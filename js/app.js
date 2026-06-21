@@ -9,7 +9,9 @@ import { mountCollectionGrid } from './views/collection-grid.js';
 import { mountProgress }      from './views/progress.js';
 import { mountMissingCards }  from './views/missing-cards.js';
 import { mountSwapAnalyser }  from './views/swap-analyser.js';
-import { clearCollection }    from './store.js';
+import { clearCollection, getCollection }    from './store.js';
+
+const STORAGE_KEY = 'panini_wc_collection';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Constants
@@ -171,6 +173,57 @@ function hookClearCollection() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Export / Import
+// ─────────────────────────────────────────────────────────────────────────────
+
+function hookExportImport() {
+  // Export — download collection as JSON file
+  document.getElementById('export-collection-btn')?.addEventListener('click', async () => {
+    const data = await getCollection();
+    const json = JSON.stringify(data);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url  = URL.createObjectURL(blob);
+    const a    = Object.assign(document.createElement('a'), { href: url, download: 'panini-collection.json' });
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  });
+
+  // Import modal
+  const modal     = document.getElementById('import-modal');
+  const textarea  = document.getElementById('import-json');
+  const errorEl   = document.getElementById('import-error');
+
+  document.getElementById('import-collection-btn')?.addEventListener('click', () => {
+    textarea.value = '';
+    errorEl.textContent = '';
+    modal.style.display = 'flex';
+    setTimeout(() => textarea.focus(), 50);
+  });
+
+  document.getElementById('import-cancel-btn')?.addEventListener('click', () => {
+    modal.style.display = 'none';
+  });
+
+  document.getElementById('import-confirm-btn')?.addEventListener('click', async () => {
+    try {
+      const parsed = JSON.parse(textarea.value.trim());
+      if (typeof parsed !== 'object' || Array.isArray(parsed)) throw new Error('Invalid format');
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
+      modal.style.display = 'none';
+      // Refresh active view
+      const { containerId } = VIEWS[activeViewId] || {};
+      if (containerId) delete document.getElementById(containerId)?._refresh;
+      showView(activeViewId || DEFAULT_VIEW);
+      alert(`Imported ${Object.keys(parsed).length} cards successfully.`);
+    } catch {
+      errorEl.textContent = 'Invalid JSON — paste the exact text from your Export file.';
+    }
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // App Init
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -180,6 +233,9 @@ async function startApp() {
 
   // Hook clear collection button
   hookClearCollection();
+
+  // Hook export / import
+  hookExportImport();
 
   // Show default view
   await showView(DEFAULT_VIEW);
