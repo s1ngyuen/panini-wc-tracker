@@ -19,7 +19,7 @@ const STORAGE_KEY = 'panini_wc_collection';
 
 const PASSWORD = 'panini2026';
 const SESSION_KEY = 'panini_authed';
-const DEFAULT_VIEW = 'card-input';
+const DEFAULT_VIEW = 'collection-grid';
 
 // Map view IDs to their mount functions and the container element IDs
 const VIEWS = {

@@ -881,7 +881,7 @@ body::before {
 }
 
 .panini-card--owned {
-  box-shadow: 0 4px 16px rgba(197,160,40,0.25), 0 0 0 2px var(--gold);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.18), 0 1px 4px rgba(0,0,0,0.1);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
