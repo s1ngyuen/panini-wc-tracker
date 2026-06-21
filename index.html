@@ -41,7 +41,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
-    href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Open+Sans:wght@400;600;700&display=swap"
     rel="stylesheet"
   />
 
@@ -57,8 +57,8 @@
       theme: {
         extend: {
           fontFamily: {
-            barlow:     ['"Barlow"', 'sans-serif'],
-            'barlow-c': ['"Barlow Condensed"', '"Arial Narrow"', 'sans-serif'],
+            fixture:  ['"Bebas Neue"', '"Arial Narrow"', 'sans-serif'],
+            sans:     ['"Open Sans"', 'sans-serif'],
           },
           colors: {
             brand: {
@@ -74,7 +74,7 @@
   </script>
 </head>
 
-<body class="bg-black text-white font-barlow overflow-x-hidden">
+<body class="bg-black text-white font-sans overflow-x-hidden">
 
   <!-- ████████████████████████████████████████████████████████████████████
        PASSWORD GATE — full-screen overlay
@@ -97,7 +97,7 @@
     <header
       id="app-header"
       class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4"
-      style="height:56px; background:#000; border-bottom:1px solid #1a1a1a;"
+      style="height:56px; background:#080808; border-bottom:1px solid #1e1e1e;"
       role="banner"
     >
       <!-- Logo / wordmark -->
@@ -108,10 +108,10 @@
         >⚽</span>
         <div>
           <div
-            style="font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:20px; color:var(--color-yellow); text-transform:uppercase; letter-spacing:.06em; line-height:1.1;"
+            style="font-family:'Bebas Neue',sans-serif; font-size:22px; color:var(--color-yellow); letter-spacing:.1em; line-height:1;"
           >WC 2026</div>
           <div
-            style="font-family:'Barlow',sans-serif; font-weight:600; font-size:9px; color:#555; text-transform:uppercase; letter-spacing:.12em; line-height:1;"
+            style="font-family:'Open Sans',sans-serif; font-weight:600; font-size:9px; color:#6a6560; text-transform:uppercase; letter-spacing:.14em; line-height:1;"
           >Adrenalyn XL Tracker</div>
         </div>
       </div>

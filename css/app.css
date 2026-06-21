@@ -12,18 +12,33 @@
 ───────────────────────────────────────────────────────────────────────────── */
 
 :root {
-  --color-black:    #000000;
-  --color-white:    #FFFFFF;
+  --color-black:    #080808;
+  --color-white:    #EDE8DF;
   --color-yellow:   #F5E100;
   --color-green:    #00D15E;
   --color-blue:     #0033A0;
   --color-orange:   #FF6B00;
   --color-grey-900: #111111;
-  --color-grey-700: #333333;
-  --color-grey-500: #666666;
+  --color-grey-700: #2a2a2a;
+  --color-grey-500: #6a6560;
+
+  /* Scoreboard accent palette */
+  --accent-coral:   #FF6B6B;
+  --accent-teal:    #4ECDC4;
+  --accent-purple:  #9B59B6;
+  --accent-mint:    #00BFA5;
+
+  /* Typography */
+  --font-display: 'Bebas Neue', 'Arial Narrow', sans-serif;
+  --font-body:    'Open Sans', sans-serif;
+
+  /* Off-white text */
+  --text-primary:   #EDE8DF;
+  --text-secondary: #9A9690;
+  --text-muted:     #4a4845;
 
   /* Default team colour fallback */
-  --team-color: #333333;
+  --team-color: #2a2a2a;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -151,7 +166,7 @@
 }
 
 .panini-card__number {
-  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  font-family: var(--font-display);
   font-weight: 700;
   font-size: 11px;
   color: rgba(255, 255, 255, 0.9);
@@ -162,7 +177,7 @@
 }
 
 .panini-card__type-badge {
-  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  font-family: var(--font-display);
   font-weight: 700;
   font-size: 8px;
   text-transform: uppercase;
@@ -174,19 +189,21 @@
   text-align: center;
 }
 
-/* Card type badge colours */
-.panini-card__type-badge--hero             { background: rgba(0,0,0,0.5); color: #FFFFFF; }
-.panini-card__type-badge--icon             { background: #8B0000; color: #F5E100; }
-.panini-card__type-badge--fan-favourite    { background: #5C35A0; color: #FFFFFF; }
-.panini-card__type-badge--team-logo        { background: #333333; color: #FFFFFF; }
-.panini-card__type-badge--golden-baller    { background: #B8860B; color: #F5E100; }
-.panini-card__type-badge--contender        { background: #1A6B3A; color: #FFFFFF; }
-.panini-card__type-badge--master-rookie    { background: #C03070; color: #FFFFFF; }
-.panini-card__type-badge--top-keeper       { background: #1A4A7A; color: #FFFFFF; }
-.panini-card__type-badge--defensive-rock   { background: #4A3000; color: #F5E100; }
-.panini-card__type-badge--midfield-maestro { background: #006060; color: #FFFFFF; }
-.panini-card__type-badge--goal-machine     { background: #CC2200; color: #FFFFFF; }
-.panini-card__type-badge--mascot           { background: #3A003A; color: #F5E100; }
+/* Card type badge colours — scoreboard vivid palette */
+.panini-card__type-badge--hero             { background: rgba(0,0,0,0.55); color: var(--text-primary); }
+.panini-card__type-badge--icon             { background: var(--accent-coral); color: #fff; }
+.panini-card__type-badge--fan-favourite    { background: var(--accent-purple); color: #fff; }
+.panini-card__type-badge--team-crest       { background: rgba(0,0,0,0.55); color: var(--text-secondary); }
+.panini-card__type-badge--golden-baller    { background: var(--color-yellow); color: #000; }
+.panini-card__type-badge--contender        { background: var(--accent-teal); color: #000; }
+.panini-card__type-badge--master-rookie    { background: var(--accent-mint); color: #000; }
+.panini-card__type-badge--top-keeper       { background: #3B82F6; color: #fff; }
+.panini-card__type-badge--defensive-rock   { background: var(--color-orange); color: #000; }
+.panini-card__type-badge--midfield-maestro { background: var(--accent-teal); color: #000; }
+.panini-card__type-badge--goal-machine     { background: var(--accent-coral); color: #fff; }
+.panini-card__type-badge--mascot           { background: var(--accent-purple); color: #fff; }
+.panini-card__type-badge--official-emblem  { background: var(--color-yellow); color: #000; }
+.panini-card__type-badge--eternos-22       { background: var(--accent-coral); color: #fff; }
 
 /* Middle section: flag + country name */
 .panini-card__middle {
@@ -205,7 +222,7 @@
 }
 
 .panini-card__country {
-  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  font-family: var(--font-display);
   font-weight: 900;
   font-size: 10px;
   text-transform: uppercase;
@@ -230,7 +247,7 @@
 }
 
 .panini-card__name {
-  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  font-family: var(--font-display);
   font-weight: 900;
   font-size: 12px;
   text-transform: uppercase;
@@ -245,7 +262,7 @@
 }
 
 .panini-card__wordmark {
-  font-family: 'Barlow', sans-serif;
+  font-family: var(--font-body);
   font-weight: 600;
   font-size: 7px;
   letter-spacing: 0.12em;
@@ -277,7 +294,7 @@
   z-index: 20;
   background: var(--color-yellow);
   color: #000;
-  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  font-family: var(--font-display);
   font-weight: 900;
   font-size: 11px;
   min-width: 22px;
@@ -291,9 +308,9 @@
   padding: 0 4px;
 }
 
-/* Owned: subtle green glow */
+/* Owned: teal glow */
 .panini-card--owned {
-  box-shadow: 0 4px 16px rgba(0,0,0,0.6), 0 0 0 2px var(--color-green);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.6), 0 0 0 2px var(--accent-teal);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -317,7 +334,7 @@
 .toast {
   padding: 12px 18px;
   border-radius: 10px;
-  font-family: 'Barlow', sans-serif;
+  font-family: var(--font-body);
   font-size: 14px;
   font-weight: 600;
   color: #fff;
@@ -373,7 +390,7 @@
 ───────────────────────────────────────────────────────────────────────────── */
 
 .progress-bar-track {
-  background: #222;
+  background: #1a1918;
   border-radius: 99px;
   height: 8px;
   overflow: hidden;
@@ -382,12 +399,12 @@
 .progress-bar-fill {
   height: 100%;
   border-radius: 99px;
-  background: var(--color-green);
+  background: linear-gradient(90deg, var(--accent-teal), var(--accent-mint));
   transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .progress-bar-fill--yellow {
-  background: var(--color-yellow);
+  background: linear-gradient(90deg, var(--color-yellow), var(--accent-coral));
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -400,8 +417,8 @@
   left: 0;
   right: 0;
   z-index: 100;
-  background: #0a0a0a;
-  border-top: 1px solid #222;
+  background: #080808;
+  border-top: 1px solid #1e1e1e;
   height: 64px;
   display: flex;
 }
@@ -416,12 +433,11 @@
   background: none;
   border: none;
   cursor: pointer;
-  color: #666;
-  font-family: 'Barlow', sans-serif;
-  font-size: 10px;
-  font-weight: 600;
+  color: var(--text-muted);
+  font-family: var(--font-display);
+  font-size: 11px;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.1em;
   padding: 8px 4px;
   min-width: 44px;
   min-height: 44px;
@@ -431,11 +447,11 @@
 
 .nav-tab:hover,
 .nav-tab:focus-visible {
-  color: #aaa;
+  color: var(--text-secondary);
 }
 
 .nav-tab.active {
-  color: var(--color-yellow);
+  color: var(--accent-teal);
 }
 
 .nav-tab svg {
@@ -450,8 +466,9 @@
 
 body {
   overflow-x: hidden;
-  background: #0a0a0a;
-  color: #f0f0f0;
+  background: var(--color-black);
+  color: var(--text-primary);
+  font-family: var(--font-body);
 }
 
 #main-content {
@@ -476,12 +493,12 @@ body {
 ───────────────────────────────────────────────────────────────────────────── */
 
 .filter-select {
-  background: #1a1a1a;
-  color: #f0f0f0;
-  border: 1px solid #333;
+  background: #111111;
+  color: var(--text-primary);
+  border: 1px solid #242424;
   border-radius: 8px;
   padding: 8px 32px 8px 12px;
-  font-family: 'Barlow', sans-serif;
+  font-family: var(--font-body);
   font-size: 13px;
   font-weight: 600;
   appearance: none;
@@ -507,32 +524,32 @@ body {
   align-items: center;
   gap: 10px;
   padding: 10px 16px;
-  border-bottom: 1px solid #1a1a1a;
-  font-family: 'Barlow', sans-serif;
+  border-bottom: 1px solid #161614;
+  font-family: var(--font-body);
   font-size: 14px;
 }
 
 .missing-row:hover {
-  background: #111;
+  background: #0f0f0e;
 }
 
 .missing-row__id {
-  font-family: 'Barlow Condensed', sans-serif;
+  font-family: var(--font-display);
   font-weight: 700;
   font-size: 12px;
-  color: #666;
+  color: var(--text-muted);
   min-width: 36px;
 }
 
 .missing-row__name {
   font-weight: 600;
-  color: #f0f0f0;
+  color: var(--text-primary);
   flex: 1;
 }
 
 .missing-row__meta {
   font-size: 12px;
-  color: #666;
+  color: var(--text-muted);
   white-space: nowrap;
 }
 
@@ -547,28 +564,28 @@ body {
   padding: 8px 12px;
   border-radius: 6px;
   background: #111;
-  font-family: 'Barlow', sans-serif;
+  font-family: var(--font-body);
   font-size: 13px;
   margin-bottom: 4px;
 }
 
 .swap-result-row__id {
-  font-family: 'Barlow Condensed', sans-serif;
+  font-family: var(--font-display);
   font-weight: 700;
   font-size: 11px;
-  color: #666;
+  color: var(--text-muted);
   min-width: 32px;
 }
 
 .swap-result-row__name {
   font-weight: 600;
-  color: #f0f0f0;
+  color: var(--text-primary);
   flex: 1;
 }
 
 .swap-result-row__meta {
   font-size: 11px;
-  color: #888;
+  color: var(--text-secondary);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -578,7 +595,7 @@ body {
 .btn-primary {
   background: var(--color-yellow);
   color: #000;
-  font-family: 'Barlow Condensed', sans-serif;
+  font-family: var(--font-display);
   font-weight: 900;
   font-size: 15px;
   text-transform: uppercase;
@@ -609,14 +626,14 @@ body {
 }
 
 .btn-secondary {
-  background: #1a1a1a;
-  color: #f0f0f0;
-  font-family: 'Barlow Condensed', sans-serif;
+  background: #111111;
+  color: var(--text-primary);
+  font-family: var(--font-display);
   font-weight: 700;
   font-size: 14px;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  border: 1px solid #333;
+  border: 1px solid #242424;
   border-radius: 8px;
   padding: 10px 20px;
   cursor: pointer;
@@ -641,7 +658,7 @@ body {
 .btn-danger {
   background: #CC0000;
   color: #fff;
-  font-family: 'Barlow Condensed', sans-serif;
+  font-family: var(--font-display);
   font-weight: 700;
   font-size: 14px;
   text-transform: uppercase;
@@ -668,12 +685,12 @@ body {
 ───────────────────────────────────────────────────────────────────────────── */
 
 .form-input {
-  background: #1a1a1a;
-  color: #f0f0f0;
-  border: 1px solid #333;
+  background: #111111;
+  color: var(--text-primary);
+  border: 1px solid #242424;
   border-radius: 8px;
   padding: 12px 16px;
-  font-family: 'Barlow', sans-serif;
+  font-family: var(--font-body);
   font-size: 15px;
   font-weight: 400;
   width: 100%;
@@ -692,12 +709,12 @@ body {
 }
 
 .form-textarea {
-  background: #1a1a1a;
-  color: #f0f0f0;
-  border: 1px solid #333;
+  background: #111111;
+  color: var(--text-primary);
+  border: 1px solid #242424;
   border-radius: 8px;
   padding: 12px 16px;
-  font-family: 'Barlow', sans-serif;
+  font-family: var(--font-body);
   font-size: 14px;
   font-weight: 400;
   width: 100%;
@@ -721,8 +738,8 @@ body {
 ───────────────────────────────────────────────────────────────────────────── */
 
 .search-dropdown {
-  background: #1a1a1a;
-  border: 1px solid #333;
+  background: #111111;
+  border: 1px solid #242424;
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 8px 24px rgba(0,0,0,0.6);
@@ -731,10 +748,10 @@ body {
 .search-dropdown-item {
   padding: 10px 16px;
   cursor: pointer;
-  font-family: 'Barlow', sans-serif;
+  font-family: var(--font-body);
   font-size: 14px;
   font-weight: 600;
-  color: #f0f0f0;
+  color: var(--text-primary);
   border-bottom: 1px solid #222;
   display: flex;
   align-items: center;
@@ -754,7 +771,7 @@ body {
 }
 
 .search-dropdown-item__id {
-  color: #666;
+  color: var(--text-muted);
   font-size: 12px;
   min-width: 36px;
 }
@@ -764,12 +781,11 @@ body {
 ───────────────────────────────────────────────────────────────────────────── */
 
 .section-heading {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-weight: 900;
-  font-size: 22px;
+  font-family: var(--font-display);
+  font-size: 26px;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: #fff;
+  letter-spacing: 0.08em;
+  color: var(--text-primary);
   position: relative;
   padding-left: 16px;
 }
@@ -782,7 +798,7 @@ body {
   transform: translateY(-50%);
   width: 4px;
   height: 80%;
-  background: var(--color-yellow);
+  background: var(--accent-teal);
   border-radius: 2px;
 }
 
