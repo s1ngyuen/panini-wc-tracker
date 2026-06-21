@@ -41,7 +41,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
-    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Open+Sans:wght@400;600;700&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap"
     rel="stylesheet"
   />
 
@@ -93,46 +93,37 @@
   ██████████████████████████████████████████████████████████████████████ -->
   <div id="app">
 
-    <!-- ── Fixed Top Header ────────────────────────────────────────────── -->
-    <header
-      id="app-header"
-      class="fixed top-0 left-0 right-0 z-50"
-      role="banner"
-    >
-      <!-- Left: Adrenalyn wordmark -->
-      <div class="flex items-center gap-2">
-        <span aria-hidden="true" style="font-size:18px; line-height:1;">⚽</span>
-        <div
-          style="font-family:'Open Sans',sans-serif; font-weight:700; font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.14em; line-height:1.2;"
-        >Adrenalyn<br>XL Tracker</div>
+    <!-- ── Fixed Header (single row with nav) ───────────────────────────── -->
+    <header id="app-header" role="banner">
+
+      <!-- Left nav: Add Cards + Collection -->
+      <div id="nav-left"></div>
+
+      <!-- Center: FIFA WC 2026 logo -->
+      <div class="header-logo" aria-label="FIFA World Cup 2026">
+        <img
+          src="https://upload.wikimedia.org/wikipedia/en/thumb/1/17/2026_FIFA_World_Cup_emblem.svg/330px-2026_FIFA_World_Cup_emblem.svg.png"
+          alt="FIFA World Cup 2026"
+          height="56"
+          style="display:block;"
+        />
       </div>
 
-      <!-- Center: FIFA WC 2026 logo mark -->
-      <div class="header-logo-center" aria-label="FIFA World Cup 2026">
-        <span class="header-logo-number">26</span>
-        <span class="header-logo-fifa">FIFA</span>
-      </div>
-
-      <!-- Right: reset button -->
-      <div class="header-actions">
+      <!-- Right nav: Progress + Missing + Swaps + Reset -->
+      <div id="nav-right-wrap">
+        <div id="nav-right"></div>
         <button
           id="clear-collection-btn"
           type="button"
-          class="btn-secondary"
-          style="font-size:11px; padding:6px 12px; min-height:36px;"
+          class="btn-reset"
           aria-label="Clear entire collection"
-        >
-          Reset
-        </button>
+        >Reset</button>
       </div>
+
     </header>
 
     <!-- ── Main Scrollable Content ─────────────────────────────────────── -->
-    <main
-      id="main-content"
-      aria-label="Main content"
-      style="padding-top:104px;"
-    >
+    <main id="main-content" aria-label="Main content">
 
       <!-- VIEW: Card Input -->
       <div
@@ -175,14 +166,6 @@
       ></div>
 
     </main><!-- /main-content -->
-
-    <!-- ── Fixed Bottom Navigation ─────────────────────────────────────── -->
-    <nav
-      id="bottom-nav"
-      aria-label="Main navigation"
-    >
-      <!-- Populated by js/components/nav.js -->
-    </nav>
 
     <!-- ── Toast Container ─────────────────────────────────────────────── -->
     <div

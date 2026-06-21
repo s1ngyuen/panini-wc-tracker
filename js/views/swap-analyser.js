@@ -16,9 +16,11 @@ export function mountSwapAnalyser(container) {
   const header = document.createElement('div');
   header.className = 'px-4 pt-6 pb-2';
   header.innerHTML = `
-    <h1 class="section-heading">Swap Analyser</h1>
-    <span class="chevron-accent"></span>
-    <p class="text-sm" style="color:#888; margin-top:-6px;">Paste your partner's cards and we'll work out the best trade.</p>
+    <div class="section-heading-wrap">
+      <div class="section-heading-bar"></div>
+      <span class="fx" style="font-size:32px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-primary); line-height:1;">Swaps</span>
+    </div>
+    <p class="section-sub">Paste your partner's cards to plan the best trade</p>
   `;
   container.appendChild(header);
 
@@ -26,7 +28,7 @@ export function mountSwapAnalyser(container) {
   const help = document.createElement('div');
   help.className = 'px-4 pb-4';
   help.innerHTML = `
-    <div class="rounded-lg p-3 text-xs" style="background:#111; color:#888; border:1px solid #222; line-height:1.7;">
+    <div style="background:#f9f9f9; padding:14px 16px; margin-bottom:16px; font-size:12px; color:var(--text-muted); line-height:1.7;">
       Enter card IDs or player names — one per line, or separated by commas.<br>
       We'll match them against your collection and your duplicates.<br>
       <span style="color:#555;">Example: <code style="color:#aaa;">42</code>, <code style="color:#aaa;">Messi</code>, <code style="color:#aaa;">Pedri, Bellingham</code></span>
@@ -43,13 +45,11 @@ export function mountSwapAnalyser(container) {
 
   const havesLabel = document.createElement('label');
   havesLabel.setAttribute('for', 'swap-haves');
-  havesLabel.className = 'block text-sm font-semibold mb-1';
-  havesLabel.style.color = '#aaa';
+  havesLabel.className = 'form-label';
   havesLabel.textContent = 'Cards they HAVE';
 
   const havesHint = document.createElement('p');
-  havesHint.className = 'text-xs mb-2';
-  havesHint.style.color = '#555';
+  havesHint.className = 'form-hint';
   havesHint.textContent = 'These are cards your partner can offer you.';
 
   const havesTextarea = document.createElement('textarea');
@@ -69,13 +69,11 @@ export function mountSwapAnalyser(container) {
 
   const wantsLabel = document.createElement('label');
   wantsLabel.setAttribute('for', 'swap-wants');
-  wantsLabel.className = 'block text-sm font-semibold mb-1';
-  wantsLabel.style.color = '#aaa';
+  wantsLabel.className = 'form-label';
   wantsLabel.textContent = 'Cards they WANT';
 
   const wantsHint = document.createElement('p');
-  wantsHint.className = 'text-xs mb-2';
-  wantsHint.style.color = '#555';
+  wantsHint.className = 'form-hint';
   wantsHint.textContent = 'These are cards your partner is looking for.';
 
   const wantsTextarea = document.createElement('textarea');

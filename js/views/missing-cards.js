@@ -20,20 +20,17 @@ export async function mountMissingCards(container) {
   const header = document.createElement('div');
   header.className = 'px-4 pt-6 pb-2';
 
-  const h1 = document.createElement('h1');
-  h1.className = 'section-heading';
-  h1.textContent = 'Missing Cards';
-
-  const accent = document.createElement('span');
-  accent.className = 'chevron-accent';
+  header.innerHTML = `
+    <div class="section-heading-wrap">
+      <div class="section-heading-bar"></div>
+      <span class="fx" style="font-size:32px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-primary); line-height:1;">Missing</span>
+    </div>
+  `;
 
   const subheading = document.createElement('p');
   subheading.id = 'missing-subheading';
-  subheading.className = 'text-sm';
-  subheading.style.color = '#888';
+  subheading.className = 'section-sub';
 
-  header.appendChild(h1);
-  header.appendChild(accent);
   header.appendChild(subheading);
   container.appendChild(header);
 

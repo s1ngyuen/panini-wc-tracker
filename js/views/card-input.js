@@ -20,11 +20,11 @@ export function mountCardInput(container) {
   const heading = document.createElement('div');
   heading.className = 'px-4 pt-6 pb-2';
   heading.innerHTML = `
-    <h1 class="section-heading text-2xl">Add a Card</h1>
-    <span class="chevron-accent"></span>
-    <p class="text-sm" style="color:#888; margin-top:-8px;">
-      Type a card number or player name. We'll tell you if it's new or a dupe.
-    </p>
+    <div class="section-heading-wrap">
+      <div class="section-heading-bar"></div>
+      <span class="fx" style="font-size:32px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-primary); line-height:1;">Add Cards</span>
+    </div>
+    <p class="section-sub">Type a number or player name</p>
   `;
   container.appendChild(heading);
 
@@ -34,8 +34,7 @@ export function mountCardInput(container) {
 
   const label = document.createElement('label');
   label.setAttribute('for', 'card-search-input');
-  label.className = 'block text-sm font-semibold mb-2';
-  label.style.color = '#aaa';
+  label.className = 'form-label';
   label.textContent = 'Card number or player name';
 
   const inputWrap = document.createElement('div');
@@ -55,8 +54,7 @@ export function mountCardInput(container) {
 
   const hint = document.createElement('p');
   hint.id = 'card-input-hint';
-  hint.className = 'text-xs mt-1';
-  hint.style.color = '#666';
+  hint.className = 'form-hint';
   hint.textContent = 'Accepts any card ID (1–630) or a player name. Partial names work too.';
 
   // Dropdown for multiple matches
@@ -88,7 +86,7 @@ export function mountCardInput(container) {
 
   const emptyState = document.createElement('p');
   emptyState.className = 'text-center py-8 text-sm';
-  emptyState.style.color = '#555';
+  emptyState.style.color = 'var(--text-muted)';
   emptyState.textContent = 'Open a pack and start typing.';
   previewSection.appendChild(emptyState);
   container.appendChild(previewSection);
@@ -279,8 +277,7 @@ export function mountCardInput(container) {
     previewSection.innerHTML = '';
 
     const label = document.createElement('p');
-    label.className = 'text-xs font-semibold mb-3';
-    label.style.color = '#888';
+    label.className = 'form-label';
     label.textContent = 'Last added:';
 
     const cardWrap = document.createElement('div');

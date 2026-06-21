@@ -17,8 +17,10 @@ export async function mountCollectionGrid(container) {
   const header = document.createElement('div');
   header.className = 'px-4 pt-6 pb-2';
   header.innerHTML = `
-    <h1 class="section-heading">My Collection</h1>
-    <span class="chevron-accent"></span>
+    <div class="section-heading-wrap">
+      <div class="section-heading-bar"></div>
+      <span class="fx" style="font-size:32px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-primary); line-height:1;">Collection</span>
+    </div>
   `;
   container.appendChild(header);
 
