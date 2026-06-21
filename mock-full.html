@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<!--
+  VISUAL MOCK — Full Site
+  Open directly in a browser. Click nav tabs to switch views.
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mock — WC 2026 Tracker</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+
+    @font-face {
+      font-family: 'FWC2026';
+      src: url('fonts/FWC2026.ttf') format('truetype');
+      font-weight: 900;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    /* ─── Tokens ─────────────────────────────────────────────────────────── */
+    :root {
+      --bg:           #FFFFFF;
+      --surface:      #F0F4FF;
+      --surface-high: #E4EAFF;
+      --border:       #C8D0F0;
+      --accent:       #304FFE;
+      --green:        #00A84F;
+      --gold:         #C5A028;
+      --text-primary:   #10164F;
+      --text-secondary: #4A5280;
+      --text-muted:     #8892C0;
+      --font-display: 'FWC2026', 'Arial Narrow', sans-serif;
+      --font-body:    'Open Sans', sans-serif;
+      --squeeze:      0.78;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text-primary);
+      position: relative;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: url('references/bg26.jpg') center center / cover no-repeat;
+      filter: grayscale(1);
+      opacity: 0.06;
+      pointer-events: none;
+      z-index: 0;
+    }
+    body > * { position: relative; z-index: 1; }
+
+    .fx   { font-family: var(--font-display); display: inline-block; transform: scaleX(var(--squeeze)); transform-origin: left center; }
+    .fx-c { font-family: var(--font-display); display: inline-block; transform: scaleX(var(--squeeze)); transform-origin: center center; }
+
+    /* ─── Header ─────────────────────────────────────────────────────────── */
+    .app-header {
+      position: sticky; top: 0; z-index: 10;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      height: 72px;
+      padding: 0 20px;
+      background: var(--bg);
+      border-bottom: none;
+    }
+    .header-nav-left  { display: flex; align-items: center; }
+    .header-logo      { display: flex; align-items: center; justify-content: center; padding: 0 24px; }
+    .header-nav-right { display: flex; align-items: center; justify-content: flex-end; }
+
+    .nav-tab {
+      display: flex; align-items: center; justify-content: center;
+      background: none; border: none; cursor: pointer;
+      color: rgba(197,160,40,0.6);
+      font-family: var(--font-display); font-size: 14px;
+      text-transform: uppercase; letter-spacing: .08em;
+      padding: 0 12px; height: 72px;
+      position: relative; white-space: nowrap;
+      transform: scaleX(var(--squeeze)); transform-origin: center;
+    }
+    .nav-tab:hover  { color: var(--text-secondary); }
+    .nav-tab.active { color: var(--gold); }
+    .nav-tab.active::after {
+      content: ''; position: absolute; bottom: 0; left: 10%; right: 10%;
+      height: 3px; background: var(--gold);
+    }
+    .btn-reset {
+      background: none; color: var(--text-muted);
+      font-family: var(--font-display); font-size: 11px;
+      text-transform: uppercase; letter-spacing: .08em;
+      border: 1px solid var(--border); border-radius: 4px;
+      padding: 6px 14px; cursor: pointer; margin-left: 16px;
+      transform: scaleX(var(--squeeze)); transform-origin: right;
+    }
+
+    /* ─── Main ───────────────────────────────────────────────────────────── */
+    .main { padding: 32px 24px 48px; max-width: 860px; margin: 0 auto; }
+
+    /* ─── Section Heading ────────────────────────────────────────────────── */
+    .section-heading { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
+    .section-heading__bar { width: 4px; border-radius: 0; background: var(--gold); flex-shrink: 0; align-self: stretch; min-height: 28px; }
+    .section-heading__text { font-size: 32px; text-transform: uppercase; letter-spacing: .04em; color: var(--text-primary); line-height: 1; }
+    .section-sub { font-size: 16px; color: rgba(197,160,40,0.6); margin-bottom: 24px; padding-left: 16px; font-family: var(--font-display); text-transform: uppercase; display: inline-block; transform: scaleX(var(--squeeze)); transform-origin: left center; }
+
+    /* ─── Stat Tiles ─────────────────────────────────────────────────────── */
+    .overall-block  { margin-bottom: 32px; }
+    .overall-tiles  { display: grid; grid-template-columns: 2.5fr 1fr 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+    .stat-tile { background:#f9f9f9; border:none; border-radius:0; padding:14px 16px; text-align:center; display:flex; flex-direction:column; align-items:center; justify-content:center; min-width:0; overflow:hidden; }
+    .stat-tile__label { font-size:11px; color:rgba(197,160,40,0.6); text-transform:uppercase; letter-spacing:.08em; font-family:var(--font-body); font-weight:600; margin-bottom:4px; }
+    .stat-tile__num   { font-size:32px; line-height:1; display:block; text-align:center; }
+
+    /* ─── Progress Bars ──────────────────────────────────────────────────── */
+    .progress-track { height: 28px; border-radius: 0; background: var(--track, var(--surface-high)); overflow: hidden; box-shadow: inset 0 2px 6px rgba(0,0,0,0.12); }
+    .progress-fill  { height: 100%; border-radius: 0; background: var(--fill, var(--accent)); transition: width .4s ease; }
+
+    /* ─── Category Heading ───────────────────────────────────────────────── */
+    .category-heading { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; margin-top: 32px; padding-bottom: 10px; }
+    .category-heading__text { font-size: 20px; text-transform: uppercase; letter-spacing: .06em; color: var(--text-primary); line-height: 1; }
+
+    /* ─── Team / Type Rows ───────────────────────────────────────────────── */
+    .prog-rows      { display: flex; flex-direction: column; gap: 16px; }
+    .prog-row__header  { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
+    .prog-row__name    { font-size: 14px; color: var(--fill, var(--text-primary)); line-height: 1; text-transform: uppercase; }
+    .prog-row__fraction{ font-size: 13px; color: var(--track, var(--text-muted)); }
+    .prog-row__pct     { font-size: 14px; font-family: var(--font-display); color: var(--fill, var(--accent)); flex-shrink: 0; min-width: 42px; text-align: right; display: inline-block; transform: scaleX(var(--squeeze)); transform-origin: right center; }
+
+    /* ─── Form Elements ──────────────────────────────────────────────────── */
+    .form-input {
+      width: 100%; padding: 12px 16px;
+      border: 1.5px solid var(--border); border-radius: 0;
+      font-family: var(--font-body); font-size: 15px; color: var(--text-primary);
+      background: #f9f9f9; outline: none;
+    }
+    .form-input:focus { border-color: var(--accent); }
+    .form-input::placeholder { color: var(--text-muted); }
+    textarea.form-input { resize: vertical; min-height: 100px; }
+
+    .btn-primary {
+      width: 100%; padding: 14px;
+      background: var(--accent); color: #fff; border: none; border-radius: 0;
+      font-family: var(--font-display); font-size: 15px;
+      text-transform: uppercase; letter-spacing: .08em;
+      transform: scaleX(var(--squeeze)); transform-origin: center;
+      cursor: pointer; margin-top: 10px;
+    }
+    .btn-primary:hover { opacity: 0.9; }
+
+    .btn-secondary {
+      padding: 10px 20px;
+      background: none; color: var(--text-secondary);
+      border: 1.5px solid var(--border); border-radius: 0;
+      font-family: var(--font-display); font-size: 13px;
+      text-transform: uppercase; letter-spacing: .06em;
+      transform: scaleX(var(--squeeze)); transform-origin: center;
+      cursor: pointer;
+    }
+
+    .form-label {
+      display: block; font-size: 11px; font-weight: 700;
+      color: rgba(197,160,40,0.6); text-transform: uppercase;
+      letter-spacing: .1em; margin-bottom: 6px;
+    }
+    .form-group { margin-bottom: 20px; }
+    .form-hint  { font-size: 12px; color: var(--text-muted); margin-top: 5px; }
+
+    /* ─── Search Dropdown ────────────────────────────────────────────────── */
+    .search-dropdown { background: #fff; border: 1.5px solid var(--border); border-top: none; position: absolute; left: 0; right: 0; z-index: 20; }
+    .search-dropdown-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; cursor: pointer; font-size: 13px; border-bottom: 1px solid var(--surface); }
+    .search-dropdown-item:hover { background: var(--surface); }
+    .search-dropdown-item__id { font-family: var(--font-display); font-size: 12px; color: var(--text-muted); min-width: 36px; transform: scaleX(var(--squeeze)); transform-origin: left; display: inline-block; }
+
+    /* ─── Card Grid (Collection) ─────────────────────────────────────────── */
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; margin-top: 16px; }
+    .card-tile {
+      background: #f9f9f9; padding: 10px 8px 8px; text-align: center;
+      border-top: 3px solid var(--card-color, var(--accent));
+      position: relative;
+    }
+    .card-tile__id     { font-family: var(--font-display); font-size: 11px; color: var(--text-muted); transform: scaleX(var(--squeeze)); transform-origin: left; display: inline-block; }
+    .card-tile__name   { font-size: 11px; font-weight: 700; color: var(--text-primary); margin: 4px 0 2px; line-height: 1.2; }
+    .card-tile__type   { font-size: 10px; color: var(--card-color, var(--accent)); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+    .card-tile__count  { position: absolute; top: 6px; right: 6px; background: var(--card-color, var(--accent)); color: #fff; font-size: 10px; font-weight: 700; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+
+    /* ─── Missing / Swap List rows ───────────────────────────────────────── */
+    .list-row {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 14px; background: #f9f9f9;
+      border-left: 3px solid var(--row-color, var(--border));
+      margin-bottom: 6px;
+    }
+    .list-row__id   { font-family: var(--font-display); font-size: 12px; color: var(--text-muted); min-width: 36px; transform: scaleX(var(--squeeze)); transform-origin: left; display: inline-block; }
+    .list-row__name { font-size: 13px; font-weight: 700; color: var(--text-primary); flex: 1; }
+    .list-row__meta { font-size: 11px; color: var(--text-muted); white-space: nowrap; }
+
+    /* ─── Filter chips ───────────────────────────────────────────────────── */
+    .filter-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+    .chip {
+      padding: 4px 12px; border: 1.5px solid var(--border); background: #f9f9f9;
+      font-size: 11px; font-weight: 700; color: var(--text-secondary);
+      text-transform: uppercase; letter-spacing: .06em; cursor: pointer; border-radius: 0;
+    }
+    .chip.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+    /* ─── Swap result bands ──────────────────────────────────────────────── */
+    .swap-band { padding: 10px 14px; margin-bottom: 6px; display: flex; gap: 12px; align-items: center; }
+    .swap-band--give { background: #FFF3CD; border-left: 3px solid var(--gold); }
+    .swap-band--get  { background: #D4EDDA; border-left: 3px solid var(--green); }
+    .swap-band__label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; min-width: 36px; }
+    .swap-band--give .swap-band__label { color: var(--gold); }
+    .swap-band--get  .swap-band__label { color: var(--green); }
+    .swap-band__text { font-size: 13px; color: var(--text-primary); font-weight: 600; }
+
+    /* ─── View switching ─────────────────────────────────────────────────── */
+    .view { display: none; }
+    .view.active { display: block; }
+
+  </style>
+</head>
+<body>
+
+  <header class="app-header">
+    <div class="header-nav-left">
+      <button class="nav-tab active" data-view="add">Add Cards</button>
+      <button class="nav-tab" data-view="collection">Collection</button>
+    </div>
+    <div class="header-logo">
+      <img src="https://upload.wikimedia.org/wikipedia/en/thumb/1/17/2026_FIFA_World_Cup_emblem.svg/330px-2026_FIFA_World_Cup_emblem.svg.png" alt="FIFA World Cup 2026" height="56" style="display:block;" />
+    </div>
+    <div class="header-nav-right">
+      <button class="nav-tab" data-view="progress">Progress</button>
+      <button class="nav-tab" data-view="missing">Missing</button>
+      <button class="nav-tab" data-view="swaps">Swaps</button>
+      <button class="btn-reset">Reset</button>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════════════════════════════════ ADD CARDS ═══ -->
+  <div class="view active" id="view-add">
+    <div class="main">
+
+      <div class="section-heading">
+        <div class="section-heading__bar"></div>
+        <span class="fx section-heading__text">Add Cards</span>
+      </div>
+      <p class="section-sub">Type a number or player name</p>
+
+      <div class="form-group" style="position:relative;">
+        <label class="form-label">Card number or player name</label>
+        <div style="position:relative;">
+          <input class="form-input" type="search" placeholder="e.g. 42 or Mbappé" />
+          <div class="search-dropdown">
+            <div class="search-dropdown-item">
+              <span class="search-dropdown-item__id">#42</span>
+              <span style="font-weight:700; font-size:13px;">Harry Kane</span>
+              <span style="font-size:11px; color:var(--text-muted); margin-left:auto;">England · Icon</span>
+            </div>
+            <div class="search-dropdown-item">
+              <span class="search-dropdown-item__id">#421</span>
+              <span style="font-weight:700; font-size:13px;">Kylian Mbappé</span>
+              <span style="font-size:11px; color:var(--text-muted); margin-left:auto;">France · Hero</span>
+            </div>
+            <div class="search-dropdown-item">
+              <span class="search-dropdown-item__id">#186</span>
+              <span style="font-weight:700; font-size:13px;">Eduardo Camavinga</span>
+              <span style="font-size:11px; color:var(--text-muted); margin-left:auto;">France · Hero</span>
+            </div>
+          </div>
+        </div>
+        <p class="form-hint">Accepts any card ID (1–630) or a player name. Partial names work.</p>
+      </div>
+
+      <button class="btn-primary">Add to Collection</button>
+
+      <!-- Last added preview -->
+      <div style="margin-top:32px;">
+        <div class="section-heading" style="margin-bottom:16px;">
+          <div class="section-heading__bar"></div>
+          <span class="fx section-heading__text" style="font-size:20px;">Last Added</span>
+        </div>
+
+        <div style="background:#f9f9f9; padding:20px; display:flex; gap:20px; align-items:center;">
+          <div style="width:80px; height:110px; background:linear-gradient(135deg,#EF233C 0%,#002395 100%); flex-shrink:0; display:flex; align-items:flex-end; padding:6px;">
+            <span style="font-size:9px; font-weight:700; color:rgba(255,255,255,0.7); text-transform:uppercase; letter-spacing:.06em;">Hero</span>
+          </div>
+          <div>
+            <div style="font-size:11px; color:rgba(197,160,40,0.6); font-weight:700; text-transform:uppercase; letter-spacing:.08em; margin-bottom:4px;">New card!</div>
+            <div style="font-size:22px; font-weight:800; color:var(--text-primary); line-height:1.1; margin-bottom:4px;">Kylian Mbappé</div>
+            <div style="font-size:12px; color:var(--text-muted);">France · #120 · Hero</div>
+            <button class="btn-secondary" style="margin-top:12px; padding:6px 16px; font-size:11px;">− Undo</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ COLLECTION ══════ -->
+  <div class="view" id="view-collection">
+    <div class="main">
+
+      <div class="section-heading">
+        <div class="section-heading__bar"></div>
+        <span class="fx section-heading__text">Collection</span>
+      </div>
+      <p class="section-sub">312 cards owned</p>
+
+      <div class="filter-row">
+        <div class="chip active">All</div>
+        <div class="chip">Argentina</div>
+        <div class="chip">Brazil</div>
+        <div class="chip">France</div>
+        <div class="chip">England</div>
+        <div class="chip">Hero</div>
+        <div class="chip">Icon</div>
+        <div class="chip">Dupes only</div>
+      </div>
+
+      <div class="card-grid">
+        <div class="card-tile" style="--card-color:#6DAEDB;">
+          <span class="card-tile__id">#12</span>
+          <div class="card-tile__name">Lionel Messi</div>
+          <div class="card-tile__type">Golden Baller</div>
+        </div>
+        <div class="card-tile" style="--card-color:#EF233C;">
+          <span class="card-tile__id">#120</span>
+          <div class="card-tile__name">Kylian Mbappé</div>
+          <div class="card-tile__type">Hero</div>
+        </div>
+        <div class="card-tile" style="--card-color:#304FFE;">
+          <span class="card-tile__id">#186</span>
+          <div class="card-tile__name">Camavinga</div>
+          <div class="card-tile__type">Hero</div>
+          <div class="card-tile__count">2</div>
+        </div>
+        <div class="card-tile" style="--card-color:#009C3B;">
+          <span class="card-tile__id">#215</span>
+          <div class="card-tile__name">Vinicius Jr</div>
+          <div class="card-tile__type">Fan Favourite</div>
+        </div>
+        <div class="card-tile" style="--card-color:#AA151B;">
+          <span class="card-tile__id">#298</span>
+          <div class="card-tile__name">Pedri</div>
+          <div class="card-tile__type">Hero</div>
+          <div class="card-tile__count">3</div>
+        </div>
+        <div class="card-tile" style="--card-color:#AA151B;">
+          <span class="card-tile__id">#312</span>
+          <div class="card-tile__name">Lamine Yamal</div>
+          <div class="card-tile__type">Hero</div>
+        </div>
+        <div class="card-tile" style="--card-color:#FF0000;">
+          <span class="card-tile__id">#465</span>
+          <div class="card-tile__name">Dan Ndoye</div>
+          <div class="card-tile__type">Hero</div>
+        </div>
+        <div class="card-tile" style="--card-color:#5CB8E4;">
+          <span class="card-tile__id">#501</span>
+          <div class="card-tile__name">Darwin Núñez</div>
+          <div class="card-tile__type">Hero</div>
+        </div>
+        <div class="card-tile" style="--card-color:#1A1A1A;">
+          <span class="card-tile__id">#88</span>
+          <div class="card-tile__name">Florian Wirtz</div>
+          <div class="card-tile__type">Contender</div>
+          <div class="card-tile__count">2</div>
+        </div>
+        <div class="card-tile" style="--card-color:#9B59B6;">
+          <span class="card-tile__id">#203</span>
+          <div class="card-tile__name">Rodrygo</div>
+          <div class="card-tile__type">Fan Favourite</div>
+        </div>
+        <div class="card-tile" style="--card-color:#F5C400;">
+          <span class="card-tile__id">#7</span>
+          <div class="card-tile__name">Cristiano Ronaldo</div>
+          <div class="card-tile__type">Golden Baller</div>
+        </div>
+        <div class="card-tile" style="--card-color:#00BFA5;">
+          <span class="card-tile__id">#542</span>
+          <div class="card-tile__name">Bellingham</div>
+          <div class="card-tile__type">Master Rookie</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════ PROGRESS ═════ -->
+  <div class="view" id="view-progress">
+    <div class="main">
+
+      <div class="section-heading">
+        <div class="section-heading__bar"></div>
+        <span class="fx section-heading__text">Progress</span>
+      </div>
+      <p class="section-sub">How close are you to completing the set?</p>
+
+      <div class="overall-block">
+        <div class="overall-tiles">
+          <div class="stat-tile">
+            <div class="stat-tile__label">Cards collected</div>
+            <span class="fx-c stat-tile__num" style="color:#111111;">312 <span style="color:rgba(197,160,40,0.6);">of 630</span></span>
+          </div>
+          <div class="stat-tile">
+            <div class="stat-tile__label">Still need</div>
+            <span class="fx-c stat-tile__num" style="color:#111111;">318</span>
+          </div>
+          <div class="stat-tile">
+            <div class="stat-tile__label">Duplicates</div>
+            <span class="fx-c stat-tile__num" style="color:#111111;">47</span>
+          </div>
+          <div class="stat-tile">
+            <div class="stat-tile__label">Complete</div>
+            <span class="fx-c stat-tile__num" style="color:#111111;">49.5%</span>
+          </div>
+        </div>
+        <div class="progress-track" style="--track:#E4EAFF; --fill:var(--accent);">
+          <div class="progress-fill" style="width:49.5%"></div>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:24px; align-items:flex-start;">
+
+        <!-- By Team -->
+        <div style="flex:1; min-width:0;">
+          <div class="category-heading">
+            <span class="fx category-heading__text">By Team</span>
+          </div>
+          <div class="prog-rows">
+
+            <div style="--fill:#6DAEDB; --track:#EAF4FB;">
+              <div class="prog-row__header">
+                <span class="fx prog-row__name">🇦🇷 Argentina</span>
+                <div style="display:flex;gap:4px;align-items:baseline;"><span class="fx prog-row__fraction">12 / 12</span><span class="prog-row__pct">100%</span></div>
+              </div>
+              <div class="progress-track"><div class="progress-fill" style="width:100%"></div></div>
+            </div>
+
+            <div style="--fill:#009C3B; --track:#D9F0E4;">
+              <div class="prog-row__header">
+                <span class="fx prog-row__name">🇧🇷 Brazil</span>
+                <div style="display:flex;gap:4px;align-items:baseline;"><span class="fx prog-row__fraction">10 / 12</span><span class="prog-row__pct">83%</span></div>
+              </div>
+              <div class="progress-track"><div class="progress-fill" style="width:83%"></div></div>
+            </div>
+
+            <div style="--fill:#EF233C; --track:#FFE8EA;">
+              <div class="prog-row__header">
+                <span class="fx prog-row__name">🇫🇷 France</span>
+                <div style="display:flex;gap:4px;align-items:baseline;"><span class="fx prog-row__fraction">9 / 12</span><span class="prog-row__pct">75%</span></div>
+              </div>
+              <div class="progress-track"><div class="progress-fill" style="width:75%"></div></div>
+            </div>
+
+            <div style="--fill:#006600; --track:#D9EDD9;">
+              <div class="prog-row__header">
+                <span class="fx prog-row__name">🇵🇹 Portugal</span>
+                <div style="display:flex;gap:4px;align-items:baseline;"><span class="fx prog-row__fraction">7 / 12</span><span class="prog-row__pct">58%</span></div>
+              </div>
+              <div class="progress-track"><div class="progress-fill" style="width:58%"></div></div>
+            </div>
+
+            <div style="--fill:#CF142B; --track:#FDDEE1;">
+              <div class="prog-row__header">
+                <span class="fx prog-row__name">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</span>
+                <div style="display:flex;gap:4px;align-items:baseline;"><span class="fx prog-row__fraction">5 / 12</span><span class="prog-row__pct">42%</span></div>
+              </div>
+              <div class="progress-track"><div class="progress-fill" style="width:42%"></div></div>
+            </div>
+
+            <div style="--fill:#AA151B; --track:#FFF3CC;">
+              <div class="prog-row__header">
+                <span class="fx prog-row__name">🇪🇸 Spain</span>
+                <div style="display:flex;gap:4px;align-items:baseline;"><span class="fx prog-row__fraction">4 / 12</span><span class="prog-row__pct">33%</span></div>
+              </div>
+              <div class="progress-track"><div class="progress-fill" style="width:33%"></div></div>
+            </div>
+
+            <div style="--fill:#FF0000; --track:#FFCEC0;">
+              <div class="prog-row__header">
+                <span class="fx prog-row__name">🇨🇭 Switzerland</span>
+                <div style="display:flex;gap:4px;align-items:baseline;"><span class="fx prog-row__fraction">6 / 12</span><span class="prog-row__pct">50%</span></div>
+              </div>
+              <div class="progress-track"><div class="progress-fill" style="width:50%"></div></div>
+            </div>
+
+            <div style="--fill:#1A1A1A; --track:#FFF2B2;">
+              <div class="prog-row__header">
+                <span class="fx prog-row__name">🇩🇪 Germany</span>
+                <div style="display:flex;gap:4px;align-items:baseline;"><span class="fx prog-row__fraction">2 / 12</span><span class="prog-row__pct">17%</span></div>
+              </div>
+              <div class="progress-track"><div class="progress-fill" style="width:17%"></div></div>
+            </div>
+
+            <div style="--fill:#5CB8E4; --track:#E0F3FC;">
+              <div class="prog-row__header">
+                <span class="fx prog-row__name">🇺🇾 Uruguay</span>
+                <div style="display:flex;gap:4px;align-items:baseline;"><span class="fx prog-row__fraction">0 / 12</span><span class="prog-row__pct">0%</span></div>
+              </div>
+              <div class="progress-track"><div class="progress-fill" style="width:0%"></div></div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- By Card Type -->
+        <div style="flex:1; min-width:0;">
+          <div class="category-heading">
+            <span class="fx category-heading__text">By Card Type</span>
+          </div>
+          <div class="prog-rows">
+
+            <div style="--fill:#F5C400; --track:#FFFBE0;">
+              <div class="prog-row__header">
+                <span class="fx prog-row__name">Golden Baller</span>
+                <div style="display:flex;gap:4px;align-items:baseline;"><span class="fx prog-row__fraction">7 / 9</span><span class="prog-row__pct">78%</span></div>
+              </div>
+              <div class="progress-track"><div class="progress-fill" style="width:78%"></div></div>
+            </div>
+
+            <div style="--fill:#304FFE; --track:#E4EAFF;">
+              <div class="prog-row__header">
+                <span class="fx prog-row__name">Hero</span>
+                <div style="display:flex;gap:4px;align-items:baseline;"><span class="fx prog-row__fraction">165 / 378</span><span class="prog-row__pct">44%</span></div>
+              </div>
+              <div class="progress-track"><div class="progress-fill" style="width:44%"></div></div>
+            </div>
+
+            <div style="--fill:#9B59B6; --track:#F0E6F8;">
+              <div class="prog-row__header">
+                <span class="fx prog-row__name">Fan Favourite</span>
+                <div style="display:flex;gap:4px;align-items:baseline;"><span class="fx prog-row__fraction">30 / 42</span><span class="prog-row__pct">71%</span></div>
+              </div>
+              <div class="progress-track"><div class="progress-fill" style="width:71%"></div></div>
+            </div>
+
+            <div style="--fill:#FF6B6B; --track:#FFE8E8;">
+              <div class="prog-row__header">
+                <span class="fx prog-row__name">Icon</span>
+                <div style="display:flex;gap:4px;align-items:baseline;"><span class="fx prog-row__fraction">28 / 42</span><span class="prog-row__pct">67%</span></div>
+              </div>
+              <div class="progress-track"><div class="progress-fill" style="width:67%"></div></div>
+            </div>
+
+            <div style="--fill:#4ECDC4; --track:#E0F7F6;">
+              <div class="prog-row__header">
+                <span class="fx prog-row__name">Contender</span>
+                <div style="display:flex;gap:4px;align-items:baseline;"><span class="fx prog-row__fraction">18 / 36</span><span class="prog-row__pct">50%</span></div>
+              </div>
+              <div class="progress-track"><div class="progress-fill" style="width:50%"></div></div>
+            </div>
+
+            <div style="--fill:#00BFA5; --track:#E0F7F4;">
+              <div class="prog-row__header">
+                <span class="fx prog-row__name">Master Rookie</span>
+                <div style="display:flex;gap:4px;align-items:baseline;"><span class="fx prog-row__fraction">6 / 16</span><span class="prog-row__pct">38%</span></div>
+              </div>
+              <div class="progress-track"><div class="progress-fill" style="width:38%"></div></div>
+            </div>
+
+            <div style="--fill:#3B82F6; --track:#DBEAFE;">
+              <div class="prog-row__header">
+                <span class="fx prog-row__name">Top Keeper</span>
+                <div style="display:flex;gap:4px;align-items:baseline;"><span class="fx prog-row__fraction">3 / 9</span><span class="prog-row__pct">33%</span></div>
+              </div>
+              <div class="progress-track"><div class="progress-fill" style="width:33%"></div></div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════ MISSING ══════ -->
+  <div class="view" id="view-missing">
+    <div class="main">
+
+      <div class="section-heading">
+        <div class="section-heading__bar"></div>
+        <span class="fx section-heading__text">Missing</span>
+      </div>
+      <p class="section-sub">318 cards still needed</p>
+
+      <div class="filter-row">
+        <div class="chip active">All</div>
+        <div class="chip">Argentina</div>
+        <div class="chip">Brazil</div>
+        <div class="chip">France</div>
+        <div class="chip">England</div>
+        <div class="chip">Hero</div>
+        <div class="chip">Icon</div>
+      </div>
+
+      <button class="btn-secondary" style="width:100%; margin-bottom:16px; display:flex; align-items:center; justify-content:center; gap:8px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        Copy Missing List
+      </button>
+
+      <div class="list-row" style="--row-color:#EF233C;">
+        <span class="list-row__id">#42</span>
+        <span class="list-row__name">Harry Kane</span>
+        <span class="list-row__meta">England · Icon</span>
+      </div>
+      <div class="list-row" style="--row-color:#EF233C;">
+        <span class="list-row__id">#120</span>
+        <span class="list-row__name">Kylian Mbappé</span>
+        <span class="list-row__meta">France · Hero</span>
+      </div>
+      <div class="list-row" style="--row-color:#EF233C;">
+        <span class="list-row__id">#186</span>
+        <span class="list-row__name">Eduardo Camavinga</span>
+        <span class="list-row__meta">France · Hero</span>
+      </div>
+      <div class="list-row" style="--row-color:#009C3B;">
+        <span class="list-row__id">#215</span>
+        <span class="list-row__name">Vinicius Júnior</span>
+        <span class="list-row__meta">Brazil · Fan Favourite</span>
+      </div>
+      <div class="list-row" style="--row-color:#AA151B;">
+        <span class="list-row__id">#298</span>
+        <span class="list-row__name">Pedri</span>
+        <span class="list-row__meta">Spain · Hero</span>
+      </div>
+      <div class="list-row" style="--row-color:#AA151B;">
+        <span class="list-row__id">#312</span>
+        <span class="list-row__name">Lamine Yamal</span>
+        <span class="list-row__meta">Spain · Hero</span>
+      </div>
+      <div class="list-row" style="--row-color:#FF0000;">
+        <span class="list-row__id">#465</span>
+        <span class="list-row__name">Dan Ndoye</span>
+        <span class="list-row__meta">Switzerland · Hero</span>
+      </div>
+      <div class="list-row" style="--row-color:#5CB8E4;">
+        <span class="list-row__id">#501</span>
+        <span class="list-row__name">Darwin Núñez</span>
+        <span class="list-row__meta">Uruguay · Hero</span>
+      </div>
+      <div class="list-row" style="--row-color:#4ECDC4;">
+        <span class="list-row__id">#522</span>
+        <span class="list-row__name">Ciro Immobile</span>
+        <span class="list-row__meta">Contender</span>
+      </div>
+      <div class="list-row" style="--row-color:#00BFA5;">
+        <span class="list-row__id">#608</span>
+        <span class="list-row__name">Pedri</span>
+        <span class="list-row__meta">Master Rookie</span>
+      </div>
+      <div class="list-row" style="--row-color:#00BFA5;">
+        <span class="list-row__id">#612</span>
+        <span class="list-row__name">Gavi</span>
+        <span class="list-row__meta">Master Rookie</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ SWAPS ═══════ -->
+  <div class="view" id="view-swaps">
+    <div class="main">
+
+      <div class="section-heading">
+        <div class="section-heading__bar"></div>
+        <span class="fx section-heading__text">Swaps</span>
+      </div>
+      <p class="section-sub">Paste a partner's cards to plan the best trade</p>
+
+      <div style="background:#f9f9f9; padding:14px 16px; margin-bottom:24px; font-size:12px; color:var(--text-muted); line-height:1.7;">
+        Enter card IDs or player names — one per line or comma-separated.<br>
+        <span style="color:var(--text-secondary);">Example: <code>42, Messi, Pedri</code></span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Cards they HAVE (your wants)</label>
+        <textarea class="form-input" placeholder="42&#10;Messi&#10;Pedri, Bellingham"></textarea>
+        <p class="form-hint">We'll check if any match cards you still need.</p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Cards they WANT (your offers)</label>
+        <textarea class="form-input" placeholder="186&#10;Yamal&#10;Camavinga"></textarea>
+        <p class="form-hint">We'll check which ones you have as duplicates.</p>
+      </div>
+
+      <button class="btn-primary">Analyse Swap</button>
+
+      <!-- Results -->
+      <div style="margin-top:32px;">
+        <div class="section-heading" style="margin-bottom:16px;">
+          <div class="section-heading__bar"></div>
+          <span class="fx section-heading__text" style="font-size:20px;">Swap Result</span>
+        </div>
+
+        <div style="margin-bottom:12px;">
+          <div style="font-size:11px; font-weight:700; color:var(--green); text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px;">You'd receive (cards you need)</div>
+          <div class="swap-band swap-band--get">
+            <span class="swap-band__label">Get</span>
+            <span class="swap-band__text">#42 Harry Kane — England · Icon</span>
+          </div>
+          <div class="swap-band swap-band--get">
+            <span class="swap-band__label">Get</span>
+            <span class="swap-band__text">#298 Pedri — Spain · Hero</span>
+          </div>
+        </div>
+
+        <div>
+          <div style="font-size:11px; font-weight:700; color:var(--gold); text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px;">You'd give (your duplicates)</div>
+          <div class="swap-band swap-band--give">
+            <span class="swap-band__label">Give</span>
+            <span class="swap-band__text">#186 Eduardo Camavinga — France · Hero (×2)</span>
+          </div>
+          <div class="swap-band swap-band--give">
+            <span class="swap-band__label">Give</span>
+            <span class="swap-band__text">#312 Lamine Yamal — Spain · Hero (×3)</span>
+          </div>
+        </div>
+
+        <div style="margin-top:16px; padding:12px 16px; background:#f9f9f9; font-size:13px; color:var(--text-secondary);">
+          <strong style="color:var(--green);">Fair trade:</strong> You get 2 new cards, give 2 duplicates.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const tabs = document.querySelectorAll('.nav-tab[data-view]');
+    const views = document.querySelectorAll('.view');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const target = tab.dataset.view;
+        tabs.forEach(t => t.classList.remove('active'));
+        views.forEach(v => v.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById('view-' + target).classList.add('active');
+      });
+    });
+  </script>
+
+</body>
+</html>

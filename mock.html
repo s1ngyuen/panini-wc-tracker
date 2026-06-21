@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<!--
+  VISUAL MOCK — Progress Page
+  Open directly in a browser. Edit tokens at top of <style> to iterate.
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mock — Progress Page</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+
+    @font-face {
+      font-family: 'FWC2026';
+      src: url('fonts/FWC2026.ttf') format('truetype');
+      font-weight: 900;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    /* ─── Tokens ────────────────────────────────────────────────────────── */
+    :root {
+      --bg:           #FFFFFF;
+      --surface:      #F0F4FF;
+      --surface-high: #E4EAFF;
+      --border:       #C8D0F0;
+
+      --accent:       #304FFE;
+      --green:        #00A84F;
+      --gold:         #C5A028;   /* World Cup trophy gold */
+
+      --text-primary:   #10164F;
+      --text-secondary: #4A5280;
+      --text-muted:     #8892C0;
+
+      --font-display: 'FWC2026', 'Arial Narrow', sans-serif;
+      --font-body:    'Open Sans', sans-serif;
+      --squeeze:      0.78;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text-primary);
+      position: relative;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: url('references/bg26.jpg') center center / cover no-repeat;
+      filter: grayscale(1);
+      opacity: 0.06;
+      pointer-events: none;
+      z-index: 0;
+    }
+    body > * { position: relative; z-index: 1; }
+
+    /* Display font helper — squeezes semi-expanded width */
+    .fx       { font-family: var(--font-display); display: inline-block; transform: scaleX(var(--squeeze)); transform-origin: left center; }
+    .fx-c     { font-family: var(--font-display); display: inline-block; transform: scaleX(var(--squeeze)); transform-origin: center center; }
+
+    /* ─── Single Header Row ─────────────────────────────────────────────── */
+    .app-header {
+      position: sticky; top: 0; z-index: 10;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      height: 72px;
+      padding: 0 20px;
+      background: var(--bg);
+      border-bottom: none;
+    }
+
+    /* Left: nav tabs */
+    .header-nav-left {
+      display: flex; align-items: center; gap: 0;
+    }
+
+    /* Center: FIFA WC 2026 logo */
+    .header-logo {
+      display: flex; flex-direction: column; align-items: center;
+      line-height: 1; gap: 0; padding: 0 24px;
+    }
+
+    /* Right: nav tabs + reset */
+    .header-nav-right {
+      display: flex; align-items: center; justify-content: flex-end; gap: 0;
+    }
+
+    /* Nav tabs (inside header) */
+    .nav-tab {
+      display: flex; align-items: center; justify-content: center;
+      background: none; border: none; cursor: pointer;
+      color: rgba(197,160,40,0.6);
+      font-family: var(--font-display); font-size: 14px;
+      text-transform: uppercase; letter-spacing: .08em;
+      padding: 0 12px; height: 72px;
+      position: relative;
+      white-space: nowrap;
+      transform: scaleX(var(--squeeze)); transform-origin: center;
+    }
+    .nav-tab:hover { color: var(--text-secondary); }
+    .nav-tab.active { color: var(--gold); }
+    .nav-tab.active::after {
+      content: ''; position: absolute; bottom: 0; left: 10%; right: 10%;
+      height: 3px; background: var(--gold);
+    }
+
+    .btn-reset {
+      background: none; color: var(--text-muted);
+      font-family: var(--font-display); font-size: 11px;
+      text-transform: uppercase; letter-spacing: .08em;
+      border: 1px solid var(--border); border-radius: 4px;
+      padding: 6px 14px; cursor: pointer; margin-left: 16px;
+      transform: scaleX(var(--squeeze)); transform-origin: right;
+    }
+
+    /* ─── Main ──────────────────────────────────────────────────────────── */
+    .main { padding: 32px 24px 48px; max-width: 860px; margin: 0 auto; }
+
+    /* ─── Section Heading ───────────────────────────────────────────────── */
+    .section-heading { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
+    .section-heading__bar { width: 4px; border-radius: 0; background: var(--gold); flex-shrink: 0; align-self: stretch; min-height: 28px; }
+    .section-heading__text { font-size: 32px; text-transform: uppercase; letter-spacing: .04em; color: var(--text-primary); line-height: 1; }
+    .section-sub { font-size: 16px; color: rgba(197,160,40,0.6); margin-bottom: 24px; padding-left: 16px; font-family: var(--font-display); text-transform: uppercase; display: inline-block; transform: scaleX(var(--squeeze)); transform-origin: left center; }
+
+    /* ─── Overall Block ─────────────────────────────────────────────────── */
+    .overall-block { margin-bottom: 32px; }
+    .overall-tiles { display: grid; grid-template-columns: 2.5fr 1fr 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+    .stat-tile { background:#f9f9f9; border:none; border-radius:0; padding:14px 16px; text-align:center; display:flex; flex-direction:column; align-items:center; justify-content:center; min-width:0; overflow:hidden; }
+    .stat-tile__label { font-size:11px; color:rgba(197,160,40,0.6); text-transform:uppercase; letter-spacing:.08em; font-family:var(--font-body); font-weight:600; margin-bottom:4px; }
+    .stat-tile__num   { font-size:32px; line-height:1; display:block; text-align:center; }
+    .stat-tile__sub   { font-size:12px; font-weight:600; color:rgba(197,160,40,0.6); margin-top:3px; }
+
+    /* ─── Progress Bars — thick + square + per-team color ──────────────── */
+    .progress-track {
+      height: 28px;
+      border-radius: 0;
+      background: var(--track, var(--surface-high));
+      overflow: hidden;
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.12);
+    }
+    .progress-fill {
+      height: 100%;
+      border-radius: 0;
+      background: var(--fill, var(--accent));
+      transition: width .4s ease;
+    }
+
+    /* ─── Cards Needed ──────────────────────────────────────────────────── */
+    .needed-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 8px;
+      margin-top: 4px;
+    }
+    .needed-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+    }
+    .needed-row__id   { font-family: var(--font-display); font-size: 13px; color: var(--text-muted); min-width: 32px; }
+    .needed-row__name { font-size: 13px; font-weight: 600; color: var(--text-primary); flex: 1; }
+    .needed-row__tag  { font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .04em; }
+
+    /* ─── Category Heading ──────────────────────────────────────────────── */
+    .category-heading {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 16px; margin-top: 32px;
+      padding-bottom: 10px;
+    }
+    .category-heading__text { font-size: 20px; text-transform: uppercase; letter-spacing: .06em; color: var(--text-primary); line-height: 1; }
+
+    /* ─── Team / Type Rows ──────────────────────────────────────────────── */
+    .prog-rows { display: flex; flex-direction: column; gap: 16px; }
+    .prog-row__header   { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
+    .prog-row__name     { font-size: 14px; color: var(--fill, var(--text-primary)); line-height: 1; text-transform: uppercase; }
+    .prog-row__fraction { font-size: 13px; color: var(--track, var(--text-muted)); }
+    .prog-row__bar-row  { display: flex; align-items: center; gap: 10px; }
+    .prog-row__bar-row .progress-track { flex: 1; }
+    .prog-row__pct      { font-size: 14px; font-family: var(--font-display); color: var(--fill, var(--accent)); flex-shrink: 0; min-width: 42px; text-align: right; display: inline-block; transform: scaleX(var(--squeeze)); transform-origin: right center; }
+
+  </style>
+</head>
+<body>
+
+  <!-- Single header row: left nav | center logo | right nav + reset -->
+  <header class="app-header">
+
+    <div class="header-nav-left">
+      <button class="nav-tab">Add Cards</button>
+      <button class="nav-tab">Collection</button>
+    </div>
+
+    <div class="header-logo">
+      <img src="https://upload.wikimedia.org/wikipedia/en/thumb/1/17/2026_FIFA_World_Cup_emblem.svg/330px-2026_FIFA_World_Cup_emblem.svg.png" alt="FIFA World Cup 2026" height="56" style="display:block;" />
+    </div>
+
+    <div class="header-nav-right">
+      <button class="nav-tab active">Progress</button>
+      <button class="nav-tab">Missing</button>
+      <button class="nav-tab">Swaps</button>
+      <button class="btn-reset">Reset</button>
+    </div>
+
+  </header>
+
+  <div class="main">
+
+    <div class="section-heading">
+      <div class="section-heading__bar"></div>
+      <span class="fx section-heading__text">Progress</span>
+    </div>
+    <p class="section-sub">How close are you to completing the set?</p>
+
+    <!-- Overall -->
+    <div class="overall-block">
+      <div class="overall-tiles">
+        <div class="stat-tile">
+          <div class="stat-tile__label">Cards collected</div>
+          <span class="fx-c stat-tile__num" style="color:#111111;">312 <span style="color:rgba(197,160,40,0.6);">of 630</span></span>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-tile__label">Still need</div>
+          <span class="fx-c stat-tile__num" style="color:#111111;">318</span>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-tile__label">Duplicates</div>
+          <span class="fx-c stat-tile__num" style="color:#111111;">47</span>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-tile__label">Complete</div>
+          <span class="fx-c stat-tile__num" style="color:#111111;">49.5%</span>
+        </div>
+      </div>
+      <!-- Overall bar: blue fill on light blue track -->
+      <div class="progress-track" style="--track:#E4EAFF; --fill:var(--accent);">
+        <div class="progress-fill" style="width:49.5%"></div>
+      </div>
+    </div>
+
+    <!-- ── Two column layout ─────────────────────────────────────────────── -->
+    <div style="display:flex; gap:24px; align-items:flex-start;">
+    <div style="flex:1; min-width:0;">
+
+    <div class="category-heading">
+      <span class="fx category-heading__text">By Team</span>
+    </div>
+    <div class="prog-rows">
+
+      <!-- Argentina: celeste / light-blue / sun gold -->
+      <div style="--fill:#6DAEDB; --track:#EAF4FB; --name-color:#003087;">
+        <div class="prog-row__header">
+          <span class="fx prog-row__name">🇦🇷 Argentina</span>
+          <div style="display:flex;gap:4px;align-items:baseline;"><span class="fx prog-row__fraction">12 / 12</span><span class="prog-row__pct">100%</span></div>
+        </div>
+        <div class="progress-track"><div class="progress-fill" style="width:100%"></div></div>
+      </div>
+
+      <!-- Brazil: green / light-green / yellow -->
+      <div style="--fill:#009C3B; --track:#D9F0E4; --name-color:#FCDF00;">
+        <div class="prog-row__header">
+          <span class="fx prog-row__name">🇧🇷 Brazil</span>
+          <div style="display:flex;gap:4px;align-items:baseline;"><span class="fx prog-row__fraction">10 / 12</span><span class="prog-row__pct">83%</span></div>
+        </div>
+        <div class="progress-track"><div class="progress-fill" style="width:83%"></div></div>
+      </div>
+
+      <!-- France: red / light-pink / blue -->
+      <div style="--fill:#EF233C; --track:#FFE8EA; --name-color:#002395;">
+        <div class="prog-row__header">
+          <span class="fx prog-row__name">🇫🇷 France</span>
+          <div style="display:flex;gap:4px;align-items:baseline;"><span class="fx prog-row__fraction">9 / 12</span><span class="prog-row__pct">75%</span></div>
+        </div>
+        <div class="progress-track"><div class="progress-fill" style="width:75%"></div></div>
+      </div>
+
+      <!-- Portugal: green / light-green / red -->
+      <div style="--fill:#006600; --track:#D9EDD9; --name-color:#C8102E;">
+        <div class="prog-row__header">
+          <span class="fx prog-row__name">🇵🇹 Portugal</span>
+          <div style="display:flex;gap:4px;align-items:baseline;"><span class="fx prog-row__fraction">7 / 12</span><span class="prog-row__pct">58%</span></div>
+        </div>
+        <div class="progress-track"><div class="progress-fill" style="width:58%"></div></div>
+      </div>
+
+      <!-- England: red / light-red / navy -->
+      <div style="--fill:#CF142B; --track:#FDDEE1; --name-color:#012169;">
+        <div class="prog-row__header">
+          <span class="fx prog-row__name">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</span>
+          <div style="display:flex;gap:4px;align-items:baseline;"><span class="fx prog-row__fraction">5 / 12</span><span class="prog-row__pct">42%</span></div>
+        </div>
+        <div class="progress-track"><div class="progress-fill" style="width:42%"></div></div>
+      </div>
+
+      <!-- Spain: red / yellow-tint / golden yellow -->
+      <div style="--fill:#AA151B; --track:#FFF3CC; --name-color:#F1BF00;">
+        <div class="prog-row__header">
+          <span class="fx prog-row__name">🇪🇸 Spain</span>
+          <div style="display:flex;gap:4px;align-items:baseline;"><span class="fx prog-row__fraction">4 / 12</span><span class="prog-row__pct">33%</span></div>
+        </div>
+        <div class="progress-track"><div class="progress-fill" style="width:33%"></div></div>
+      </div>
+
+      <!-- Switzerland: red / salmon / dark red -->
+      <div style="--fill:#FF0000; --track:#FFCEC0; --name-color:#8B0000;">
+        <div class="prog-row__header">
+          <span class="fx prog-row__name">🇨🇭 Switzerland</span>
+          <div style="display:flex;gap:4px;align-items:baseline;"><span class="fx prog-row__fraction">6 / 12</span><span class="prog-row__pct">50%</span></div>
+        </div>
+        <div class="progress-track"><div class="progress-fill" style="width:50%"></div></div>
+      </div>
+
+      <!-- Germany: black / yellow / red -->
+      <div style="--fill:#1A1A1A; --track:#FFF2B2; --name-color:#DD0000;">
+        <div class="prog-row__header">
+          <span class="fx prog-row__name">🇩🇪 Germany</span>
+          <div style="display:flex;gap:4px;align-items:baseline;"><span class="fx prog-row__fraction">2 / 12</span><span class="prog-row__pct">17%</span></div>
+        </div>
+        <div class="progress-track"><div class="progress-fill" style="width:17%"></div></div>
+      </div>
+
+      <!-- Uruguay: celeste / light-blue / sun gold -->
+      <div style="--fill:#5CB8E4; --track:#E0F3FC; --name-color:#F7C948;">
+        <div class="prog-row__header">
+          <span class="fx prog-row__name">🇺🇾 Uruguay</span>
+          <div style="display:flex;gap:4px;align-items:baseline;"><span class="fx prog-row__fraction">0 / 12</span><span class="prog-row__pct">0%</span></div>
+        </div>
+        <div class="progress-track"><div class="progress-fill" style="width:0%"></div></div>
+      </div>
+
+    </div>
+
+    </div><!-- /by-team column -->
+
+    <div style="flex:1; min-width:0;">
+    <div class="category-heading">
+      <span class="fx category-heading__text">By Card Type</span>
+    </div>
+    <div class="prog-rows">
+
+      <div style="--fill:#F5C400; --track:#FFF7CC;">
+        <div class="prog-row__header">
+          <span class="fx prog-row__name">Golden Baller</span>
+          <div style="display:flex;gap:4px;align-items:baseline;"><span class="fx prog-row__fraction">7 / 9</span><span class="prog-row__pct">78%</span></div>
+        </div>
+        <div class="progress-track"><div class="progress-fill" style="width:78%"></div></div>
+      </div>
+
+      <div style="--fill:#304FFE; --track:#E4EAFF;">
+        <div class="prog-row__header">
+          <span class="fx prog-row__name">Hero</span>
+          <div style="display:flex;gap:4px;align-items:baseline;"><span class="fx prog-row__fraction">165 / 378</span><span class="prog-row__pct">44%</span></div>
+        </div>
+        <div class="progress-track"><div class="progress-fill" style="width:44%"></div></div>
+      </div>
+
+      <div style="--fill:#9B59B6; --track:#F0E6F8;">
+        <div class="prog-row__header">
+          <span class="fx prog-row__name">Fan Favourite</span>
+          <div style="display:flex;gap:4px;align-items:baseline;"><span class="fx prog-row__fraction">30 / 42</span><span class="prog-row__pct">71%</span></div>
+        </div>
+        <div class="progress-track"><div class="progress-fill" style="width:71%"></div></div>
+      </div>
+
+      <div style="--fill:#FF6B6B; --track:#FFE8E8;">
+        <div class="prog-row__header">
+          <span class="fx prog-row__name">Icon</span>
+          <div style="display:flex;gap:4px;align-items:baseline;"><span class="fx prog-row__fraction">28 / 42</span><span class="prog-row__pct">67%</span></div>
+        </div>
+        <div class="progress-track"><div class="progress-fill" style="width:67%"></div></div>
+      </div>
+
+      <div style="--fill:#4ECDC4; --track:#E0F7F6;">
+        <div class="prog-row__header">
+          <span class="fx prog-row__name">Contender</span>
+          <div style="display:flex;gap:4px;align-items:baseline;"><span class="fx prog-row__fraction">18 / 36</span><span class="prog-row__pct">50%</span></div>
+        </div>
+        <div class="progress-track"><div class="progress-fill" style="width:50%"></div></div>
+      </div>
+
+      <div style="--fill:#00BFA5; --track:#E0F7F4;">
+        <div class="prog-row__header">
+          <span class="fx prog-row__name">Master Rookie</span>
+          <div style="display:flex;gap:4px;align-items:baseline;"><span class="fx prog-row__fraction">6 / 16</span><span class="prog-row__pct">38%</span></div>
+        </div>
+        <div class="progress-track"><div class="progress-fill" style="width:38%"></div></div>
+      </div>
+
+      <div style="--fill:#3B82F6; --track:#DBEAFE;">
+        <div class="prog-row__header">
+          <span class="fx prog-row__name">Top Keeper</span>
+          <div style="display:flex;gap:4px;align-items:baseline;"><span class="fx prog-row__fraction">3 / 9</span><span class="prog-row__pct">33%</span></div>
+        </div>
+        <div class="progress-track"><div class="progress-fill" style="width:33%"></div></div>
+      </div>
+
+    </div>
+    </div><!-- /by-type column -->
+    </div><!-- /two-col -->
+
+  </div>
+
+</body>
+</html>
