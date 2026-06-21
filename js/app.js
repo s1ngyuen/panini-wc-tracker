@@ -234,6 +234,9 @@ async function startApp() {
   // Hook clear collection button
   hookClearCollection();
 
+  // Hook Add Cards button
+  document.getElementById('add-cards-btn')?.addEventListener('click', () => showView('card-input'));
+
   // Hook export / import
   hookExportImport();
 

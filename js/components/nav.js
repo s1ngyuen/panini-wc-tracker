@@ -2,19 +2,18 @@
 // Header navigation — split across left and right nav containers.
 
 const LEFT_ITEMS = [
-  { id: 'card-input',      label: 'Add Cards'  },
   { id: 'collection-grid', label: 'Collection' },
 ];
 
 const RIGHT_ITEMS = [
-  { id: 'progress', label: 'Progress' },
-  { id: 'missing',  label: 'Missing'  },
-  { id: 'swap',     label: 'Swaps'    },
+  { id: 'progress',   label: 'Progress'  },
+  { id: 'missing',    label: 'Missing'   },
+  { id: 'swap',       label: 'Swaps'     },
 ];
 
 const ALL_ITEMS = [...LEFT_ITEMS, ...RIGHT_ITEMS];
 
-let _activeId    = 'card-input';
+let _activeId    = 'collection-grid';
 let _onNavigate  = null;
 
 function makeTab(item) {
