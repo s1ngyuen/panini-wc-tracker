@@ -695,6 +695,14 @@ body::before {
    PANINI CARD VISUAL
 ───────────────────────────────────────────────────────────────────────────── */
 
+/* Outer wrapper allows the dupe badge to hang outside without being clipped */
+.panini-card-outer {
+  position: relative;
+  flex-shrink: 0;
+  display: inline-block;
+  line-height: 0;
+}
+
 .panini-card {
   width: 160px;
   height: 224px;
@@ -703,7 +711,6 @@ body::before {
   overflow: hidden;
   background: #1a1a2e;
   box-shadow: 0 4px 16px rgba(0,0,0,0.18), 0 1px 4px rgba(0,0,0,0.1);
-  flex-shrink: 0;
   user-select: none;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }

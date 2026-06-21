@@ -86,19 +86,23 @@ export function createCardElement(card, count) {
   const isDuplicate = count >= 2;
   const isMissing   = count === 0;
 
-  const wrapper = document.createElement('div');
-  wrapper.className = [
+  // Outer wrap has no overflow:hidden so the badge can hang outside
+  const outer = document.createElement('div');
+  outer.className = 'panini-card-outer';
+  outer.setAttribute('role', 'img');
+  outer.setAttribute('aria-label', `Card #${card.id}: ${card.playerName}, ${card.country}, ${card.cardType}${isMissing ? ', missing' : isDuplicate ? `, ${count} copies` : ', owned'}`);
+
+  const card_el = document.createElement('div');
+  card_el.className = [
     'panini-card',
     isOwned     ? 'panini-card--owned'     : '',
     isDuplicate ? 'panini-card--duplicate' : '',
     isMissing   ? 'panini-card--missing'   : '',
   ].filter(Boolean).join(' ');
 
-  wrapper.setAttribute('data-country', card.country);
-  wrapper.setAttribute('data-card-id', card.id);
-  wrapper.setAttribute('title', `#${card.id} ${card.playerName} (${card.country} — ${card.cardType})`);
-  wrapper.setAttribute('role', 'img');
-  wrapper.setAttribute('aria-label', `Card #${card.id}: ${card.playerName}, ${card.country}, ${card.cardType}${isMissing ? ', missing' : isDuplicate ? `, ${count} copies` : ', owned'}`);
+  card_el.setAttribute('data-country', card.country);
+  card_el.setAttribute('data-card-id', card.id);
+  card_el.setAttribute('title', `#${card.id} ${card.playerName} (${card.country} — ${card.cardType})`);
 
   // Real card photo
   const img = document.createElement('img');
@@ -107,26 +111,25 @@ export function createCardElement(card, count) {
   img.alt = '';
   img.setAttribute('aria-hidden', 'true');
   img.loading = 'lazy';
-  // Fall back to stylized card if image missing
   img.onerror = () => {
     img.style.display = 'none';
-    wrapper.classList.add('panini-card--no-photo');
-    const inner = buildFallbackInner(card);
-    wrapper.appendChild(inner);
+    card_el.classList.add('panini-card--no-photo');
+    card_el.appendChild(buildFallbackInner(card));
   };
-  wrapper.appendChild(img);
+  card_el.appendChild(img);
+  outer.appendChild(card_el);
 
-  // Duplicate count badge
+  // Duplicate badge sits on the outer wrapper — never clipped
   if (isDuplicate) {
     const dupeBadge = document.createElement('div');
     dupeBadge.className = 'panini-card__dupe-badge';
     dupeBadge.setAttribute('aria-hidden', 'true');
     dupeBadge.textContent = `×${count}`;
     dupeBadge.title = `You have ${count} copies — ${count - 1} available for swapping.`;
-    wrapper.appendChild(dupeBadge);
+    outer.appendChild(dupeBadge);
   }
 
-  return wrapper;
+  return outer;
 }
 
 function buildFallbackInner(card) {
