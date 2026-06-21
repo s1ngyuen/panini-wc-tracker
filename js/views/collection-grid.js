@@ -44,22 +44,28 @@ export async function mountCollectionGrid(container) {
 
   // ── Load collection & render ─────────────────────────────────────────────
   let collection = await getCollection();
-  let currentFilter = { country: '', cardType: '' };
+  let currentFilter = { country: '', cardType: '', status: '' };
 
   function getFilteredCards() {
     return CARDS.filter(card => {
       if (currentFilter.country  && card.country  !== currentFilter.country)  return false;
       if (currentFilter.cardType && card.cardType !== currentFilter.cardType) return false;
+      if (currentFilter.status) {
+        const count = collection[String(card.id)] ?? 0;
+        if (currentFilter.status === 'owned'      && count < 1)  return false;
+        if (currentFilter.status === 'missing'    && count > 0)  return false;
+        if (currentFilter.status === 'duplicates' && count < 2)  return false;
+      }
       return true;
     });
   }
 
   function buildCountLabel(filtered, filter) {
-    const { country, cardType } = filter;
-    if (!country && !cardType) {
+    const { country, cardType, status } = filter;
+    if (!country && !cardType && !status) {
       countLabel.textContent = `Showing ${filtered.length} of 630 cards`;
     } else {
-      const parts = [country, cardType].filter(Boolean);
+      const parts = [country, cardType, status].filter(Boolean);
       countLabel.textContent = `${filtered.length} cards · ${parts.join(' · ')}`;
     }
   }

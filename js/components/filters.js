@@ -12,10 +12,9 @@
  * }} options
  */
 export function renderFilterBar(container, { teams, cardTypes, onChange }) {
-  // Clear existing content
   container.innerHTML = '';
 
-  const state = { country: '', cardType: '' };
+  const state = { country: '', cardType: '', status: '' };
 
   const bar = document.createElement('div');
   bar.className = 'flex flex-wrap gap-2 items-center';
@@ -78,6 +77,30 @@ export function renderFilterBar(container, { teams, cardTypes, onChange }) {
     updateClear();
   });
 
+  // ── Status select ──────────────────────────────────────────────────────
+  const statusLabel = document.createElement('label');
+  statusLabel.setAttribute('for', 'filter-status');
+  statusLabel.className = 'sr-only';
+  statusLabel.textContent = 'Filter by status';
+
+  const statusSelect = document.createElement('select');
+  statusSelect.id = 'filter-status';
+  statusSelect.className = 'filter-select flex-1';
+  statusSelect.setAttribute('aria-label', 'Filter by status');
+
+  [['', 'All Cards'], ['owned', 'Owned'], ['missing', 'Missing'], ['duplicates', 'Duplicates']].forEach(([val, label]) => {
+    const opt = document.createElement('option');
+    opt.value = val;
+    opt.textContent = label;
+    statusSelect.appendChild(opt);
+  });
+
+  statusSelect.addEventListener('change', () => {
+    state.status = statusSelect.value;
+    onChange({ ...state });
+    updateClear();
+  });
+
   // ── Clear button ───────────────────────────────────────────────────────
   const clearBtn = document.createElement('button');
   clearBtn.type = 'button';
@@ -89,20 +112,24 @@ export function renderFilterBar(container, { teams, cardTypes, onChange }) {
   clearBtn.addEventListener('click', () => {
     teamSelect.value = '';
     typeSelect.value = '';
+    statusSelect.value = '';
     state.country = '';
     state.cardType = '';
+    state.status = '';
     onChange({ ...state });
     clearBtn.hidden = true;
   });
 
   function updateClear() {
-    clearBtn.hidden = !state.country && !state.cardType;
+    clearBtn.hidden = !state.country && !state.cardType && !state.status;
   }
 
   bar.appendChild(teamLabel);
   bar.appendChild(teamSelect);
   bar.appendChild(typeLabel);
   bar.appendChild(typeSelect);
+  bar.appendChild(statusLabel);
+  bar.appendChild(statusSelect);
   bar.appendChild(clearBtn);
 
   container.appendChild(bar);
