@@ -698,7 +698,7 @@ body::before {
 .panini-card {
   width: 160px;
   height: 224px;
-  border-radius: 12px;
+  border-radius: 0;
   position: relative;
   overflow: hidden;
   background: #1a1a2e;
@@ -745,7 +745,7 @@ body::before {
   background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, transparent 50%, rgba(0,0,0,0.1) 100%);
   pointer-events: none;
   z-index: 2;
-  border-radius: 12px;
+  border-radius: 0;
 }
 
 .panini-card__inner {
@@ -881,7 +881,7 @@ body::before {
 }
 
 .panini-card--owned {
-  box-shadow: 0 4px 16px rgba(48,79,254,0.2), 0 0 0 2px var(--accent-primary);
+  box-shadow: 0 4px 16px rgba(197,160,40,0.25), 0 0 0 2px var(--gold);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
