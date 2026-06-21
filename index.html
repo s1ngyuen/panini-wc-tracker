@@ -74,7 +74,7 @@
   </script>
 </head>
 
-<body class="text-white font-sans overflow-x-hidden" style="background:#000522;">
+<body class="font-sans overflow-x-hidden">
 
   <!-- ████████████████████████████████████████████████████████████████████
        PASSWORD GATE — full-screen overlay
@@ -96,43 +96,42 @@
     <!-- ── Fixed Top Header ────────────────────────────────────────────── -->
     <header
       id="app-header"
-      class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4"
-      style="height:56px; background:#000522; border-bottom:1px solid #1a2255;"
+      class="fixed top-0 left-0 right-0 z-50"
       role="banner"
     >
-      <!-- Logo / wordmark -->
-      <div class="flex items-center gap-3">
-        <span
-          aria-hidden="true"
-          style="font-size:22px; line-height:1;"
-        >⚽</span>
-        <div>
-          <div
-            style="font-family:'Bebas Neue',sans-serif; font-size:22px; color:#6B85FF; letter-spacing:.1em; line-height:1;"
-          >WC 2026</div>
-          <div
-            style="font-family:'Open Sans',sans-serif; font-weight:600; font-size:9px; color:#3d4a7a; text-transform:uppercase; letter-spacing:.14em; line-height:1;"
-          >Adrenalyn XL Tracker</div>
-        </div>
+      <!-- Left: Adrenalyn wordmark -->
+      <div class="flex items-center gap-2">
+        <span aria-hidden="true" style="font-size:18px; line-height:1;">⚽</span>
+        <div
+          style="font-family:'Open Sans',sans-serif; font-weight:700; font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.14em; line-height:1.2;"
+        >Adrenalyn<br>XL Tracker</div>
       </div>
 
-      <!-- Clear collection button (top-right, accessible) -->
-      <button
-        id="clear-collection-btn"
-        type="button"
-        class="btn-secondary"
-        style="font-size:11px; padding:6px 12px; min-height:36px;"
-        aria-label="Clear entire collection"
-      >
-        Reset
-      </button>
+      <!-- Center: FIFA WC 2026 logo mark -->
+      <div class="header-logo-center" aria-label="FIFA World Cup 2026">
+        <span class="header-logo-number">26</span>
+        <span class="header-logo-fifa">FIFA</span>
+      </div>
+
+      <!-- Right: reset button -->
+      <div class="header-actions">
+        <button
+          id="clear-collection-btn"
+          type="button"
+          class="btn-secondary"
+          style="font-size:11px; padding:6px 12px; min-height:36px;"
+          aria-label="Clear entire collection"
+        >
+          Reset
+        </button>
+      </div>
     </header>
 
     <!-- ── Main Scrollable Content ─────────────────────────────────────── -->
     <main
       id="main-content"
       aria-label="Main content"
-      style="padding-top:56px;"
+      style="padding-top:104px;"
     >
 
       <!-- VIEW: Card Input -->

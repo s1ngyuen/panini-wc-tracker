@@ -93,10 +93,10 @@ function renderPasswordGate() {
 
   gate.innerHTML = `
     <div style="max-width:360px; width:90%; text-align:center;">
-      <div style="font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:48px; color:var(--color-yellow); letter-spacing:.04em; line-height:1; text-transform:uppercase;">WC 2026</div>
-      <div style="font-family:'Barlow',sans-serif; font-weight:600; font-size:13px; color:#555; letter-spacing:.12em; text-transform:uppercase; margin-bottom:32px;">Adrenalyn XL Tracker</div>
+      <div style="font-family:'Bebas Neue',sans-serif; font-size:48px; color:var(--accent-primary); letter-spacing:.04em; line-height:1; text-transform:uppercase;">WC 2026</div>
+      <div style="font-family:'Open Sans',sans-serif; font-weight:700; font-size:11px; color:var(--text-muted); letter-spacing:.2em; text-transform:uppercase; margin-bottom:32px;">FIFA Adrenalyn XL</div>
 
-      <h1 style="font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:26px; color:#fff; text-transform:uppercase; letter-spacing:.04em; margin-bottom:8px;">Your Collection Awaits</h1>
+      <h1 style="font-family:'Bebas Neue',sans-serif; font-size:26px; color:var(--text-primary); text-transform:uppercase; letter-spacing:.04em; margin-bottom:8px;">Your Collection Awaits</h1>
       <p style="font-size:14px; color:#666; margin-bottom:24px;">Enter your password to unlock your tracker.</p>
 
       <div style="margin-bottom:12px; text-align:left;">
@@ -107,7 +107,7 @@ function renderPasswordGate() {
           class="form-input"
           placeholder="Enter password"
           autocomplete="current-password"
-          style="background:#111; border-color:#333;"
+          style=""
         />
       </div>
 

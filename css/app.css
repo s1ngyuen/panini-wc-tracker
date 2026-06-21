@@ -1,33 +1,23 @@
-/* app.css — Custom styles for Panini WC 2026 Tracker
-   Tailwind CDN handles utilities; this file handles:
-   - CSS custom properties (design tokens)
-   - Adrenalyn XL card visual template
-   - Team colour bindings via [data-country] attribute selectors
-   - Toast animation keyframes
-   - Misc Tailwind overrides
-*/
+/* app.css — Custom styles for Panini WC 2026 Tracker */
 
 /* ─────────────────────────────────────────────────────────────────────────────
    DESIGN TOKENS
 ───────────────────────────────────────────────────────────────────────────── */
 
 :root {
-  /* FIFA brand palette — inspired by nynjfwc26.com */
-  --color-black:    #000522;       /* deep navy background */
-  --color-white:    #EDE8DF;       /* off-white */
+  /* Light / white-base palette */
+  --color-black:    #10164F;    /* primary text (dark navy) */
+  --color-white:    #FFFFFF;
   --color-yellow:   #F5E100;
-  --color-green:    #00D15E;
-  --color-blue:     #304FFE;       /* electric blue primary */
+  --color-green:    #00A84F;
   --color-orange:   #FF6B00;
-  --color-grey-900: #060c2a;       /* elevated surfaces */
-  --color-grey-700: #0d1440;       /* card / widget backgrounds */
-  --color-grey-500: #7a84b3;       /* blue-tinted muted text */
 
-  /* Electric-blue accent for all UI chrome */
+  /* Electric-blue accent (FIFA brand) */
   --accent-primary: #304FFE;
-  --accent-hover:   #6B85FF;
+  --accent-hover:   #1a3bef;
+  --accent-light:   #EEF1FF;
 
-  /* Card-type badge accents (Panini card specific — keep vivid) */
+  /* Card badge vivid palette (Panini-specific, unchanged) */
   --accent-coral:   #FF6B6B;
   --accent-teal:    #4ECDC4;
   --accent-purple:  #9B59B6;
@@ -38,23 +28,22 @@
   --font-body:    'Open Sans', sans-serif;
 
   /* Text scale */
-  --text-primary:   #EDE8DF;
-  --text-secondary: #8892c0;    /* blue-tinted secondary */
-  --text-muted:     #3d4a7a;   /* dark navy-muted */
+  --text-primary:   #10164F;
+  --text-secondary: #4A5280;
+  --text-muted:     #8892C0;
+
+  /* Surfaces */
+  --surface:        #F0F4FF;
+  --surface-high:   #E4EAFF;
+  --border:         #C8D0F0;
+  --border-light:   #D8E0F8;
 
   /* Default team colour fallback */
-  --team-color: #0d1440;
-
-  /* Surfaces & borders */
-  --surface:      #060c2a;
-  --surface-high: #0d1440;
-  --border:       #1a2255;
-  --border-light: #242e6a;
+  --team-color: #304FFE;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   TEAM COLOUR MAP  (via [data-country] attribute selectors)
-   Applied on .panini-card[data-country="..."]
+   TEAM COLOUR MAP
 ───────────────────────────────────────────────────────────────────────────── */
 
 [data-country="Algeria"]        { --team-color: #006233; }
@@ -116,7 +105,7 @@
     var(--team-color) 0%,
     color-mix(in srgb, var(--team-color) 55%, #000) 100%
   );
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6), 0 1px 4px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18), 0 1px 4px rgba(0, 0, 0, 0.1);
   flex-shrink: 0;
   user-select: none;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
@@ -124,10 +113,9 @@
 
 .panini-card:hover {
   transform: translateY(-3px) scale(1.02);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7), 0 2px 8px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22), 0 2px 8px rgba(0, 0, 0, 0.14);
 }
 
-/* Diagonal stripe texture overlay */
 .panini-card::before {
   content: '';
   position: absolute;
@@ -143,7 +131,6 @@
   z-index: 1;
 }
 
-/* Shimmer/gloss overlay */
 .panini-card::after {
   content: '';
   position: absolute;
@@ -159,7 +146,6 @@
   border-radius: 12px;
 }
 
-/* Card inner layout — sits above overlays */
 .panini-card__inner {
   position: absolute;
   inset: 0;
@@ -169,7 +155,6 @@
   padding: 8px;
 }
 
-/* Top row: card number + type badge */
 .panini-card__top {
   display: flex;
   justify-content: space-between;
@@ -178,7 +163,6 @@
 
 .panini-card__number {
   font-family: var(--font-display);
-  font-weight: 700;
   font-size: 11px;
   color: rgba(255, 255, 255, 0.9);
   line-height: 1;
@@ -189,7 +173,6 @@
 
 .panini-card__type-badge {
   font-family: var(--font-display);
-  font-weight: 700;
   font-size: 8px;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -200,11 +183,10 @@
   text-align: center;
 }
 
-/* Card type badge colours — vivid palette */
-.panini-card__type-badge--hero             { background: rgba(0,0,0,0.55); color: var(--text-primary); }
+.panini-card__type-badge--hero             { background: rgba(0,0,0,0.55); color: rgba(255,255,255,0.9); }
 .panini-card__type-badge--icon             { background: var(--accent-coral); color: #fff; }
 .panini-card__type-badge--fan-favourite    { background: var(--accent-purple); color: #fff; }
-.panini-card__type-badge--team-crest       { background: rgba(0,0,0,0.55); color: var(--text-secondary); }
+.panini-card__type-badge--team-crest       { background: rgba(0,0,0,0.55); color: rgba(255,255,255,0.7); }
 .panini-card__type-badge--golden-baller    { background: var(--color-yellow); color: #000; }
 .panini-card__type-badge--contender        { background: var(--accent-teal); color: #000; }
 .panini-card__type-badge--master-rookie    { background: var(--accent-mint); color: #000; }
@@ -216,7 +198,6 @@
 .panini-card__type-badge--official-emblem  { background: var(--color-yellow); color: #000; }
 .panini-card__type-badge--eternos-22       { background: var(--accent-coral); color: #fff; }
 
-/* Middle section: flag + country name */
 .panini-card__middle {
   flex: 1;
   display: flex;
@@ -241,12 +222,10 @@
   text-align: center;
 }
 
-/* Light-team-color: dark text in middle section */
 .card-dark-text .panini-card__country {
   color: rgba(0, 0, 0, 0.7);
 }
 
-/* Bottom bar: player name + Panini wordmark */
 .panini-card__bottom {
   background: rgba(0, 0, 0, 0.72);
   border-radius: 6px;
@@ -280,21 +259,19 @@
 
 /* ── Status modifiers ─────────────────────────────────────────────────────── */
 
-/* Missing: desaturate and darken */
 .panini-card--missing {
-  filter: grayscale(0.7);
+  filter: grayscale(0.6);
 }
 
 .panini-card--missing .panini-card__inner::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.60);
+  background: rgba(0, 0, 0, 0.50);
   border-radius: 12px;
   z-index: 0;
 }
 
-/* Duplicate count badge — top-right corner, above everything */
 .panini-card__dupe-badge {
   position: absolute;
   top: -6px;
@@ -311,14 +288,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid #000;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+  border: 2px solid #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
   padding: 0 4px;
 }
 
-/* Owned: electric blue glow */
 .panini-card--owned {
-  box-shadow: 0 4px 16px rgba(0,0,0,0.6), 0 0 0 2px var(--accent-primary);
+  box-shadow: 0 4px 16px rgba(48,79,254,0.2), 0 0 0 2px var(--accent-primary);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -327,7 +303,7 @@
 
 #toast-container {
   position: fixed;
-  bottom: 80px; /* above bottom nav */
+  bottom: 24px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 9999;
@@ -346,7 +322,7 @@
   font-size: 14px;
   font-weight: 600;
   color: #fff;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
   animation: toast-in 0.28s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
   max-width: 100%;
   text-align: center;
@@ -354,10 +330,10 @@
   line-height: 1.4;
 }
 
-.toast--success { background: var(--color-green); color: #000; }
-.toast--warning { background: var(--color-orange); color: #000; }
+.toast--success { background: var(--color-green); color: #fff; }
+.toast--warning { background: var(--color-orange); color: #fff; }
 .toast--info    { background: var(--accent-primary); color: #fff; }
-.toast--error   { background: #CC0000;               color: #fff; }
+.toast--error   { background: #CC0000; color: #fff; }
 
 .toast.toast--leaving {
   animation: toast-out 0.22s ease-in forwards;
@@ -381,7 +357,7 @@
   position: fixed;
   inset: 0;
   z-index: 8888;
-  background: var(--color-black);
+  background: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -407,27 +383,71 @@
 .progress-bar-fill {
   height: 100%;
   border-radius: 99px;
-  background: linear-gradient(90deg, var(--accent-primary), var(--accent-hover));
+  background: linear-gradient(90deg, var(--accent-primary), #6B85FF);
   transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .progress-bar-fill--yellow {
-  background: linear-gradient(90deg, var(--color-yellow), var(--accent-coral));
+  background: linear-gradient(90deg, #F5A100, var(--color-orange));
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   NAVIGATION
+   HEADER  (fixed top)
+───────────────────────────────────────────────────────────────────────────── */
+
+#app-header {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding: 0 16px;
+  height: 56px;
+  background: #fff;
+  border-bottom: 1px solid var(--border);
+}
+
+.header-logo-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1;
+  gap: 1px;
+}
+
+.header-logo-number {
+  font-family: var(--font-display);
+  font-size: 32px;
+  color: var(--accent-primary);
+  letter-spacing: 0.04em;
+  line-height: 0.9;
+}
+
+.header-logo-fifa {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 8px;
+  letter-spacing: 0.28em;
+  color: var(--text-primary);
+  text-transform: uppercase;
+}
+
+.header-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   NAVIGATION  (top, below header)
 ───────────────────────────────────────────────────────────────────────────── */
 
 #bottom-nav {
   position: fixed;
-  bottom: 0;
+  top: 56px;
   left: 0;
   right: 0;
   z-index: 100;
-  background: var(--color-black);
-  border-top: 1px solid var(--border);
-  height: 64px;
+  background: #fff;
+  border-bottom: 1px solid var(--border);
+  height: 48px;
   display: flex;
 }
 
@@ -443,14 +463,15 @@
   cursor: pointer;
   color: var(--text-muted);
   font-family: var(--font-display);
-  font-size: 11px;
+  font-size: 10px;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  padding: 8px 4px;
+  letter-spacing: 0.08em;
+  padding: 4px;
   min-width: 44px;
   min-height: 44px;
   transition: color 0.15s;
   -webkit-tap-highlight-color: transparent;
+  position: relative;
 }
 
 .nav-tab:hover,
@@ -462,25 +483,38 @@
   color: var(--accent-primary);
 }
 
+/* Active underline indicator */
+.nav-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 16%;
+  right: 16%;
+  height: 2px;
+  background: var(--accent-primary);
+  border-radius: 2px 2px 0 0;
+}
+
 .nav-tab svg {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   flex-shrink: 0;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   SCROLLABLE MAIN AREA
+   BODY / MAIN CONTENT
 ───────────────────────────────────────────────────────────────────────────── */
 
 body {
   overflow-x: hidden;
-  background: var(--color-black);
+  background: #fff;
   color: var(--text-primary);
   font-family: var(--font-body);
 }
 
 #main-content {
-  padding-bottom: 80px; /* room for bottom nav */
+  padding-top: 104px;  /* 56px header + 48px nav */
+  padding-bottom: 32px;
   min-height: 100dvh;
 }
 
@@ -511,7 +545,7 @@ body {
   font-weight: 600;
   appearance: none;
   -webkit-appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%238892c0' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%234A5280' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 10px center;
   cursor: pointer;
@@ -543,7 +577,6 @@ body {
 
 .missing-row__id {
   font-family: var(--font-display);
-  font-weight: 700;
   font-size: 12px;
   color: var(--text-muted);
   min-width: 36px;
@@ -579,7 +612,6 @@ body {
 
 .swap-result-row__id {
   font-family: var(--font-display);
-  font-weight: 700;
   font-size: 11px;
   color: var(--text-muted);
   min-width: 32px;
@@ -628,15 +660,14 @@ body {
 }
 
 .btn-primary:focus-visible {
-  outline: 2px solid #fff;
-  outline-offset: 2px;
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 3px;
 }
 
 .btn-secondary {
   background: var(--surface);
   color: var(--text-primary);
   font-family: var(--font-display);
-  font-weight: 700;
   font-size: 14px;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -666,7 +697,6 @@ body {
   background: #CC0000;
   color: #fff;
   font-family: var(--font-display);
-  font-weight: 700;
   font-size: 14px;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -699,7 +729,6 @@ body {
   padding: 12px 16px;
   font-family: var(--font-body);
   font-size: 15px;
-  font-weight: 400;
   width: 100%;
   min-height: 48px;
   transition: border-color 0.15s, box-shadow 0.15s;
@@ -712,7 +741,7 @@ body {
 .form-input:focus {
   outline: none;
   border-color: var(--accent-primary);
-  box-shadow: 0 0 0 3px rgba(48, 79, 254, 0.2);
+  box-shadow: 0 0 0 3px rgba(48, 79, 254, 0.15);
 }
 
 .form-textarea {
@@ -723,7 +752,6 @@ body {
   padding: 12px 16px;
   font-family: var(--font-body);
   font-size: 14px;
-  font-weight: 400;
   width: 100%;
   resize: vertical;
   min-height: 120px;
@@ -737,7 +765,7 @@ body {
 .form-textarea:focus {
   outline: none;
   border-color: var(--accent-primary);
-  box-shadow: 0 0 0 3px rgba(48, 79, 254, 0.2);
+  box-shadow: 0 0 0 3px rgba(48, 79, 254, 0.15);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -745,11 +773,11 @@ body {
 ───────────────────────────────────────────────────────────────────────────── */
 
 .search-dropdown {
-  background: var(--surface);
+  background: #fff;
   border: 1px solid var(--border);
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+  box-shadow: 0 8px 24px rgba(16, 22, 79, 0.12);
 }
 
 .search-dropdown-item {
@@ -773,7 +801,7 @@ body {
 
 .search-dropdown-item:hover,
 .search-dropdown-item:focus {
-  background: var(--surface-high);
+  background: var(--surface);
   outline: none;
 }
 
@@ -784,7 +812,7 @@ body {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   SECTION HEADINGS with accent bar
+   SECTION HEADINGS
 ───────────────────────────────────────────────────────────────────────────── */
 
 .section-heading {
@@ -817,7 +845,7 @@ body {
   display: inline-block;
   width: 20px;
   height: 20px;
-  border: 2px solid rgba(255,255,255,0.2);
+  border: 2px solid var(--border);
   border-top-color: var(--accent-primary);
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
@@ -843,7 +871,6 @@ body {
   border-width: 0;
 }
 
-/* Section separator accent */
 .chevron-accent {
   display: block;
   width: 100%;
