@@ -7,7 +7,6 @@ const LEFT_ITEMS = [
 
 const RIGHT_ITEMS = [
   { id: 'progress', label: 'Progress' },
-  { id: 'missing',  label: 'Missing'  },
   { id: 'swap',     label: 'Swaps'    },
 ];
 

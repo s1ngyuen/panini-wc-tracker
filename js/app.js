@@ -7,7 +7,6 @@ import { initNav, setActive } from './components/nav.js';
 import { mountCardInput }     from './views/card-input.js';
 import { mountCollectionGrid } from './views/collection-grid.js';
 import { mountProgress }      from './views/progress.js';
-import { mountMissingCards }  from './views/missing-cards.js';
 import { mountSwapAnalyser }  from './views/swap-analyser.js';
 import { clearCollection, getCollection }    from './store.js';
 
@@ -25,7 +24,6 @@ const DEFAULT_VIEW = 'collection-grid';
 const VIEWS = {
   'collection-grid':  { mountFn: mountCollectionGrid, containerId: 'view-collection-grid' },
   'progress':         { mountFn: mountProgress,       containerId: 'view-progress' },
-  'missing':          { mountFn: mountMissingCards,   containerId: 'view-missing' },
   'swap':             { mountFn: mountSwapAnalyser,   containerId: 'view-swap' },
 };
 
