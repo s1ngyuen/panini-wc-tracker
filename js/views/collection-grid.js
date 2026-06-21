@@ -24,6 +24,24 @@ export async function mountCollectionGrid(container) {
   `;
   container.appendChild(header);
 
+  // ── Progress summary ─────────────────────────────────────────────────────
+  const progressWrap = document.createElement('div');
+  progressWrap.className = 'collection-progress';
+  progressWrap.innerHTML = `
+    <div class="collection-progress__labels">
+      <span class="collection-progress__count"></span>
+      <span class="collection-progress__pct"></span>
+    </div>
+    <div class="collection-progress__bar-track">
+      <div class="collection-progress__bar-fill"></div>
+    </div>
+  `;
+  container.appendChild(progressWrap);
+
+  const progressCount = progressWrap.querySelector('.collection-progress__count');
+  const progressPct   = progressWrap.querySelector('.collection-progress__pct');
+  const progressFill  = progressWrap.querySelector('.collection-progress__bar-fill');
+
   // ── Filter bar container ─────────────────────────────────────────────────
   const filterWrap = document.createElement('div');
   filterWrap.className = 'px-4 pb-3';
@@ -70,10 +88,20 @@ export async function mountCollectionGrid(container) {
     }
   }
 
+  function updateProgress(filtered) {
+    const owned = filtered.filter(c => (collection[String(c.id)] ?? 0) >= 1).length;
+    const total = filtered.length;
+    const pct   = total === 0 ? 0 : Math.round((owned / total) * 100);
+    progressCount.textContent = `${owned} of ${total} cards`;
+    progressPct.textContent   = `${pct}%`;
+    progressFill.style.width  = `${pct}%`;
+  }
+
   function renderGrid() {
     grid.innerHTML = '';
     const filtered = getFilteredCards();
     buildCountLabel(filtered, currentFilter);
+    updateProgress(filtered);
 
     if (filtered.length === 0) {
       const empty = document.createElement('p');

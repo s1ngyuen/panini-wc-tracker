@@ -638,6 +638,50 @@ body::before {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
+   COLLECTION PROGRESS BAR
+───────────────────────────────────────────────────────────────────────────── */
+
+.collection-progress {
+  padding: 0 16px 16px;
+}
+
+.collection-progress__labels {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 6px;
+}
+
+.collection-progress__count {
+  font-family: var(--font-display);
+  font-size: 15px;
+  color: var(--text-primary);
+  letter-spacing: .02em;
+}
+
+.collection-progress__pct {
+  font-family: var(--font-display);
+  font-size: 20px;
+  color: var(--accent-primary);
+  letter-spacing: .02em;
+}
+
+.collection-progress__bar-track {
+  height: 6px;
+  background: var(--surface-high);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.collection-progress__bar-fill {
+  height: 100%;
+  background: var(--accent-primary);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+  width: 0%;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
    CARD GRID  (collection view)
 ───────────────────────────────────────────────────────────────────────────── */
 
