@@ -85,7 +85,6 @@ export function createCardElement(card, count) {
   const isOwned     = count >= 1;
   const isDuplicate = count >= 2;
   const isMissing   = count === 0;
-  const isLight     = LIGHT_COLOUR_COUNTRIES.has(card.country);
 
   const wrapper = document.createElement('div');
   wrapper.className = [
@@ -93,7 +92,6 @@ export function createCardElement(card, count) {
     isOwned     ? 'panini-card--owned'     : '',
     isDuplicate ? 'panini-card--duplicate' : '',
     isMissing   ? 'panini-card--missing'   : '',
-    isLight     ? 'card-dark-text'         : '',
   ].filter(Boolean).join(' ');
 
   wrapper.setAttribute('data-country', card.country);
@@ -102,7 +100,23 @@ export function createCardElement(card, count) {
   wrapper.setAttribute('role', 'img');
   wrapper.setAttribute('aria-label', `Card #${card.id}: ${card.playerName}, ${card.country}, ${card.cardType}${isMissing ? ', missing' : isDuplicate ? `, ${count} copies` : ', owned'}`);
 
-  // Duplicate count badge (z-index above all card overlays)
+  // Real card photo
+  const img = document.createElement('img');
+  img.className = 'panini-card__photo';
+  img.src = `assets/cards/${card.id}.jpg`;
+  img.alt = '';
+  img.setAttribute('aria-hidden', 'true');
+  img.loading = 'lazy';
+  // Fall back to stylized card if image missing
+  img.onerror = () => {
+    img.style.display = 'none';
+    wrapper.classList.add('panini-card--no-photo');
+    const inner = buildFallbackInner(card);
+    wrapper.appendChild(inner);
+  };
+  wrapper.appendChild(img);
+
+  // Duplicate count badge
   if (isDuplicate) {
     const dupeBadge = document.createElement('div');
     dupeBadge.className = 'panini-card__dupe-badge';
@@ -112,62 +126,52 @@ export function createCardElement(card, count) {
     wrapper.appendChild(dupeBadge);
   }
 
-  // Main inner layout
-  const inner = document.createElement('div');
-  inner.className = 'panini-card__inner';
+  return wrapper;
+}
 
-  // Top row
+function buildFallbackInner(card) {
+  const isLight = LIGHT_COLOUR_COUNTRIES.has(card.country);
+  const inner = document.createElement('div');
+  inner.className = 'panini-card__inner' + (isLight ? ' card-dark-text' : '');
+
   const top = document.createElement('div');
   top.className = 'panini-card__top';
   top.setAttribute('aria-hidden', 'true');
-
   const numEl = document.createElement('span');
   numEl.className = 'panini-card__number';
   numEl.textContent = `#${card.id}`;
-
   const badgeEl = document.createElement('span');
   badgeEl.className = `panini-card__type-badge panini-card__type-badge--${typeToClass(card.cardType)}`;
   badgeEl.textContent = card.cardType;
-
   top.appendChild(numEl);
   top.appendChild(badgeEl);
 
-  // Middle: flag + country
   const middle = document.createElement('div');
   middle.className = 'panini-card__middle';
   middle.setAttribute('aria-hidden', 'true');
-
   const flagEl = document.createElement('span');
   flagEl.className = 'panini-card__flag';
   flagEl.textContent = FLAG_EMOJI[card.country] || '🏳';
-
   const countryEl = document.createElement('span');
   countryEl.className = 'panini-card__country';
   countryEl.textContent = card.country;
-
   middle.appendChild(flagEl);
   middle.appendChild(countryEl);
 
-  // Bottom bar: name + wordmark
   const bottom = document.createElement('div');
   bottom.className = 'panini-card__bottom';
   bottom.setAttribute('aria-hidden', 'true');
-
   const nameEl = document.createElement('div');
   nameEl.className = 'panini-card__name';
   nameEl.textContent = card.playerName;
-
   const wordmarkEl = document.createElement('div');
   wordmarkEl.className = 'panini-card__wordmark';
   wordmarkEl.textContent = 'PANINI';
-
   bottom.appendChild(nameEl);
   bottom.appendChild(wordmarkEl);
 
   inner.appendChild(top);
   inner.appendChild(middle);
   inner.appendChild(bottom);
-  wrapper.appendChild(inner);
-
-  return wrapper;
+  return inner;
 }

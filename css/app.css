@@ -701,7 +701,7 @@ body::before {
   border-radius: 12px;
   position: relative;
   overflow: hidden;
-  background: linear-gradient(160deg, var(--team-color) 0%, color-mix(in srgb, var(--team-color) 55%, #000) 100%);
+  background: #1a1a2e;
   box-shadow: 0 4px 16px rgba(0,0,0,0.18), 0 1px 4px rgba(0,0,0,0.1);
   flex-shrink: 0;
   user-select: none;
@@ -713,7 +713,23 @@ body::before {
   box-shadow: 0 8px 24px rgba(0,0,0,0.22), 0 2px 8px rgba(0,0,0,0.14);
 }
 
-.panini-card::before {
+/* Real card photo — fills the entire card */
+.panini-card__photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  z-index: 1;
+}
+
+/* Fallback: show gradient when no photo loaded */
+.panini-card--no-photo {
+  background: linear-gradient(160deg, var(--team-color) 0%, color-mix(in srgb, var(--team-color) 55%, #000) 100%);
+}
+
+.panini-card--no-photo::before {
   content: '';
   position: absolute;
   inset: 0;
@@ -722,7 +738,7 @@ body::before {
   z-index: 1;
 }
 
-.panini-card::after {
+.panini-card--no-photo::after {
   content: '';
   position: absolute;
   inset: 0;
@@ -833,15 +849,15 @@ body::before {
   color: rgba(255,255,255,0.5);
 }
 
-.panini-card--missing { filter: grayscale(0.6); }
+.panini-card--missing { filter: grayscale(0.7); }
 
-.panini-card--missing .panini-card__inner::after {
+.panini-card--missing::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,0.50);
-  border-radius: 12px;
-  z-index: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 2;
+  pointer-events: none;
 }
 
 .panini-card__dupe-badge {
