@@ -119,15 +119,21 @@ export function mountSwapAnalyser(container) {
     const result = runSwapAnalysis(havesText, wantsText, collection);
     renderResults(result);
     resultsSection.hidden = false;
-    resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    resultsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   });
 
+  // ── Rarity tiers ─────────────────────────────────────────────────────────
+  const RARITY_TIER = {
+    'Golden Baller': 3,
+    'Icon': 2, 'Fan Favourite': 2, 'Master Rookie': 2, 'Top Keeper': 2,
+    'Defensive Rock': 2, 'Midfield Maestro': 2, 'Goal Machine': 2,
+    'Mascot': 2, 'Official Emblem': 2, 'Eternos-22': 2,
+    'Hero': 1, 'Contender': 1, 'Team Crest': 1,
+  };
+  const TIER_LABEL = { 3: 'Ultra Rare', 2: 'Special', 1: 'Base' };
+  function tier(cardType) { return RARITY_TIER[cardType] ?? 1; }
+
   // ── Swap algorithm ────────────────────────────────────────────────────────
-  /**
-   * Parse a raw text block into an array of matched Card objects.
-   * @param {string} text
-   * @returns {{ matched: Card[], unmatched: string[] }}
-   */
   function parseInput(text) {
     const tokens = text
       .split(/[\n,;]+/)
@@ -139,58 +145,78 @@ export function mountSwapAnalyser(container) {
     const unmatched = [];
 
     tokens.forEach(token => {
-      // Try numeric ID first
       const num = Number(token);
       if (!isNaN(num) && Number.isInteger(num) && num >= 1 && num <= 630) {
         const card = CARDS_BY_ID[num];
-        if (card && !seen.has(card.id)) {
-          seen.add(card.id);
-          matched.push(card);
-        } else if (!card) {
-          unmatched.push(token);
-        }
+        if (card && !seen.has(card.id)) { seen.add(card.id); matched.push(card); }
+        else if (!card) unmatched.push(token);
         return;
       }
-
-      // Text search
       const lower = token.toLowerCase();
       let found = CARDS.find(c => c.playerName.toLowerCase() === lower);
-      if (!found) {
-        found = CARDS.find(c => c.playerName.toLowerCase().includes(lower));
-      }
-
-      if (found && !seen.has(found.id)) {
-        seen.add(found.id);
-        matched.push(found);
-      } else if (!found) {
-        unmatched.push(token);
-      }
+      if (!found) found = CARDS.find(c => c.playerName.toLowerCase().includes(lower));
+      if (found && !seen.has(found.id)) { seen.add(found.id); matched.push(found); }
+      else if (!found) unmatched.push(token);
     });
 
     return { matched, unmatched };
   }
 
-  /**
-   * @param {string} havesText
-   * @param {string} wantsText
-   * @param {{ [key: string]: number }} collection
-   */
+  function buildSuggestedOffer(youGet, myDuplicates) {
+    // Group needed cards by card type
+    const needByType = {};
+    for (const card of youGet) {
+      (needByType[card.cardType] = needByType[card.cardType] || []).push(card);
+    }
+
+    // Index my dupes by type and tier
+    const dupsByType = {};
+    const dupsByTier = { 1: [], 2: [], 3: [] };
+    for (const card of myDuplicates) {
+      (dupsByType[card.cardType] = dupsByType[card.cardType] || []).push(card);
+      dupsByTier[tier(card.cardType)].push(card);
+    }
+
+    const used = new Set();
+    const groups = [];
+
+    for (const [type, needed] of Object.entries(needByType)) {
+      const count = needed.length;
+      const t = tier(type);
+
+      // 1. Same card type
+      const sameType = (dupsByType[type] || []).filter(d => !used.has(d.id)).slice(0, count);
+      sameType.forEach(d => used.add(d.id));
+
+      // 2. Fill with same tier
+      let offer = [...sameType];
+      if (offer.length < count) {
+        const fill = dupsByTier[t].filter(d => !used.has(d.id)).slice(0, count - offer.length);
+        fill.forEach(d => used.add(d.id));
+        offer = [...offer, ...fill];
+      }
+
+      groups.push({ type, tier: t, need: count, offer, shortfall: count - offer.length });
+    }
+
+    return groups;
+  }
+
   function runSwapAnalysis(havesText, wantsText, collection) {
-    const userMissing    = new Set(CARDS.filter(c => (collection[String(c.id)] ?? 0) === 0).map(c => c.id));
-    const userDuplicates = new Set(CARDS.filter(c => (collection[String(c.id)] ?? 0) > 1).map(c => c.id));
+    const userMissing   = new Set(CARDS.filter(c => (collection[String(c.id)] ?? 0) === 0).map(c => c.id));
+    const myDuplicates  = CARDS.filter(c => (collection[String(c.id)] ?? 0) > 1);
 
     const { matched: partnerHas,   unmatched: unmatchedHas  } = parseInput(havesText);
     const { matched: partnerWants, unmatched: unmatchedWants } = parseInput(wantsText);
 
-    // Cards I can request: partner has them AND I'm missing them
-    const youGet = partnerHas.filter(c => userMissing.has(c.id));
-
-    // Cards I can offer: partner wants them AND I have spares
-    const youGive = partnerWants.filter(c => userDuplicates.has(c.id));
+    const youGet       = partnerHas.filter(c => userMissing.has(c.id));
+    const tradeGroups  = buildSuggestedOffer(youGet, myDuplicates);
+    const myDupSet     = new Set(myDuplicates.map(c => c.id));
+    const partnerMatch = partnerWants.filter(c => myDupSet.has(c.id)); // what they want that I have
 
     const unmatched = [...new Set([...unmatchedHas, ...unmatchedWants])];
 
-    return { youGet, youGive, unmatched };
+    return { youGet, tradeGroups, partnerMatch, unmatched };
   }
 
   // ── Render results ────────────────────────────────────────────────────────
@@ -216,168 +242,133 @@ export function mountSwapAnalyser(container) {
     return row;
   }
 
-  function renderResults({ youGet, youGive, unmatched }) {
+  function renderResults({ youGet, tradeGroups, partnerMatch, unmatched }) {
     resultsSection.innerHTML = '';
 
-    // Results heading
-    const rHeading = document.createElement('h2');
-    rHeading.className = 'section-heading text-xl mb-2';
-    rHeading.textContent = 'Swap Results';
-    resultsSection.appendChild(rHeading);
-    resultsSection.appendChild(Object.assign(document.createElement('span'), { className: 'chevron-accent' }));
+    const totalOffer = tradeGroups.reduce((s, g) => s + g.offer.length, 0);
+    const totalShortfall = tradeGroups.reduce((s, g) => s + g.shortfall, 0);
 
-    // No match state
-    if (youGet.length === 0 && youGive.length === 0) {
+    if (youGet.length === 0) {
       const noMatch = document.createElement('div');
-      noMatch.className = 'rounded-lg p-4 text-center';
-      noMatch.style.background = '#111';
-      noMatch.innerHTML = `
-        <p class="font-semibold text-sm mb-1" style="color:#aaa;">No swap matches found.</p>
-        <p class="text-xs" style="color:#555;">Your partner's cards don't overlap with your missing cards or duplicates.<br>Try updating their list and running the analysis again.</p>
-      `;
+      noMatch.style.cssText = 'background:#f9f9f9; padding:16px; text-align:center;';
+      noMatch.innerHTML = `<p style="color:#555; font-size:13px;">None of their cards are on your missing list.<br>Try updating their card list.</p>`;
       resultsSection.appendChild(noMatch);
     } else {
-      // Balance warning (threshold: difference > 3)
-      const diff = Math.abs(youGet.length - youGive.length);
-      if (diff > 3 && youGet.length > 0 && youGive.length > 0) {
-        const balanceNote = document.createElement('div');
-        balanceNote.className = 'rounded-lg p-3 mb-4 text-xs';
-        balanceNote.style.cssText = 'background:#2a1a00; border:1px solid #ff6b00; color:#ff9944;';
-        balanceNote.textContent = `Heads up: this trade isn't even — you're getting ${youGet.length} cards but giving ${youGive.length}. Worth a conversation before you commit.`;
-        resultsSection.appendChild(balanceNote);
+
+      // ── Trade groups (one per card type I need) ───────────────────────────
+      for (const group of tradeGroups) {
+        const block = document.createElement('div');
+        block.style.cssText = 'margin-bottom:20px;';
+
+        // Header row: "3 Icons for 3 Icons"
+        const label = group.offer.length === group.need
+          ? `${group.need} ${group.type}${group.need > 1 ? 's' : ''} for ${group.offer.length} ${
+              group.offer[0]?.cardType === group.type ? group.type : TIER_LABEL[group.tier]
+            }${group.offer.length > 1 ? 's' : ''}`
+          : `${group.need} ${group.type}${group.need > 1 ? 's' : ''} — you can only offer ${group.offer.length}`;
+
+        const groupHead = document.createElement('div');
+        groupHead.style.cssText = 'display:flex; align-items:center; gap:8px; margin-bottom:8px;';
+        groupHead.innerHTML = `
+          <span style="font-family:var(--font-display); font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--gold);">${label}</span>
+          ${totalShortfall > 0 && group.shortfall > 0 ? `<span style="font-size:11px; color:#c55; background:#fee; padding:2px 7px;">${group.shortfall} short</span>` : ''}
+        `;
+        block.appendChild(groupHead);
+
+        // Two-column: You want | You offer
+        const cols = document.createElement('div');
+        cols.style.cssText = 'display:grid; grid-template-columns:1fr 1fr; gap:10px;';
+
+        const wantCol = document.createElement('div');
+        const offerCol = document.createElement('div');
+
+        const wantHead = document.createElement('p');
+        wantHead.style.cssText = 'font-size:10px; text-transform:uppercase; letter-spacing:.06em; color:var(--green); margin-bottom:4px; font-family:var(--font-display);';
+        wantHead.textContent = 'I want';
+        wantCol.appendChild(wantHead);
+        group.need > 0 && group.type && CARDS.filter(c => group.type === c.cardType && youGet.some(g => g.id === c.id))
+          .forEach(c => wantCol.appendChild(cardLine(c)));
+
+        const offerHead = document.createElement('p');
+        offerHead.style.cssText = 'font-size:10px; text-transform:uppercase; letter-spacing:.06em; color:rgba(197,160,40,0.8); margin-bottom:4px; font-family:var(--font-display);';
+        offerHead.textContent = 'I offer';
+        offerCol.appendChild(offerHead);
+        if (group.offer.length > 0) {
+          group.offer.forEach(c => offerCol.appendChild(cardLine(c)));
+        } else {
+          const none = document.createElement('p');
+          none.style.cssText = 'font-size:11px; color:#aaa; padding:4px 0;';
+          none.textContent = 'No dupes available';
+          offerCol.appendChild(none);
+        }
+
+        cols.appendChild(wantCol);
+        cols.appendChild(offerCol);
+        block.appendChild(cols);
+
+        const divider = document.createElement('div');
+        divider.style.cssText = 'height:1px; background:#eee; margin-top:16px;';
+        block.appendChild(divider);
+
+        resultsSection.appendChild(block);
       }
 
-      // One-sided messages
-      if (youGet.length === 0 && youGive.length > 0) {
-        const sideNote = document.createElement('p');
-        sideNote.className = 'text-xs mb-4 px-1';
-        sideNote.style.color = '#888';
-        sideNote.textContent = `You can give ${youGive.length} card(s), but nothing from their list covers your missing cards.`;
-        resultsSection.appendChild(sideNote);
+      // ── Summary banner ────────────────────────────────────────────────────
+      const summary = document.createElement('div');
+      summary.style.cssText = 'background:#f9f9f9; padding:12px 14px; margin-bottom:16px; font-size:12px;';
+      summary.innerHTML = totalShortfall === 0
+        ? `<span style="color:var(--green); font-weight:700;">Balanced trade:</span> You get <strong>${youGet.length}</strong> cards and offer <strong>${totalOffer}</strong> of equal rarity.`
+        : `<span style="color:#c55; font-weight:700;">Uneven:</span> You need <strong>${youGet.length}</strong> cards but only have <strong>${totalOffer}</strong> dupes of matching rarity. You're <strong>${totalShortfall}</strong> short — negotiate with your partner.`;
+      resultsSection.appendChild(summary);
+
+      // ── Partner's explicit wants (if they entered any) ────────────────────
+      if (partnerMatch.length > 0) {
+        const pw = document.createElement('div');
+        pw.style.cssText = 'margin-bottom:16px;';
+        const pwHead = document.createElement('p');
+        pwHead.style.cssText = 'font-family:var(--font-display); font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:#888; margin-bottom:6px;';
+        pwHead.textContent = "Also matches what they want";
+        pw.appendChild(pwHead);
+        partnerMatch.forEach(c => pw.appendChild(cardLine(c)));
+        resultsSection.appendChild(pw);
       }
-      if (youGive.length === 0 && youGet.length > 0) {
-        const sideNote = document.createElement('p');
-        sideNote.className = 'text-xs mb-4 px-1';
-        sideNote.style.color = '#888';
-        sideNote.textContent = `They have ${youGet.length} card(s) you need, but none of your dupes match what they want.`;
-        resultsSection.appendChild(sideNote);
-      }
-
-      // Cards I want from partner
-      const getSection = document.createElement('div');
-      getSection.className = 'mb-5';
-
-      const getHeading = document.createElement('h3');
-      getHeading.className = 'text-sm font-black mb-1';
-      getHeading.style.cssText = 'font-family:"Barlow Condensed",sans-serif; text-transform:uppercase; letter-spacing:.05em; color:var(--color-green);';
-      getHeading.textContent = 'Cards I Want From You';
-
-      const getSub = document.createElement('p');
-      getSub.className = 'text-xs mb-3';
-      getSub.style.color = '#666';
-      getSub.textContent = `${youGet.length} card(s) your partner has that you're missing.`;
-
-      getSection.appendChild(getHeading);
-      getSection.appendChild(getSub);
-
-      if (youGet.length === 0) {
-        const none = document.createElement('p');
-        none.className = 'text-xs px-3 py-2 rounded';
-        none.style.cssText = 'background:#111; color:#555;';
-        none.textContent = '(none)';
-        getSection.appendChild(none);
-      } else {
-        youGet.forEach(c => getSection.appendChild(cardLine(c)));
-      }
-      resultsSection.appendChild(getSection);
-
-      // Cards I can give
-      const giveSection = document.createElement('div');
-      giveSection.className = 'mb-5';
-
-      const giveHeading = document.createElement('h3');
-      giveHeading.className = 'text-sm font-black mb-1';
-      giveHeading.style.cssText = 'font-family:"Barlow Condensed",sans-serif; text-transform:uppercase; letter-spacing:.05em; color:var(--color-yellow);';
-      giveHeading.textContent = 'Cards I Can Give You';
-
-      const giveSub = document.createElement('p');
-      giveSub.className = 'text-xs mb-3';
-      giveSub.style.color = '#666';
-      giveSub.textContent = `${youGive.length} duplicate(s) your partner is looking for.`;
-
-      giveSection.appendChild(giveHeading);
-      giveSection.appendChild(giveSub);
-
-      if (youGive.length === 0) {
-        const none = document.createElement('p');
-        none.className = 'text-xs px-3 py-2 rounded';
-        none.style.cssText = 'background:#111; color:#555;';
-        none.textContent = '(none)';
-        giveSection.appendChild(none);
-      } else {
-        youGive.forEach(c => giveSection.appendChild(cardLine(c)));
-      }
-      resultsSection.appendChild(giveSection);
     }
 
-    // Unmatched tokens
+    // ── Unmatched tokens ──────────────────────────────────────────────────
     if (unmatched.length > 0) {
-      const unmatchedSection = document.createElement('div');
-      unmatchedSection.className = 'mt-4 rounded-lg p-3';
-      unmatchedSection.style.cssText = 'background:#1a0000; border:1px solid #440000;';
-
-      const uHead = document.createElement('p');
-      uHead.className = 'text-xs font-bold mb-1';
-      uHead.style.color = '#ff6666';
-      uHead.textContent = "Couldn't match these:";
-
-      const uSub = document.createElement('p');
-      uSub.className = 'text-xs mb-2';
-      uSub.style.color = '#882222';
-      uSub.textContent = "These entries didn't match any card in the set. Check the spelling or use the card ID instead.";
-
-      unmatchedSection.appendChild(uHead);
-      unmatchedSection.appendChild(uSub);
-
+      const um = document.createElement('div');
+      um.style.cssText = 'background:#fff5f5; padding:12px 14px; margin-bottom:12px;';
+      um.innerHTML = `<p style="font-size:11px; color:#c55; margin-bottom:4px; font-weight:700;">Couldn't match:</p>`;
       unmatched.forEach(token => {
         const item = document.createElement('p');
-        item.className = 'text-xs py-1';
-        item.style.color = '#cc4444';
+        item.style.cssText = 'font-size:11px; color:#c55;';
         item.textContent = `"${token}" — not found`;
-        unmatchedSection.appendChild(item);
+        um.appendChild(item);
       });
-
-      resultsSection.appendChild(unmatchedSection);
+      resultsSection.appendChild(um);
     }
 
-    // Copy trade message button
-    if (youGet.length > 0 || youGive.length > 0) {
+    // ── Copy trade message ────────────────────────────────────────────────
+    if (youGet.length > 0) {
       const copyBtn = document.createElement('button');
       copyBtn.type = 'button';
       copyBtn.className = 'btn-primary w-full mt-4';
-      copyBtn.innerHTML = `
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-        </svg>
-        Copy Trade Message
-      `;
+      copyBtn.textContent = 'Copy Trade Message';
 
       copyBtn.addEventListener('click', async () => {
-        const getLines = youGet.length > 0
-          ? youGet.map(c => `#${c.id} ${c.playerName} (${c.country} — ${c.cardType})`).join('\n')
-          : '(none)';
-        const giveLines = youGive.length > 0
-          ? youGive.map(c => `#${c.id} ${c.playerName} (${c.country} — ${c.cardType})`).join('\n')
-          : '(none)';
+        const getLines = youGet.map(c => `#${c.id} ${c.playerName} (${c.country} — ${c.cardType})`).join('\n');
+        const offerCards = tradeGroups.flatMap(g => g.offer);
+        const giveLines = offerCards.length > 0
+          ? offerCards.map(c => `#${c.id} ${c.playerName} (${c.country} — ${c.cardType})`).join('\n')
+          : '(no duplicates available)';
 
-        const text = `--- CARDS I WANT FROM YOU ---\n${getLines}\n\n--- CARDS I CAN GIVE YOU ---\n${giveLines}\n\nGenerated by WC 2026 Tracker`;
+        const text = `--- CARDS I WANT FROM YOU ---\n${getLines}\n\n--- CARDS I CAN OFFER ---\n${giveLines}\n\nGenerated by WC 2026 Tracker`;
 
         try {
           await navigator.clipboard.writeText(text);
-          showToast('Copied! Send it to your partner and sort the swap.', 'success');
+          showToast('Copied! Send it to your partner.', 'success');
         } catch {
-          showToast("Couldn't copy automatically. Select the text above and copy it manually.", 'error');
+          showToast("Couldn't copy — select and copy manually.", 'error');
         }
       });
 
