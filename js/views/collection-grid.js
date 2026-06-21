@@ -53,6 +53,57 @@ export async function mountCollectionGrid(container) {
   countLabel.style.color = '#666';
   container.appendChild(countLabel);
 
+  // ── Card lightbox ────────────────────────────────────────────────────────
+  const lightbox = document.createElement('div');
+  lightbox.className = 'card-lightbox';
+  lightbox.setAttribute('role', 'dialog');
+  lightbox.setAttribute('aria-modal', 'true');
+  lightbox.setAttribute('aria-label', 'Card detail');
+  lightbox.hidden = true;
+  lightbox.innerHTML = `
+    <div class="card-lightbox__backdrop"></div>
+    <div class="card-lightbox__panel">
+      <button class="card-lightbox__close" aria-label="Close">✕</button>
+      <div class="card-lightbox__img-wrap">
+        <img class="card-lightbox__img" alt="" />
+      </div>
+      <div class="card-lightbox__meta">
+        <div class="card-lightbox__name"></div>
+        <div class="card-lightbox__sub"></div>
+        <div class="card-lightbox__status"></div>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(lightbox);
+
+  const lbImg    = lightbox.querySelector('.card-lightbox__img');
+  const lbName   = lightbox.querySelector('.card-lightbox__name');
+  const lbSub    = lightbox.querySelector('.card-lightbox__sub');
+  const lbStatus = lightbox.querySelector('.card-lightbox__status');
+
+  function openLightbox(card, count) {
+    lbImg.src = `assets/cards/${card.id}.jpg`;
+    lbImg.alt = card.playerName;
+    lbName.textContent = card.playerName;
+    lbSub.textContent  = `#${card.id} · ${card.country} · ${card.cardType}`;
+    if (count === 0)      lbStatus.textContent = 'Missing';
+    else if (count === 1) lbStatus.textContent = 'Owned';
+    else                  lbStatus.textContent = `×${count} — ${count - 1} spare`;
+    lbStatus.className = `card-lightbox__status card-lightbox__status--${count === 0 ? 'missing' : count >= 2 ? 'dupe' : 'owned'}`;
+    lightbox.hidden = false;
+    document.body.style.overflow = 'hidden';
+    lightbox.querySelector('.card-lightbox__close').focus();
+  }
+
+  function closeLightbox() {
+    lightbox.hidden = true;
+    document.body.style.overflow = '';
+  }
+
+  lightbox.querySelector('.card-lightbox__backdrop').addEventListener('click', closeLightbox);
+  lightbox.querySelector('.card-lightbox__close').addEventListener('click', closeLightbox);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+
   // ── Card grid ────────────────────────────────────────────────────────────
   const grid = document.createElement('div');
   grid.className = 'card-grid';
@@ -118,6 +169,8 @@ export async function mountCollectionGrid(container) {
       const count = collection[String(card.id)] ?? 0;
       const el = createCardElement(card, count);
       el.setAttribute('role', 'listitem');
+      el.style.cursor = 'pointer';
+      el.addEventListener('click', () => openLightbox(card, count));
       frag.appendChild(el);
     });
     grid.appendChild(frag);

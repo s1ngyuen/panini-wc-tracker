@@ -935,6 +935,101 @@ body::before {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
+   CARD LIGHTBOX
+───────────────────────────────────────────────────────────────────────────── */
+
+.card-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-lightbox[hidden] { display: none; }
+
+.card-lightbox__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+}
+
+.card-lightbox__panel {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 32px 24px 28px;
+  background: #fff;
+  width: min(360px, 90vw);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.card-lightbox__close {
+  position: absolute;
+  top: 12px; right: 14px;
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: #999;
+  line-height: 1;
+  padding: 4px;
+}
+.card-lightbox__close:hover { color: #333; }
+
+.card-lightbox__img-wrap {
+  width: 220px;
+  height: 308px;
+  flex-shrink: 0;
+  background: #1a1a2e;
+  overflow: hidden;
+}
+
+.card-lightbox__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.card-lightbox__meta {
+  text-align: center;
+  width: 100%;
+}
+
+.card-lightbox__name {
+  font-family: var(--font-display);
+  font-size: 20px;
+  color: var(--text-primary);
+  letter-spacing: .03em;
+  margin-bottom: 4px;
+}
+
+.card-lightbox__sub {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+.card-lightbox__status {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 12px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+}
+
+.card-lightbox__status--owned   { background: var(--green);  color: #fff; }
+.card-lightbox__status--missing { background: #888;          color: #fff; }
+.card-lightbox__status--dupe    { background: #e02020;       color: #fff; }
+
+/* ─────────────────────────────────────────────────────────────────────────────
    TOAST NOTIFICATIONS
 ───────────────────────────────────────────────────────────────────────────── */
 
