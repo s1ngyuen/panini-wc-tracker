@@ -4,13 +4,6 @@
    FONT
 ───────────────────────────────────────────────────────────────────────────── */
 
-@font-face {
-  font-family: 'FWC2026';
-  src: url('../fonts/FWC2026.ttf') format('truetype');
-  font-weight: 900;
-  font-style: normal;
-  font-display: swap;
-}
 
 /* ─────────────────────────────────────────────────────────────────────────────
    TOKENS
@@ -41,9 +34,9 @@
   --text-secondary: #4A5280;
   --text-muted:     #8892C0;
 
-  --font-display: 'FWC2026', 'Arial Narrow', sans-serif;
+  --font-display: 'Syne', sans-serif;
   --font-body:    'Open Sans', sans-serif;
-  --squeeze:      0.78;
+  --squeeze:      1;
 
   --team-color: #304FFE;
 }
