@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<!--
+  Panini WC 2026 Tracker
+  ─────────────────────────────────────────────────────────
+  IMPORTANT: This app uses ES modules (type="module" scripts).
+  It MUST be served over HTTP, not opened as file://.
+
+  To run locally:
+    python3 -m http.server 8000
+  Then open: http://localhost:8000
+
+  Or use VS Code Live Server, npx serve, etc.
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- ── SEO ──────────────────────────────────────────────────────────── -->
+  <title>WC 2026 Tracker — Panini Adrenalyn XL Collection</title>
+  <meta name="description" content="Track your Panini Adrenalyn XL FIFA World Cup 2026 card collection. Add cards, spot duplicates instantly, check progress, and plan trades with the swap analyser." />
+  <link rel="canonical" href="https://panini-wc-tracker.netlify.app/" />
+
+  <!-- ── Open Graph ────────────────────────────────────────────────────── -->
+  <meta property="og:type"        content="website" />
+  <meta property="og:url"         content="https://panini-wc-tracker.netlify.app/" />
+  <meta property="og:title"       content="WC 2026 Tracker — Panini Adrenalyn XL" />
+  <meta property="og:description" content="Your Panini Adrenalyn XL WC 2026 collection, sorted. Track cards, spot dupes, and plan swaps." />
+  <meta property="og:image"       content="https://placehold.co/1200x630/000000/F5E100?text=WC+2026+Tracker" />
+
+  <!-- ── Twitter Card ──────────────────────────────────────────────────── -->
+  <meta name="twitter:card"        content="summary_large_image" />
+  <meta name="twitter:title"       content="WC 2026 Tracker — Panini Adrenalyn XL" />
+  <meta name="twitter:description" content="Your Panini Adrenalyn XL WC 2026 collection, sorted." />
+  <meta name="twitter:image"       content="https://placehold.co/1200x630/000000/F5E100?text=WC+2026+Tracker" />
+
+  <!-- ── Favicon (inline SVG) ──────────────────────────────────────────── -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%23000'/><text y='24' x='4' font-size='24'>⚽</text></svg>" />
+
+  <!-- ── Google Fonts ──────────────────────────────────────────────────── -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- ── Tailwind CSS (CDN — prototype/local build) ────────────────────── -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- ── Custom CSS ────────────────────────────────────────────────────── -->
+  <link rel="stylesheet" href="css/app.css" />
+
+  <!-- ── Tailwind config (extend defaults with brand tokens) ───────────── -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            barlow:     ['"Barlow"', 'sans-serif'],
+            'barlow-c': ['"Barlow Condensed"', '"Arial Narrow"', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              yellow: '#F5E100',
+              green:  '#00D15E',
+              blue:   '#0033A0',
+              orange: '#FF6B00',
+            },
+          },
+        },
+      },
+    };
+  </script>
+</head>
+
+<body class="bg-black text-white font-barlow overflow-x-hidden">
+
+  <!-- ████████████████████████████████████████████████████████████████████
+       PASSWORD GATE — full-screen overlay
+  ██████████████████████████████████████████████████████████████████████ -->
+  <div
+    id="password-gate"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Authentication"
+  >
+    <!-- Content injected by app.js → renderPasswordGate() -->
+  </div>
+
+  <!-- ████████████████████████████████████████████████████████████████████
+       APP SHELL
+  ██████████████████████████████████████████████████████████████████████ -->
+  <div id="app">
+
+    <!-- ── Fixed Top Header ────────────────────────────────────────────── -->
+    <header
+      id="app-header"
+      class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4"
+      style="height:56px; background:#000; border-bottom:1px solid #1a1a1a;"
+      role="banner"
+    >
+      <!-- Logo / wordmark -->
+      <div class="flex items-center gap-3">
+        <span
+          aria-hidden="true"
+          style="font-size:22px; line-height:1;"
+        >⚽</span>
+        <div>
+          <div
+            style="font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:20px; color:var(--color-yellow); text-transform:uppercase; letter-spacing:.06em; line-height:1.1;"
+          >WC 2026</div>
+          <div
+            style="font-family:'Barlow',sans-serif; font-weight:600; font-size:9px; color:#555; text-transform:uppercase; letter-spacing:.12em; line-height:1;"
+          >Adrenalyn XL Tracker</div>
+        </div>
+      </div>
+
+      <!-- Clear collection button (top-right, accessible) -->
+      <button
+        id="clear-collection-btn"
+        type="button"
+        class="btn-secondary"
+        style="font-size:11px; padding:6px 12px; min-height:36px;"
+        aria-label="Clear entire collection"
+      >
+        Reset
+      </button>
+    </header>
+
+    <!-- ── Main Scrollable Content ─────────────────────────────────────── -->
+    <main
+      id="main-content"
+      aria-label="Main content"
+      style="padding-top:56px;"
+    >
+
+      <!-- VIEW: Card Input -->
+      <div
+        id="view-card-input"
+        role="region"
+        aria-label="Add Cards"
+        hidden
+      ></div>
+
+      <!-- VIEW: Collection Grid -->
+      <div
+        id="view-collection-grid"
+        role="region"
+        aria-label="My Collection"
+        hidden
+      ></div>
+
+      <!-- VIEW: Progress -->
+      <div
+        id="view-progress"
+        role="region"
+        aria-label="Progress"
+        hidden
+      ></div>
+
+      <!-- VIEW: Missing Cards -->
+      <div
+        id="view-missing"
+        role="region"
+        aria-label="Missing Cards"
+        hidden
+      ></div>
+
+      <!-- VIEW: Swap Analyser -->
+      <div
+        id="view-swap"
+        role="region"
+        aria-label="Swap Analyser"
+        hidden
+      ></div>
+
+    </main><!-- /main-content -->
+
+    <!-- ── Fixed Bottom Navigation ─────────────────────────────────────── -->
+    <nav
+      id="bottom-nav"
+      aria-label="Main navigation"
+    >
+      <!-- Populated by js/components/nav.js -->
+    </nav>
+
+    <!-- ── Toast Container ─────────────────────────────────────────────── -->
+    <div
+      id="toast-container"
+      aria-live="polite"
+      aria-atomic="false"
+    ></div>
+
+  </div><!-- /#app -->
+
+  <!-- ── App entry point (ES module) ──────────────────────────────────── -->
+  <!--
+    REQUIRES HTTP SERVER:
+    Run: python3 -m http.server 8000
+    Then: http://localhost:8000
+  -->
+  <script type="module" src="js/app.js"></script>
+
+</body>
+</html>

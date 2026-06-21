@@ -1,0 +1,30 @@
+# Netlify deployment config for Panini WC 2026 Tracker
+# Static site — no build step needed
+
+[build]
+  # No build command needed — this is a pure static site
+  command = ""
+  publish = "."
+
+# Redirect all 404s to index.html for client-side routing (if needed in future)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Security headers
+[[headers]]
+  for = "/*"
+  [headers.values]
+    # Prevent clickjacking
+    X-Frame-Options = "DENY"
+    # Prevent MIME type sniffing
+    X-Content-Type-Options = "nosniff"
+    # Referrer policy
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    # Disable unnecessary permissions
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+    # HSTS: require HTTPS for 2 years
+    Strict-Transport-Security = "max-age=63072000; includeSubDomains"
+    # Content Security Policy
+    Content-Security-Policy = "default-src 'self'; script-src 'self' https://cdn.tailwindcss.com https://fonts.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://placehold.co; object-src 'none'; base-uri 'self'; form-action 'self'"
