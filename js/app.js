@@ -23,7 +23,6 @@ const DEFAULT_VIEW = 'collection-grid';
 
 // Map view IDs to their mount functions and the container element IDs
 const VIEWS = {
-  'card-input':       { mountFn: mountCardInput,     containerId: 'view-card-input' },
   'collection-grid':  { mountFn: mountCollectionGrid, containerId: 'view-collection-grid' },
   'progress':         { mountFn: mountProgress,       containerId: 'view-progress' },
   'missing':          { mountFn: mountMissingCards,   containerId: 'view-missing' },
@@ -234,8 +233,27 @@ async function startApp() {
   // Hook clear collection button
   hookClearCollection();
 
-  // Hook Add Cards button
-  document.getElementById('add-cards-btn')?.addEventListener('click', () => showView('card-input'));
+  // Hook Add Cards modal
+  const addCardsModal   = document.getElementById('add-cards-modal');
+  const addCardsContent = document.getElementById('add-cards-modal-content');
+  let addCardsMounted   = false;
+
+  function openAddCards() {
+    if (!addCardsMounted) {
+      mountCardInput(addCardsContent);
+      addCardsMounted = true;
+    }
+    addCardsModal.style.display = 'flex';
+    addCardsModal.querySelector('input')?.focus();
+  }
+
+  document.getElementById('add-cards-btn')?.addEventListener('click', openAddCards);
+  document.getElementById('add-cards-close-btn')?.addEventListener('click', () => {
+    addCardsModal.style.display = 'none';
+  });
+  addCardsModal?.addEventListener('click', e => {
+    if (e.target === addCardsModal) addCardsModal.style.display = 'none';
+  });
 
   // Hook export / import
   hookExportImport();

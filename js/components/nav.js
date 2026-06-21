@@ -1,14 +1,13 @@
 // js/components/nav.js
 // Header navigation — split across left and right nav containers.
 
-const LEFT_ITEMS = [
-  { id: 'collection-grid', label: 'Collection' },
-];
+const LEFT_ITEMS = [];
 
 const RIGHT_ITEMS = [
-  { id: 'progress',   label: 'Progress'  },
-  { id: 'missing',    label: 'Missing'   },
-  { id: 'swap',       label: 'Swaps'     },
+  { id: 'collection-grid', label: 'Collection' },
+  { id: 'progress',        label: 'Progress'   },
+  { id: 'missing',         label: 'Missing'    },
+  { id: 'swap',            label: 'Swaps'      },
 ];
 
 const ALL_ITEMS = [...LEFT_ITEMS, ...RIGHT_ITEMS];

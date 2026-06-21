@@ -117,6 +117,14 @@
         <button id="clear-collection-btn"  type="button" class="btn-reset" aria-label="Clear entire collection">Reset</button>
       </div>
 
+      <!-- Add Cards modal -->
+      <div id="add-cards-modal" style="display:none; position:fixed; inset:0; z-index:500; background:rgba(0,0,0,0.55); align-items:flex-start; justify-content:center; padding-top:80px;">
+        <div style="background:#fff; width:min(480px,92vw); max-height:80vh; overflow-y:auto; position:relative;">
+          <button id="add-cards-close-btn" type="button" style="position:absolute; top:12px; right:14px; background:none; border:none; font-size:20px; cursor:pointer; color:#999; line-height:1;">✕</button>
+          <div id="add-cards-modal-content"></div>
+        </div>
+      </div>
+
       <!-- Import modal -->
       <div id="import-modal" style="display:none; position:fixed; inset:0; z-index:500; background:rgba(0,0,0,0.6); align-items:center; justify-content:center;">
         <div style="background:#fff; padding:28px; width:min(480px,90vw); position:relative;">

@@ -645,7 +645,7 @@ body::before {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
-  padding: 12px;
+  padding: 0 16px 16px;
   justify-content: flex-start;
 }
 
