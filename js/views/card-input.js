@@ -17,7 +17,7 @@ export function mountCardInput(container) {
       <div class="section-heading-bar"></div>
       <span class="fx" style="font-size:32px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-primary); line-height:1;">Add Cards</span>
     </div>
-    <p class="section-sub">Search for a card and add it to your list, then commit them all at once.</p>
+    <p class="section-sub">Add card(s) to your collection here.</p>
   `;
   container.appendChild(heading);
 
