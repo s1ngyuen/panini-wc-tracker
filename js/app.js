@@ -273,7 +273,7 @@ function buildTickerHtml(scores) {
   const label = `<span class="tk-w">TODAY'S SCORES</span>${sep}`;
 
   const items = scores.length
-    ? label + scores.map(s => `<span class="tk-g">${s}</span>`).join(sep) + sep
+    ? label + scores.map((s, i) => `<span class="${i % 2 === 0 ? 'tk-g' : 'tk-w'}">${s}</span>`).join(sep) + sep
     : `<span class="tk-w">NO SCORES YET</span>${sep}`;
 
   return items.repeat(10) + items.repeat(10);
