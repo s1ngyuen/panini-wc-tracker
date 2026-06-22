@@ -90,29 +90,29 @@ function renderPasswordGate() {
   const gate = document.getElementById('password-gate');
   if (!gate) return;
 
+  // Build ticker rows — duplicate text so scroll loops seamlessly
+  const TICKER_TEXT = '#FIFAWORLDCUP    FIFA WORLD CUP 2026    ';
+  const chunk = TICKER_TEXT.repeat(10);
+  const rows = [false, true, false, true, false, true, false].map(rtl => `
+    <div class="gate-ticker__track${rtl ? ' gate-ticker__track--rtl' : ''}">
+      <div class="gate-ticker__inner">${chunk}${chunk}</div>
+    </div>
+  `).join('');
+
   gate.innerHTML = `
-    <div style="max-width:360px; width:90%; text-align:center;">
-      <div style="font-family:'Bebas Neue',sans-serif; font-size:48px; color:var(--accent-primary); letter-spacing:.04em; line-height:1; text-transform:uppercase;">WC 2026</div>
-      <div style="font-family:'Open Sans',sans-serif; font-weight:700; font-size:11px; color:var(--text-muted); letter-spacing:.2em; text-transform:uppercase; margin-bottom:32px;">FIFA Adrenalyn XL</div>
-
-      <h1 style="font-family:'Bebas Neue',sans-serif; font-size:26px; color:var(--text-primary); text-transform:uppercase; letter-spacing:.04em; margin-bottom:8px;">Your Collection Awaits</h1>
-      <p style="font-size:14px; color:#666; margin-bottom:24px;">Enter your password to unlock your tracker.</p>
-
-      <div style="margin-bottom:12px; text-align:left;">
-        <label for="gate-password" style="display:block; font-size:12px; font-weight:600; color:#888; margin-bottom:6px; text-transform:uppercase; letter-spacing:.06em;">Password</label>
-        <input
-          id="gate-password"
-          type="password"
-          class="form-input"
-          placeholder="Enter password"
-          autocomplete="current-password"
-          style=""
-        />
+    <div class="gate-intro">
+      <div class="gate-ticker">${rows}</div>
+    </div>
+    <div class="gate-sweep"></div>
+    <div class="gate-login">
+      <img src="assets/wc26-logo.png" alt="FIFA World Cup 2026" class="gate-logo" />
+      <div class="gate-form">
+        <p class="gate-form__hint">Enter your password to unlock your tracker.</p>
+        <label for="gate-password" class="form-label" style="display:block; margin-bottom:6px;">Password</label>
+        <input id="gate-password" type="password" class="form-input" placeholder="Enter password" autocomplete="current-password" />
+        <p id="gate-error" style="color:#e02020; font-size:13px; min-height:20px; margin:8px 0 0;"></p>
+        <button id="gate-submit" type="button" class="btn-primary w-full" style="margin-top:12px;">Unlock</button>
       </div>
-
-      <p id="gate-error" style="color:#ff4444; font-size:13px; min-height:20px; margin-bottom:8px;"></p>
-
-      <button id="gate-submit" type="button" class="btn-primary w-full">Unlock</button>
     </div>
   `;
 
@@ -137,8 +137,8 @@ function renderPasswordGate() {
     if (e.key === 'Enter') attempt();
   });
 
-  // Focus password field immediately
-  setTimeout(() => input.focus(), 100);
+  // Focus after animation completes
+  setTimeout(() => input.focus(), 2400);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

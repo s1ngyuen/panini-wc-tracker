@@ -1111,14 +1111,123 @@ body::before {
   position: fixed;
   inset: 0;
   z-index: 8888;
-  background: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background: transparent;
   transition: opacity 0.4s ease;
 }
 
 #password-gate.fade-out { opacity: 0; pointer-events: none; }
+
+/* ── Intro: scrolling ticker ───────────────────────────────────────────── */
+
+.gate-intro {
+  position: absolute;
+  inset: 0;
+  background: #05091C;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+  z-index: 1;
+  animation: gate-intro-hide 0.01s linear 1.8s forwards;
+}
+
+@keyframes gate-intro-hide {
+  to { visibility: hidden; }
+}
+
+.gate-ticker {
+  display: flex;
+  flex-direction: column;
+}
+
+.gate-ticker__track {
+  overflow: hidden;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.gate-ticker__track:first-child {
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+
+.gate-ticker__inner {
+  display: inline-block;
+  white-space: nowrap;
+  font-family: var(--font-display);
+  font-size: clamp(28px, 5vw, 52px);
+  font-weight: 800;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  animation: ticker-ltr 18s linear infinite;
+}
+
+.gate-ticker__track--rtl .gate-ticker__inner {
+  animation: ticker-rtl 18s linear infinite;
+}
+
+@keyframes ticker-ltr {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+@keyframes ticker-rtl {
+  from { transform: translateX(-50%); }
+  to   { transform: translateX(0); }
+}
+
+/* ── Blue sweep ────────────────────────────────────────────────────────── */
+
+.gate-sweep {
+  position: absolute;
+  inset: 0;
+  background: #0033A0;
+  z-index: 2;
+  transform: translateY(100%);
+  animation: gate-sweep 1.3s cubic-bezier(0.76, 0, 0.24, 1) 0.9s forwards;
+}
+
+@keyframes gate-sweep {
+  0%   { transform: translateY(100%); }
+  42%  { transform: translateY(0%); }
+  100% { transform: translateY(-100%); }
+}
+
+/* ── Login form ────────────────────────────────────────────────────────── */
+
+.gate-login {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  z-index: 0;
+  opacity: 0;
+  animation: gate-login-show 0.5s ease 2.0s forwards;
+}
+
+@keyframes gate-login-show {
+  to { opacity: 1; }
+}
+
+.gate-logo {
+  height: 90px;
+  width: auto;
+  margin-bottom: 36px;
+}
+
+.gate-form {
+  width: min(340px, 88vw);
+}
+
+.gate-form__hint {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 20px;
+  text-align: center;
+}
 
 /* ─────────────────────────────────────────────────────────────────────────────
    LOADING SPINNER
