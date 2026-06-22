@@ -39,14 +39,23 @@ export async function mountCollectionGrid(container) {
     </div>
     <div class="collection-progress__bar-track">
       <div class="collection-progress__bar-fill"></div>
+      <div class="collection-progress__bar-pending"></div>
+    </div>
+    <div class="collection-progress__key" hidden>
+      <span class="collection-progress__key-owned"></span>
+      <span class="collection-progress__key-pending"></span>
     </div>
     <div class="collection-progress__hint">Tap for full breakdown</div>
   `;
   container.appendChild(progressWrap);
 
-  const progressCount = progressWrap.querySelector('.collection-progress__count');
-  const progressPct   = progressWrap.querySelector('.collection-progress__pct');
-  const progressFill  = progressWrap.querySelector('.collection-progress__bar-fill');
+  const progressCount      = progressWrap.querySelector('.collection-progress__count');
+  const progressPct        = progressWrap.querySelector('.collection-progress__pct');
+  const progressFill       = progressWrap.querySelector('.collection-progress__bar-fill');
+  const progressPendingBar = progressWrap.querySelector('.collection-progress__bar-pending');
+  const progressKey        = progressWrap.querySelector('.collection-progress__key');
+  const progressKeyOwned   = progressWrap.querySelector('.collection-progress__key-owned');
+  const progressKeyPending = progressWrap.querySelector('.collection-progress__key-pending');
 
   // ── Progress breakdown modal ──────────────────────────────────────────────
   const progressModal = document.createElement('div');
@@ -246,12 +255,27 @@ export async function mountCollectionGrid(container) {
   }
 
   function updateProgress(filtered) {
-    const owned = filtered.filter(c => (collection[String(c.id)] ?? 0) >= 1).length;
-    const total = filtered.length;
-    const pct   = total === 0 ? 0 : Math.round((owned / total) * 100);
-    progressCount.textContent = `${owned} of ${total} cards`;
-    progressPct.textContent   = `${pct}%`;
-    progressFill.style.width  = `${pct}%`;
+    const total   = filtered.length;
+    const owned   = filtered.filter(c => (collection[String(c.id)] ?? 0) >= 1).length;
+    const pending = filtered.filter(c => (collection[String(c.id)] ?? 0) === 0 && pendingReceiveIds.has(c.id)).length;
+    const combined = owned + pending;
+
+    const ownedPct   = total === 0 ? 0 : (owned   / total) * 100;
+    const pendingPct = total === 0 ? 0 : (pending / total) * 100;
+    const combinedPct = Math.round(ownedPct + pendingPct);
+
+    progressFill.style.width        = `${ownedPct}%`;
+    progressPendingBar.style.width  = `${pendingPct}%`;
+
+    const hasPending = pending > 0;
+    progressCount.textContent = `${combined}${hasPending ? '*' : ''} of ${total} cards`;
+    progressPct.textContent   = `${combinedPct}%`;
+
+    progressKey.hidden = !hasPending;
+    if (hasPending) {
+      progressKeyOwned.textContent   = `${owned} owned`;
+      progressKeyPending.textContent = `${pending} pending`;
+    }
   }
 
   function renderGrid() {

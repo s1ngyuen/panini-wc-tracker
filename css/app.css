@@ -674,9 +674,10 @@ body::before {
 }
 
 .collection-progress__bar-track {
-  height: 7px;
+  height: 12px;
   background: #d8d9db;
   overflow: hidden;
+  display: flex;
 }
 
 .collection-progress__bar-fill {
@@ -684,7 +685,40 @@ body::before {
   background: #226750;
   transition: width 0.3s ease;
   width: 0%;
+  flex-shrink: 0;
 }
+
+.collection-progress__bar-pending {
+  height: 100%;
+  background: rgba(197, 160, 40, 0.55);
+  transition: width 0.3s ease;
+  width: 0%;
+  flex-shrink: 0;
+}
+
+.collection-progress__key {
+  display: flex;
+  gap: 14px;
+  margin-top: 7px;
+}
+
+.collection-progress__key-owned {
+  font-family: var(--font-body);
+  font-size: 11px;
+  color: rgba(34, 103, 80, 0.7);
+  font-weight: 600;
+}
+
+.collection-progress__key-owned::before { content: '● '; }
+
+.collection-progress__key-pending {
+  font-family: var(--font-body);
+  font-size: 11px;
+  color: rgba(197, 160, 40, 0.8);
+  font-weight: 600;
+}
+
+.collection-progress__key-pending::before { content: '● '; }
 
 .collection-progress__hint {
   font-family: var(--font-body);
@@ -718,10 +752,11 @@ body::before {
 
 .progress-modal__panel {
   position: relative;
-  width: 100%;
+  width: calc(100% - 24px);
+  margin: 0 12px;
   max-height: 90vh;
   background: var(--bg);
-  border-radius: 16px 16px 0 0;
+  border-radius: 16px 16px 12px 12px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
