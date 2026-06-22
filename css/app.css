@@ -1411,24 +1411,23 @@ body::before {
   box-shadow: 0 4px 16px rgba(0,0,0,0.35);
 }
 
-.pending-trade-card__thumb-zoom {
-  position: absolute;
-  bottom: calc(100% + 8px);
-  left: 50%;
-  transform: translateX(-50%);
+/* Global cursor-following card zoom */
+#card-zoom-tip {
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  display: none;
   width: 160px;
   height: 224px;
-  object-fit: cover;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.5);
   background: #1a1a2e;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.45);
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity .15s;
-  z-index: 50;
 }
 
-.pending-trade-card__thumb-wrap:hover .pending-trade-card__thumb-zoom {
-  opacity: 1;
+#card-zoom-tip img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .pending-trade-card__card-line {

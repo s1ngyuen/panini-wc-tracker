@@ -233,16 +233,26 @@ function renderTradeCard(trade, { onComplete, onRefresh }) {
           img.src = `assets/cards/${c.id}.jpg`;
           img.alt = c.playerName;
           img.className = 'pending-trade-card__thumb';
-          img.title = `#${c.id} ${c.playerName}`;
-
-          const zoom = document.createElement('img');
-          zoom.src = `assets/cards/${c.id}.jpg`;
-          zoom.alt = '';
-          zoom.className = 'pending-trade-card__thumb-zoom';
 
           wrap.appendChild(img);
-          wrap.appendChild(zoom);
           thumbRow.appendChild(wrap);
+
+          const tip = document.getElementById('card-zoom-tip');
+          const tipImg = tip?.querySelector('img');
+
+          wrap.addEventListener('mouseenter', () => {
+            if (!tip || !tipImg) return;
+            tipImg.src = `assets/cards/${c.id}.jpg`;
+            tip.style.display = 'block';
+          });
+          wrap.addEventListener('mousemove', e => {
+            if (!tip) return;
+            tip.style.left = `${e.clientX + 14}px`;
+            tip.style.top  = `${e.clientY + 14}px`;
+          });
+          wrap.addEventListener('mouseleave', () => {
+            if (tip) tip.style.display = 'none';
+          });
         });
         col.appendChild(thumbRow);
         // Names list below
