@@ -319,32 +319,139 @@ function renderTradeCard(trade, { onComplete, onRefresh }) {
   }
 
   function renderEdit() {
-    wrap.innerHTML = '';
-    wrap.innerHTML = `
-      <div class="pending-trade-card__edit">
-        <label class="pending-trade-card__edit-label">Partner name</label>
-        <input id="et-partner" type="text" class="form-input" style="font-size:13px; margin-bottom:10px;" value="${trade.partner || ''}" placeholder="e.g. John" />
-        <label class="pending-trade-card__edit-label">I give (card IDs, comma-separated)</label>
-        <input id="et-give" type="text" class="form-input" style="font-size:13px; margin-bottom:10px;" value="${(trade.iGive ?? []).join(', ')}" placeholder="42, 87, 123" />
-        <label class="pending-trade-card__edit-label">I get (card IDs, comma-separated)</label>
-        <input id="et-get" type="text" class="form-input" style="font-size:13px; margin-bottom:12px;" value="${(trade.iGet ?? []).join(', ')}" placeholder="55, 66, 77" />
-        <div style="display:flex; gap:8px;">
-          <button id="et-save" type="button" class="btn-primary" style="flex:1;">Save</button>
-          <button id="et-cancel" type="button" class="btn-secondary" style="flex:1;">Cancel</button>
-        </div>
-      </div>
-    `;
+    const draftGive = [...(trade.iGive ?? [])];
+    const draftGet  = [...(trade.iGet  ?? [])];
 
-    wrap.querySelector('#et-save').addEventListener('click', () => {
-      trade.partner = wrap.querySelector('#et-partner').value.trim();
-      trade.iGive = wrap.querySelector('#et-give').value.split(/[\s,;]+/).map(Number).filter(n => n >= 1 && n <= 630);
-      trade.iGet  = wrap.querySelector('#et-get').value.split(/[\s,;]+/).map(Number).filter(n => n >= 1 && n <= 630);
-      updatePendingTrade(trade.id, { partner: trade.partner, iGive: trade.iGive, iGet: trade.iGet });
-      showToast('Trade updated.', 'success');
-      renderView();
-    });
+    function buildEdit() {
+      wrap.innerHTML = '';
+      const edit = document.createElement('div');
+      edit.className = 'pending-trade-card__edit';
 
-    wrap.querySelector('#et-cancel').addEventListener('click', renderView);
+      // Partner name
+      const partnerLabel = document.createElement('label');
+      partnerLabel.className = 'pending-trade-card__edit-label';
+      partnerLabel.textContent = 'Partner name';
+      const partnerInput = document.createElement('input');
+      partnerInput.type = 'text';
+      partnerInput.className = 'form-input';
+      partnerInput.style.cssText = 'font-size:13px; margin-bottom:14px;';
+      partnerInput.value = trade.partner || '';
+      partnerInput.placeholder = 'e.g. John';
+      edit.appendChild(partnerLabel);
+      edit.appendChild(partnerInput);
+
+      function buildCardSection(label, draft, accentClass) {
+        const section = document.createElement('div');
+        section.style.marginBottom = '14px';
+
+        const lbl = document.createElement('label');
+        lbl.className = 'pending-trade-card__edit-label';
+        lbl.textContent = label;
+        section.appendChild(lbl);
+
+        const thumbsRow = document.createElement('div');
+        thumbsRow.className = 'et-thumbs';
+
+        function refreshThumbs() {
+          thumbsRow.innerHTML = '';
+          draft.forEach((id, idx) => {
+            const card = CARDS_BY_ID[id];
+            const wrap2 = document.createElement('div');
+            wrap2.className = 'et-thumb-wrap';
+
+            const img = document.createElement('img');
+            img.src = `assets/cards/${id}.jpg`;
+            img.className = 'pending-trade-card__thumb';
+            img.alt = card ? card.playerName : `#${id}`;
+            img.onerror = () => { img.style.display = 'none'; };
+            wrap2.appendChild(img);
+
+            const xBtn = document.createElement('button');
+            xBtn.type = 'button';
+            xBtn.className = 'et-thumb-remove';
+            xBtn.textContent = '×';
+            xBtn.setAttribute('aria-label', `Remove card ${id}`);
+            xBtn.addEventListener('click', () => {
+              draft.splice(idx, 1);
+              refreshThumbs();
+            });
+            wrap2.appendChild(xBtn);
+            thumbsRow.appendChild(wrap2);
+          });
+        }
+        refreshThumbs();
+        section.appendChild(thumbsRow);
+
+        // Add card input
+        const addRow = document.createElement('div');
+        addRow.style.cssText = 'display:flex; gap:6px; margin-top:6px;';
+        const addInput = document.createElement('input');
+        addInput.type = 'text';
+        addInput.className = 'form-input';
+        addInput.style.cssText = 'font-size:12px; flex:1;';
+        addInput.placeholder = 'Add card ID…';
+        const addBtn = document.createElement('button');
+        addBtn.type = 'button';
+        addBtn.className = `btn-secondary ${accentClass}`;
+        addBtn.style.cssText = 'font-size:11px; padding:6px 10px; flex-shrink:0;';
+        addBtn.textContent = 'Add';
+        const doAdd = () => {
+          const val = addInput.value.trim();
+          const n = Number(val);
+          if (!n || n < 1 || n > 630 || !CARDS_BY_ID[n]) {
+            showToast('Enter a valid card ID (1–630).', 'error');
+            return;
+          }
+          if (!draft.includes(n)) {
+            draft.push(n);
+            refreshThumbs();
+          }
+          addInput.value = '';
+          addInput.focus();
+        };
+        addBtn.addEventListener('click', doAdd);
+        addInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); doAdd(); } });
+        addRow.appendChild(addInput);
+        addRow.appendChild(addBtn);
+        section.appendChild(addRow);
+
+        return section;
+      }
+
+      edit.appendChild(buildCardSection('I give', draftGive, 'et-add-give'));
+      edit.appendChild(buildCardSection('I get',  draftGet,  'et-add-get'));
+
+      const actions = document.createElement('div');
+      actions.style.cssText = 'display:flex; gap:8px;';
+
+      const saveBtn = document.createElement('button');
+      saveBtn.type = 'button';
+      saveBtn.className = 'btn-primary';
+      saveBtn.style.flex = '1';
+      saveBtn.textContent = 'Save';
+      saveBtn.addEventListener('click', () => {
+        trade.partner = partnerInput.value.trim();
+        trade.iGive = [...draftGive];
+        trade.iGet  = [...draftGet];
+        updatePendingTrade(trade.id, { partner: trade.partner, iGive: trade.iGive, iGet: trade.iGet });
+        showToast('Trade updated.', 'success');
+        renderView();
+      });
+
+      const cancelBtn = document.createElement('button');
+      cancelBtn.type = 'button';
+      cancelBtn.className = 'btn-secondary';
+      cancelBtn.style.flex = '1';
+      cancelBtn.textContent = 'Cancel';
+      cancelBtn.addEventListener('click', renderView);
+
+      actions.appendChild(saveBtn);
+      actions.appendChild(cancelBtn);
+      edit.appendChild(actions);
+      wrap.appendChild(edit);
+    }
+
+    buildEdit();
   }
 
   renderView();
