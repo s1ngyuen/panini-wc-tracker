@@ -1316,6 +1316,19 @@ body::before {
   color: var(--text-muted);
 }
 
+.bulk-add-row__badge {
+  flex-shrink: 0;
+  font-family: var(--font-body);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+.bulk-add-row__badge--new  { background: #226750; color: #fff; }
+.bulk-add-row__badge--dupe { background: #e02020; color: #fff; }
+
 .bulk-add-row__remove {
   flex-shrink: 0;
   width: 28px;

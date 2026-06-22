@@ -1,7 +1,7 @@
 // js/views/card-input.js
 
 import { CARDS, CARDS_BY_ID } from '../cards-data.js';
-import { addCard, removeCard } from '../store.js';
+import { addCard, removeCard, getCollection } from '../store.js';
 import { showToast } from '../components/toast.js';
 
 let _outsideClickHandler = null;
@@ -69,7 +69,9 @@ export function mountCardInput(container) {
 
   // ── State ────────────────────────────────────────────────────────────────
   let selectedCard = null;
-  const stagedCards = []; // { card, id } — same card can be added multiple times
+  const stagedCards = [];
+  let collection = {};
+  getCollection().then(c => { collection = c; renderStaging(); });
 
   // ── Search logic ─────────────────────────────────────────────────────────
   function searchCards(query) {
@@ -203,6 +205,12 @@ export function mountCardInput(container) {
     stagingSection.appendChild(list);
 
     stagedCards.forEach((card, idx) => {
+      const owned = collection[String(card.id)] ?? 0;
+      // count how many times this card already appears earlier in the staged list
+      const stagedBefore = stagedCards.slice(0, idx).filter(c => c.id === card.id).length;
+      const effectiveOwned = owned + stagedBefore;
+      const isNew = effectiveOwned === 0;
+
       const row = document.createElement('div');
       row.className = 'bulk-add-row';
 
@@ -214,6 +222,10 @@ export function mountCardInput(container) {
       const info = document.createElement('div');
       info.className = 'bulk-add-row__info';
       info.innerHTML = `<span class="bulk-add-row__name">${card.playerName}</span><span class="bulk-add-row__meta">#${card.id} · ${card.country}</span>`;
+
+      const badge = document.createElement('span');
+      badge.className = `bulk-add-row__badge bulk-add-row__badge--${isNew ? 'new' : 'dupe'}`;
+      badge.textContent = isNew ? 'NEW' : 'DUPE';
 
       const removeBtn = document.createElement('button');
       removeBtn.type = 'button';
@@ -227,6 +239,7 @@ export function mountCardInput(container) {
 
       row.appendChild(thumb);
       row.appendChild(info);
+      row.appendChild(badge);
       row.appendChild(removeBtn);
       list.appendChild(row);
     });
@@ -267,6 +280,7 @@ export function mountCardInput(container) {
     );
 
     stagedCards.length = 0;
+    collection = await getCollection();
     renderStaging();
     input.focus();
   }
