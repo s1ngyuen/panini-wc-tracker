@@ -16,7 +16,7 @@ const STORAGE_KEY = 'panini_wc_collection';
 // Constants
 // ─────────────────────────────────────────────────────────────────────────────
 
-const PASSWORD = 'panini2026';
+const PASSWORD = 'messithegoat';
 const SESSION_KEY = 'panini_authed';
 const DEFAULT_VIEW = 'collection-grid';
 
