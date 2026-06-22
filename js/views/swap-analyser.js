@@ -191,8 +191,8 @@ function renderTradeCard(trade, { onComplete, onRefresh }) {
   function renderView() {
     wrap.innerHTML = '';
 
-    const iGiveCards = (trade.iGive ?? []).map(id => CARDS_BY_ID[id]).filter(Boolean);
-    const iGetCards  = (trade.iGet  ?? []).map(id => CARDS_BY_ID[id]).filter(Boolean);
+    const iGiveCards = (trade.iGive ?? []).map(id => CARDS_BY_ID[id]).filter(Boolean).sort((a, b) => a.id - b.id);
+    const iGetCards  = (trade.iGet  ?? []).map(id => CARDS_BY_ID[id]).filter(Boolean).sort((a, b) => a.id - b.id);
 
     const header = document.createElement('div');
     header.className = 'pending-trade-card__header';
@@ -288,8 +288,8 @@ function renderTradeCard(trade, { onComplete, onRefresh }) {
     copyBtn.className = 'btn-secondary';
     copyBtn.textContent = 'Copy Message';
     copyBtn.addEventListener('click', async () => {
-      const iGiveCards = (trade.iGive ?? []).map(id => CARDS_BY_ID[id]).filter(Boolean);
-      const iGetCards  = (trade.iGet  ?? []).map(id => CARDS_BY_ID[id]).filter(Boolean);
+      const iGiveCards = (trade.iGive ?? []).map(id => CARDS_BY_ID[id]).filter(Boolean).sort((a, b) => a.id - b.id);
+      const iGetCards  = (trade.iGet  ?? []).map(id => CARDS_BY_ID[id]).filter(Boolean).sort((a, b) => a.id - b.id);
       const getLines  = iGetCards.map(c  => `#${c.id} ${c.playerName}`).join('\n');
       const giveLines = iGiveCards.map(c => `#${c.id} ${c.playerName}`).join('\n');
       const text = `Hi mate, I am looking for:\n${getLines}\n\nFor:\n${giveLines}`;
