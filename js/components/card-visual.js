@@ -119,24 +119,29 @@ export function createCardElement(card, count, { isPending = false } = {}) {
   card_el.appendChild(img);
   outer.appendChild(card_el);
 
-  // Duplicate badge sits on the outer wrapper — never clipped
-  if (isDuplicate) {
-    const dupeBadge = document.createElement('div');
-    dupeBadge.className = 'panini-card__dupe-badge';
-    dupeBadge.setAttribute('aria-hidden', 'true');
-    dupeBadge.textContent = `×${count}`;
-    dupeBadge.title = `You have ${count} copies — ${count - 1} available for swapping.`;
-    outer.appendChild(dupeBadge);
-  }
+  // Badge stack — top-right corner, stacks downward
+  if (isDuplicate || isPending) {
+    const badgeStack = document.createElement('div');
+    badgeStack.className = 'panini-card__badge-stack';
+    badgeStack.setAttribute('aria-hidden', 'true');
 
-  // Pending badge — card is locked in a pending trade
-  if (isPending) {
-    const pendingBadge = document.createElement('div');
-    pendingBadge.className = 'panini-card__pending-badge';
-    pendingBadge.setAttribute('aria-hidden', 'true');
-    pendingBadge.textContent = 'PENDING';
-    pendingBadge.title = 'This card is locked in a pending trade.';
-    outer.appendChild(pendingBadge);
+    if (isDuplicate) {
+      const dupeBadge = document.createElement('div');
+      dupeBadge.className = 'panini-card__dupe-badge';
+      dupeBadge.textContent = `Duplicate x${count - 1}`;
+      dupeBadge.title = `You have ${count} copies — ${count - 1} available for swapping.`;
+      badgeStack.appendChild(dupeBadge);
+    }
+
+    if (isPending) {
+      const pendingBadge = document.createElement('div');
+      pendingBadge.className = 'panini-card__pending-badge';
+      pendingBadge.textContent = 'Pending';
+      pendingBadge.title = 'On its way to you in a pending trade.';
+      badgeStack.appendChild(pendingBadge);
+    }
+
+    outer.appendChild(badgeStack);
   }
 
   return outer;

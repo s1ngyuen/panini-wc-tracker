@@ -911,43 +911,50 @@ body::before {
   pointer-events: none;
 }
 
-.panini-card__dupe-badge {
+/* Badge stack — anchored top-right, stacks downward */
+.panini-card__badge-stack {
   position: absolute;
-  top: -8px; right: -10px;
+  top: -8px;
+  right: -10px;
   z-index: 20;
-  background: #e02020;
-  color: #fff;
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 11px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+  transform-origin: top right;
+  transition: transform 0.15s ease;
+}
+
+/* Card hover lifts the badge stack with it */
+.panini-card-outer:hover .panini-card__badge-stack {
+  transform: translateY(-3px) scale(1.02);
+}
+
+/* Shared badge base */
+.panini-card__dupe-badge,
+.panini-card__pending-badge {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 10px;
   height: 20px;
   border-radius: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-  padding: 0 6px;
-  letter-spacing: .04em;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+  padding: 0 7px;
+  white-space: nowrap;
+  letter-spacing: 0;
+}
+
+.panini-card__dupe-badge {
+  background: #e02020;
+  color: #fff;
 }
 
 .panini-card__pending-badge {
-  position: absolute;
-  top: 14px; right: -10px;
-  z-index: 20;
   background: #F5E100;
   color: #000;
-  font-family: var(--font-display);
-  font-weight: 900;
-  font-size: 9px;
-  height: 20px;
-  border-radius: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-  padding: 0 6px;
-  letter-spacing: .08em;
-  text-transform: uppercase;
 }
 
 .panini-card--owned {
