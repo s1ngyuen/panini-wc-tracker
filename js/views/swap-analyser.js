@@ -272,6 +272,25 @@ function renderTradeCard(trade, { onComplete, onRefresh }) {
       onRefresh();
     });
 
+    const copyBtn = document.createElement('button');
+    copyBtn.type = 'button';
+    copyBtn.className = 'btn-secondary';
+    copyBtn.textContent = 'Copy Message';
+    copyBtn.addEventListener('click', async () => {
+      const iGiveCards = (trade.iGive ?? []).map(id => CARDS_BY_ID[id]).filter(Boolean);
+      const iGetCards  = (trade.iGet  ?? []).map(id => CARDS_BY_ID[id]).filter(Boolean);
+      const getLines  = iGetCards.map(c  => `#${c.id} ${c.playerName}`).join('\n');
+      const giveLines = iGiveCards.map(c => `#${c.id} ${c.playerName}`).join('\n');
+      const text = `Hi mate, I am looking for:\n${getLines}\n\nFor:\n${giveLines}`;
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast('Copied!', 'success');
+      } catch {
+        showToast("Couldn't copy — try manually.", 'error');
+      }
+    });
+
+    actions.appendChild(copyBtn);
     actions.appendChild(editBtn);
     actions.appendChild(completeBtn);
     actions.appendChild(cancelBtn);
@@ -626,11 +645,11 @@ export async function mountSwapAnalyser(container) {
     copyBtn.style.flex = '1';
     copyBtn.textContent = 'Copy Message';
     copyBtn.addEventListener('click', async () => {
-      const getNames   = youGet.map(c => `#${c.id} ${c.playerName}`).join(', ');
+      const getLines   = youGet.map(c => `#${c.id} ${c.playerName}`).join('\n');
       const offerCards = tradeGroups.flatMap(g => g.offer);
-      const giveNames  = offerCards.length > 0 ? offerCards.map(c => `#${c.id} ${c.playerName}`).join(', ') : '(none available)';
+      const giveLines  = offerCards.length > 0 ? offerCards.map(c => `#${c.id} ${c.playerName}`).join('\n') : '(none available)';
       try {
-        await navigator.clipboard.writeText(`Hi mate, I am looking for ${getNames} for ${giveNames}`);
+        await navigator.clipboard.writeText(`Hi mate, I am looking for:\n${getLines}\n\nFor:\n${giveLines}`);
         showToast('Copied! Send it to your partner.', 'success');
       } catch {
         showToast("Couldn't copy — select and copy manually.", 'error');
