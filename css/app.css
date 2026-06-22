@@ -644,7 +644,6 @@ body::before {
 .collection-progress {
   margin: 0 16px 12px;
   background: #f2f3f5;
-  border-radius: 10px;
   padding: 14px 16px 12px;
   cursor: pointer;
   transition: background .15s;
@@ -677,14 +676,12 @@ body::before {
 .collection-progress__bar-track {
   height: 7px;
   background: #d8d9db;
-  border-radius: 4px;
   overflow: hidden;
 }
 
 .collection-progress__bar-fill {
   height: 100%;
   background: #226750;
-  border-radius: 4px;
   transition: width 0.3s ease;
   width: 0%;
 }
@@ -1526,7 +1523,7 @@ body::before {
 .gate-intro {
   position: absolute;
   inset: 0;
-  background: #05091C;
+  background: #000;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -1565,9 +1562,10 @@ body::before {
   animation: ticker-ltr 18s linear infinite;
 }
 
-/* Alternating green / gold rows */
-.gate-ticker__track:nth-child(odd)  .gate-ticker__inner { color: #226750; }
-.gate-ticker__track:nth-child(even) .gate-ticker__inner { color: #C5A028; }
+/* Cycling white / gold / green rows */
+.gate-ticker__track:nth-child(3n+1) .gate-ticker__inner { color: #ffffff; }
+.gate-ticker__track:nth-child(3n+2) .gate-ticker__inner { color: #C5A028; }
+.gate-ticker__track:nth-child(3n)   .gate-ticker__inner { color: #226750; }
 
 .gate-ticker__track--rtl .gate-ticker__inner {
   animation: ticker-rtl 18s linear infinite;
