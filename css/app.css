@@ -932,12 +932,12 @@ body::before {
 
 .panini-card__pending-badge {
   position: absolute;
-  top: -8px; left: -6px;
+  top: 14px; right: -10px;
   z-index: 20;
-  background: #C5A028;
-  color: #fff;
+  background: #F5E100;
+  color: #000;
   font-family: var(--font-display);
-  font-weight: 700;
+  font-weight: 900;
   font-size: 9px;
   height: 20px;
   border-radius: 0;

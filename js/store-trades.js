@@ -27,7 +27,12 @@ export function removePendingTrade(id) {
   _save(_load().filter(t => t.id !== id));
 }
 
-/** Returns a Set of card IDs locked in pending iGive lists. */
+/** Returns a Set of card IDs locked in pending iGive lists (can't be offered). */
 export function getLockedCardIds() {
   return new Set(_load().flatMap(t => t.iGive ?? []));
+}
+
+/** Returns a Set of card IDs we're pending receiving (iGet). */
+export function getPendingReceiveIds() {
+  return new Set(_load().flatMap(t => t.iGet ?? []));
 }
