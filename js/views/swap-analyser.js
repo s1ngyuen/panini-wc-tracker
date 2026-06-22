@@ -49,16 +49,31 @@ function parseInput(text) {
   return { matched, unmatched };
 }
 
-// ── Offer algorithm: nation-completion priority + rarity balance ───────────────
-function buildSuggestedOffer(youGet, myDuplicates, lockedIds = new Set()) {
-  const available = myDuplicates.filter(d => !lockedIds.has(d.id));
-
-  // Prioritise giving cards from the same nations I'm receiving — helps both
-  // parties complete their nation sets
+// ── Offer algorithm ───────────────────────────────────────────────────────────
+// Priority order for each card in my offer pool:
+//   1. Partner explicitly wants it AND it's from a nation I'm receiving
+//   2. Partner explicitly wants it (any nation)
+//   3. Same nation as cards I'm receiving (nation-completion)
+//   4. Any other dupe of matching rarity
+//
+// Hard exclusions:
+//   - Cards locked in other pending trades
+//   - Cards the partner already has (partnerHas proves ownership)
+function buildSuggestedOffer(youGet, myDuplicates, partnerHas, partnerWants, lockedIds = new Set()) {
+  const partnerHasIds  = new Set(partnerHas.map(c => c.id));
+  const partnerWantIds = new Set(partnerWants.map(c => c.id));
   const receivingNations = new Set(youGet.map(c => c.country));
-  const nationFirst = cards => [
-    ...cards.filter(c => receivingNations.has(c.country)),
-    ...cards.filter(c => !receivingNations.has(c.country)),
+
+  // Only offer dupes that aren't locked and the partner doesn't already own
+  const available = myDuplicates.filter(d =>
+    !lockedIds.has(d.id) && !partnerHasIds.has(d.id)
+  );
+
+  const sortByPriority = cards => [
+    ...cards.filter(c =>  partnerWantIds.has(c.id) &&  receivingNations.has(c.country)),
+    ...cards.filter(c =>  partnerWantIds.has(c.id) && !receivingNations.has(c.country)),
+    ...cards.filter(c => !partnerWantIds.has(c.id) &&  receivingNations.has(c.country)),
+    ...cards.filter(c => !partnerWantIds.has(c.id) && !receivingNations.has(c.country)),
   ];
 
   const needByType = {};
@@ -68,12 +83,10 @@ function buildSuggestedOffer(youGet, myDuplicates, lockedIds = new Set()) {
 
   const dupsByType = {};
   const dupsByTier = { 1: [], 2: [], 3: [] };
-  for (const card of available) {
+  for (const card of sortByPriority(available)) {
     (dupsByType[card.cardType] = dupsByType[card.cardType] || []).push(card);
     dupsByTier[tier(card.cardType)].push(card);
   }
-  for (const t in dupsByType) dupsByType[t] = nationFirst(dupsByType[t]);
-  for (const t of [1, 2, 3]) dupsByTier[t] = nationFirst(dupsByTier[t]);
 
   const used = new Set();
   const groups = [];
@@ -453,9 +466,10 @@ export async function mountSwapAnalyser(container) {
     const { matched: partnerWants, unmatched: unmatchedWants } = parseInput(wantsText);
 
     const youGet       = partnerHas.filter(c => userMissing.has(c.id));
-    const tradeGroups  = buildSuggestedOffer(youGet, myDuplicates, lockedIds);
+    const tradeGroups  = buildSuggestedOffer(youGet, myDuplicates, partnerHas, partnerWants, lockedIds);
     const myDupSet     = new Set(myDuplicates.map(c => c.id));
-    const partnerMatch = partnerWants.filter(c => myDupSet.has(c.id) && !lockedIds.has(c.id));
+    const partnerHasIds = new Set(partnerHas.map(c => c.id));
+    const partnerMatch = partnerWants.filter(c => myDupSet.has(c.id) && !lockedIds.has(c.id) && !partnerHasIds.has(c.id));
     const unmatched    = [...new Set([...unmatchedHas, ...unmatchedWants])];
 
     renderResults({ youGet, tradeGroups, partnerMatch, unmatched }, partnerInput.value.trim());
