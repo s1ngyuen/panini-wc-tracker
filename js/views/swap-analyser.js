@@ -20,6 +20,59 @@ const RARITY_TIER = {
 const TIER_LABEL = { 3: 'Ultra Rare', 2: 'Special', 1: 'Base' };
 function tier(cardType) { return RARITY_TIER[cardType] ?? 1; }
 
+// ── FIFA world ranking (lower = better, used to sort "cards I want") ──────────
+const NATION_RANK = {
+  'Argentina':      1,
+  'France':         2,
+  'England':        3,
+  'Brazil':         4,
+  'Spain':          5,
+  'Portugal':       6,
+  'Netherlands':    7,
+  'Belgium':        8,
+  'Germany':        9,
+  'Croatia':        10,
+  'Uruguay':        11,
+  'Colombia':       12,
+  'Switzerland':    13,
+  'Morocco':        14,
+  'Japan':          15,
+  'Mexico':         16,
+  'United States':  17,
+  'Senegal':        18,
+  'Korea Republic': 19,
+  'Austria':        20,
+  'Denmark':        21,
+  'Ecuador':        22,
+  'Italy':          23,
+  'Iran':           24,
+  'Australia':      25,
+  'Canada':         26,
+  'Norway':         27,
+  'Poland':         28,
+  'Turkey':         29,
+  'Qatar':          30,
+  'Saudi Arabia':   31,
+  'Ghana':          32,
+  'Tunisia':        33,
+  'Algeria':        34,
+  'Egypt':          35,
+  'Ivory Coast':    36,
+  'South Africa':   37,
+  'New Zealand':    38,
+  'Sweden':         39,
+  'Haiti':          40,
+  'Cape Verde':     41,
+  'Panama':         42,
+  'Paraguay':       43,
+  'Scotland':       44,
+  'Jordan':         45,
+  'Jamaica':        46,
+  'Curaçao':        47,
+  'Uzbekistan':     48,
+};
+function nationRank(country) { return NATION_RANK[country] ?? 99; }
+
 // ── Parse card input text ─────────────────────────────────────────────────────
 function parseInput(text) {
   const tokens = text
@@ -50,62 +103,48 @@ function parseInput(text) {
 }
 
 // ── Offer algorithm ───────────────────────────────────────────────────────────
-// Priority order for each card in my offer pool:
-//   1. Partner explicitly wants it AND it's from a nation I'm receiving
-//   2. Partner explicitly wants it (any nation)
-//   3. Same nation as cards I'm receiving (nation-completion)
-//   4. Any other dupe of matching rarity
-//
-// Hard exclusions:
-//   - Cards locked in other pending trades
-//   - Cards the partner already has (partnerHas proves ownership)
-function buildSuggestedOffer(youGet, myDuplicates, partnerHas, partnerWants, lockedIds = new Set()) {
-  const partnerHasIds  = new Set(partnerHas.map(c => c.id));
-  const partnerWantIds = new Set(partnerWants.map(c => c.id));
-  const receivingNations = new Set(youGet.map(c => c.country));
+// Rule: ONLY offer cards the partner has explicitly listed in their wants.
+// Within that pool, match rarity tier to what I'm receiving.
+// If they haven't entered wants, the offer is empty (can't guess what they need).
+function buildSuggestedOffer(youGet, myDuplicates, partnerWants, lockedIds = new Set()) {
+  if (partnerWants.length === 0) return [];
 
-  // Only offer dupes that aren't locked and the partner doesn't already own
+  const partnerWantIds = new Set(partnerWants.map(c => c.id));
+
+  // Offer pool: only things they want, I have as a spare, and aren't locked
   const available = myDuplicates.filter(d =>
-    !lockedIds.has(d.id) && !partnerHasIds.has(d.id)
+    partnerWantIds.has(d.id) && !lockedIds.has(d.id)
   );
 
-  const sortByPriority = cards => [
-    ...cards.filter(c =>  partnerWantIds.has(c.id) &&  receivingNations.has(c.country)),
-    ...cards.filter(c =>  partnerWantIds.has(c.id) && !receivingNations.has(c.country)),
-    ...cards.filter(c => !partnerWantIds.has(c.id) &&  receivingNations.has(c.country)),
-    ...cards.filter(c => !partnerWantIds.has(c.id) && !receivingNations.has(c.country)),
-  ];
-
-  const needByType = {};
+  // Group what I need by rarity tier (not type) for a simpler balanced match
+  const needByTier = { 1: [], 2: [], 3: [] };
   for (const card of youGet) {
-    (needByType[card.cardType] = needByType[card.cardType] || []).push(card);
+    needByTier[tier(card.cardType)].push(card);
   }
 
-  const dupsByType = {};
-  const dupsByTier = { 1: [], 2: [], 3: [] };
-  for (const card of sortByPriority(available)) {
-    (dupsByType[card.cardType] = dupsByType[card.cardType] || []).push(card);
-    dupsByTier[tier(card.cardType)].push(card);
+  const availByTier = { 1: [], 2: [], 3: [] };
+  for (const card of available) {
+    availByTier[tier(card.cardType)].push(card);
   }
 
   const used = new Set();
   const groups = [];
 
-  for (const [type, needed] of Object.entries(needByType)) {
-    const count = needed.length;
-    const t = tier(type);
+  for (const t of [3, 2, 1]) {
+    const needed = needByTier[t];
+    if (needed.length === 0) continue;
 
-    const sameType = (dupsByType[type] || []).filter(d => !used.has(d.id)).slice(0, count);
-    sameType.forEach(d => used.add(d.id));
+    const offer = availByTier[t].filter(d => !used.has(d.id)).slice(0, needed.length);
+    offer.forEach(d => used.add(d.id));
 
-    let offer = [...sameType];
-    if (offer.length < count) {
-      const fill = dupsByTier[t].filter(d => !used.has(d.id)).slice(0, count - offer.length);
-      fill.forEach(d => used.add(d.id));
-      offer = [...offer, ...fill];
-    }
-
-    groups.push({ type, tier: t, need: count, offer, shortfall: count - offer.length });
+    groups.push({
+      tierLabel: TIER_LABEL[t],
+      tier: t,
+      need: needed.length,
+      needCards: needed,
+      offer,
+      shortfall: needed.length - offer.length,
+    });
   }
 
   return groups;
@@ -175,6 +214,7 @@ function renderTradeCard(trade, { onComplete, onRefresh }) {
       head.className = `pending-trade-card__col-head${mod ? ' pending-trade-card__col-head' + mod : ''}`;
       head.textContent = label;
       col.appendChild(head);
+
       if (cards.length === 0) {
         const empty = document.createElement('div');
         empty.className = 'pending-trade-card__card-line';
@@ -182,12 +222,23 @@ function renderTradeCard(trade, { onComplete, onRefresh }) {
         empty.textContent = 'None';
         col.appendChild(empty);
       } else {
+        // Thumbnail strip
+        const thumbRow = document.createElement('div');
+        thumbRow.className = 'pending-trade-card__thumbs';
         cards.forEach(c => {
-          const el = document.createElement('div');
-          el.className = 'pending-trade-card__card-line';
-          el.textContent = `#${c.id} ${c.playerName}`;
-          col.appendChild(el);
+          const img = document.createElement('img');
+          img.src = `assets/cards/${c.id}.jpg`;
+          img.alt = c.playerName;
+          img.className = 'pending-trade-card__thumb';
+          img.title = `#${c.id} ${c.playerName}`;
+          thumbRow.appendChild(img);
         });
+        col.appendChild(thumbRow);
+        // Names list below
+        const names = document.createElement('div');
+        names.className = 'pending-trade-card__card-line';
+        names.textContent = cards.map(c => c.playerName).join(', ');
+        col.appendChild(names);
       }
       cols.appendChild(col);
     });
@@ -452,112 +503,106 @@ export async function mountSwapAnalyser(container) {
   analyseBtn.addEventListener('click', async () => {
     const havesText = havesTextarea.value;
     const wantsText = wantsTextarea.value;
-    if (!havesText.trim() && !wantsText.trim()) {
-      showToast("Paste your partner's cards first.", 'error');
+    if (!havesText.trim()) {
+      showToast("Enter the cards they have first.", 'error');
       return;
     }
 
     const collection = await getCollection();
     const lockedIds  = getLockedCardIds();
 
-    const userMissing   = new Set(CARDS.filter(c => (collection[String(c.id)] ?? 0) === 0).map(c => c.id));
-    const myDuplicates  = CARDS.filter(c => (collection[String(c.id)] ?? 0) > 1);
+    const userMissing  = new Set(CARDS.filter(c => (collection[String(c.id)] ?? 0) === 0).map(c => c.id));
+    const myDuplicates = CARDS.filter(c => (collection[String(c.id)] ?? 0) > 1);
     const { matched: partnerHas,   unmatched: unmatchedHas  } = parseInput(havesText);
     const { matched: partnerWants, unmatched: unmatchedWants } = parseInput(wantsText);
 
-    const youGet       = partnerHas.filter(c => userMissing.has(c.id));
-    const tradeGroups  = buildSuggestedOffer(youGet, myDuplicates, partnerHas, partnerWants, lockedIds);
-    const myDupSet     = new Set(myDuplicates.map(c => c.id));
-    const partnerHasIds = new Set(partnerHas.map(c => c.id));
-    const partnerMatch = partnerWants.filter(c => myDupSet.has(c.id) && !lockedIds.has(c.id) && !partnerHasIds.has(c.id));
-    const unmatched    = [...new Set([...unmatchedHas, ...unmatchedWants])];
+    // Cards I want from them, sorted by FIFA nation rank (best nations first)
+    const youGet = partnerHas
+      .filter(c => userMissing.has(c.id))
+      .sort((a, b) => nationRank(a.country) - nationRank(b.country));
 
-    renderResults({ youGet, tradeGroups, partnerMatch, unmatched }, partnerInput.value.trim());
+    const tradeGroups = buildSuggestedOffer(youGet, myDuplicates, partnerWants, lockedIds);
+    const unmatched   = [...new Set([...unmatchedHas, ...unmatchedWants])];
+
+    renderResults({ youGet, tradeGroups, unmatched, hasWants: partnerWants.length > 0 }, partnerInput.value.trim());
     resultsSection.hidden = false;
     resultsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   });
 
   // ── Render results ───────────────────────────────────────────────────────
-  function renderResults({ youGet, tradeGroups, partnerMatch, unmatched }, partnerName) {
+  function renderResults({ youGet, tradeGroups, unmatched, hasWants }, partnerName) {
     resultsSection.innerHTML = '';
 
     const totalOffer     = tradeGroups.reduce((s, g) => s + g.offer.length, 0);
     const totalShortfall = tradeGroups.reduce((s, g) => s + g.shortfall, 0);
 
     if (youGet.length === 0) {
-      resultsSection.innerHTML = `<div style="background:#f9f9f9; padding:16px; text-align:center;"><p style="color:#555; font-size:13px;">None of their cards are on your missing list.<br>Try updating their card list.</p></div>`;
+      resultsSection.innerHTML = `<div style="background:#f9f9f9; padding:16px; text-align:center;"><p style="color:#555; font-size:13px;">None of their cards are on your missing list.</p></div>`;
       return;
     }
 
-    for (const group of tradeGroups) {
-      const block = document.createElement('div');
-      block.style.marginBottom = '20px';
+    // Cards I want (nation-ranked)
+    const wantBlock = document.createElement('div');
+    wantBlock.style.marginBottom = '20px';
+    const wantHead = document.createElement('p');
+    wantHead.style.cssText = 'font-size:10px; text-transform:uppercase; letter-spacing:.06em; color:var(--green); margin-bottom:6px; font-family:var(--font-display);';
+    wantHead.textContent = `I want (${youGet.length}) — ranked by nation`;
+    wantBlock.appendChild(wantHead);
+    youGet.forEach(c => wantBlock.appendChild(cardLine(c)));
+    wantBlock.insertAdjacentHTML('beforeend', '<div style="height:1px; background:#eee; margin-top:12px;"></div>');
+    resultsSection.appendChild(wantBlock);
 
-      const label = group.offer.length === group.need
-        ? `${group.need} ${group.type}${group.need > 1 ? 's' : ''} for ${group.offer.length} ${
-            group.offer[0]?.cardType === group.type ? group.type : TIER_LABEL[group.tier]
-          }${group.offer.length > 1 ? 's' : ''}`
-        : `${group.need} ${group.type}${group.need > 1 ? 's' : ''} — only ${group.offer.length} available`;
+    // My offer
+    const offerHeadEl = document.createElement('p');
+    offerHeadEl.style.cssText = 'font-size:10px; text-transform:uppercase; letter-spacing:.06em; color:rgba(197,160,40,0.9); margin-bottom:8px; font-family:var(--font-display);';
 
-      const groupHead = document.createElement('div');
-      groupHead.style.cssText = 'display:flex; align-items:center; gap:8px; margin-bottom:8px;';
-      groupHead.innerHTML = `
-        <span style="font-family:var(--font-display); font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--gold);">${label}</span>
-        ${group.shortfall > 0 ? `<span style="font-size:11px; color:#c55; background:#fee; padding:2px 7px;">${group.shortfall} short</span>` : ''}
-      `;
-      block.appendChild(groupHead);
+    if (!hasWants) {
+      offerHeadEl.textContent = 'My offer';
+      resultsSection.appendChild(offerHeadEl);
+      const note = document.createElement('p');
+      note.style.cssText = 'font-size:12px; color:#888; background:#f9f9f9; padding:12px;';
+      note.textContent = "Enter their want list to see what you can offer — we only suggest cards they've asked for.";
+      resultsSection.appendChild(note);
+    } else if (tradeGroups.length === 0) {
+      offerHeadEl.textContent = 'My offer';
+      resultsSection.appendChild(offerHeadEl);
+      const note = document.createElement('p');
+      note.style.cssText = 'font-size:12px; color:#888; background:#f9f9f9; padding:12px;';
+      note.textContent = "None of the cards they want match your duplicates.";
+      resultsSection.appendChild(note);
+    } else {
+      offerHeadEl.textContent = `My offer (${totalOffer} cards)`;
+      resultsSection.appendChild(offerHeadEl);
 
-      const cols = document.createElement('div');
-      cols.style.cssText = 'display:grid; grid-template-columns:1fr 1fr; gap:10px;';
+      for (const group of tradeGroups) {
+        const block = document.createElement('div');
+        block.style.marginBottom = '12px';
 
-      const wantCol  = document.createElement('div');
-      const offerCol = document.createElement('div');
+        const label = document.createElement('p');
+        label.style.cssText = 'font-family:var(--font-display); font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--gold); margin-bottom:4px;';
+        label.innerHTML = `${group.tierLabel}${group.shortfall > 0 ? ` <span style="color:#c55; background:#fee; padding:1px 6px; font-size:10px;">${group.shortfall} short</span>` : ''}`;
+        block.appendChild(label);
 
-      const wantHead = document.createElement('p');
-      wantHead.style.cssText = 'font-size:10px; text-transform:uppercase; letter-spacing:.06em; color:var(--green); margin-bottom:4px; font-family:var(--font-display);';
-      wantHead.textContent = 'I want';
-      wantCol.appendChild(wantHead);
-      CARDS.filter(c => c.cardType === group.type && youGet.some(g => g.id === c.id))
-        .forEach(c => wantCol.appendChild(cardLine(c)));
-
-      const offerHead = document.createElement('p');
-      offerHead.style.cssText = 'font-size:10px; text-transform:uppercase; letter-spacing:.06em; color:rgba(197,160,40,0.8); margin-bottom:4px; font-family:var(--font-display);';
-      offerHead.textContent = 'I offer';
-      offerCol.appendChild(offerHead);
-      if (group.offer.length > 0) {
-        group.offer.forEach(c => offerCol.appendChild(cardLine(c)));
-      } else {
-        const none = document.createElement('p');
-        none.style.cssText = 'font-size:11px; color:#aaa; padding:4px 0;';
-        none.textContent = 'No dupes available';
-        offerCol.appendChild(none);
+        group.offer.forEach(c => block.appendChild(cardLine(c)));
+        if (group.offer.length === 0) {
+          const none = document.createElement('p');
+          none.style.cssText = 'font-size:11px; color:#aaa;';
+          none.textContent = 'No matching dupes available';
+          block.appendChild(none);
+        }
+        resultsSection.appendChild(block);
       }
 
-      cols.appendChild(wantCol);
-      cols.appendChild(offerCol);
-      block.appendChild(cols);
-      block.insertAdjacentHTML('beforeend', '<div style="height:1px; background:#eee; margin-top:16px;"></div>');
-      resultsSection.appendChild(block);
+      // Summary
+      const summary = document.createElement('div');
+      summary.style.cssText = 'background:#f9f9f9; padding:12px 14px; margin:12px 0 16px; font-size:12px;';
+      summary.innerHTML = totalShortfall === 0
+        ? `<span style="color:var(--green); font-weight:700;">Balanced:</span> You get <strong>${youGet.length}</strong> cards, offer <strong>${totalOffer}</strong> of matching rarity.`
+        : `<span style="color:#c55; font-weight:700;">Uneven:</span> You want <strong>${youGet.length}</strong> but can only offer <strong>${totalOffer}</strong> — <strong>${totalShortfall}</strong> short.`;
+      resultsSection.appendChild(summary);
     }
 
-    // Summary banner
-    const summary = document.createElement('div');
-    summary.style.cssText = 'background:#f9f9f9; padding:12px 14px; margin-bottom:16px; font-size:12px;';
-    summary.innerHTML = totalShortfall === 0
-      ? `<span style="color:var(--green); font-weight:700;">Balanced trade:</span> You get <strong>${youGet.length}</strong> cards and offer <strong>${totalOffer}</strong> of equal rarity.`
-      : `<span style="color:#c55; font-weight:700;">Uneven:</span> You need <strong>${youGet.length}</strong> but only have <strong>${totalOffer}</strong> matching dupes. You're <strong>${totalShortfall}</strong> short.`;
-    resultsSection.appendChild(summary);
-
-    // Partner explicit wants
-    if (partnerMatch.length > 0) {
-      const pw = document.createElement('div');
-      pw.style.marginBottom = '16px';
-      pw.innerHTML = `<p style="font-family:var(--font-display); font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:#888; margin-bottom:6px;">Also matches what they want</p>`;
-      partnerMatch.forEach(c => pw.appendChild(cardLine(c)));
-      resultsSection.appendChild(pw);
-    }
-
-    // Unmatched
+    // Unmatched tokens
     if (unmatched.length > 0) {
       const um = document.createElement('div');
       um.style.cssText = 'background:#fff5f5; padding:12px 14px; margin-bottom:12px;';
