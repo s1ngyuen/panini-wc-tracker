@@ -1,6 +1,8 @@
 // js/components/nav.js
 // Header navigation — split across left and right nav containers.
 
+import { getPendingTrades } from '../store-trades.js';
+
 const LEFT_ITEMS = [
   { id: 'collection-grid', label: 'Collection' },
 ];
@@ -23,11 +25,36 @@ function makeTab(item) {
   btn.setAttribute('aria-label', item.label);
   btn.setAttribute('aria-pressed', item.id === _activeId ? 'true' : 'false');
   btn.textContent = item.label;
+
+  if (item.id === 'swap') {
+    const count = getPendingTrades().length;
+    if (count > 0) {
+      const badge = document.createElement('span');
+      badge.className = 'nav-tab__badge';
+      badge.textContent = count;
+      btn.appendChild(badge);
+    }
+  }
+
   btn.addEventListener('click', () => {
     setActive(item.id);
     if (_onNavigate) _onNavigate(item.id);
   });
   return btn;
+}
+
+/** Call after any pending trade change to keep the badge in sync. */
+export function updateSwapBadge() {
+  const count = getPendingTrades().length;
+  document.querySelectorAll('.nav-tab[data-view="swap"]').forEach(btn => {
+    btn.querySelector('.nav-tab__badge')?.remove();
+    if (count > 0) {
+      const badge = document.createElement('span');
+      badge.className = 'nav-tab__badge';
+      badge.textContent = count;
+      btn.appendChild(badge);
+    }
+  });
 }
 
 /**

@@ -1061,6 +1061,140 @@ body::before {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
+   PENDING TRADE CARDS
+───────────────────────────────────────────────────────────────────────────── */
+
+.pending-trade-card {
+  border: 1px solid var(--border);
+  background: #fff;
+  padding: 14px;
+}
+
+.pending-trade-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 10px;
+}
+
+.pending-trade-card__partner {
+  font-family: var(--font-display);
+  font-size: 15px;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: var(--text-primary);
+}
+
+.pending-trade-card__age {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.pending-trade-card__cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.pending-trade-card__col-head {
+  font-family: var(--font-display);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--gold);
+  margin-bottom: 5px;
+}
+
+.pending-trade-card__col-head--get {
+  color: var(--accent-primary);
+}
+
+.pending-trade-card__card-line {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.pending-trade-card__actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pending-trade-card__actions button {
+  flex: 1;
+  min-width: 80px;
+  font-size: 11px;
+  padding: 6px 10px;
+}
+
+.pending-trade-card__edit {
+  display: flex;
+  flex-direction: column;
+}
+
+.pending-trade-card__edit-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--text-muted);
+  display: block;
+  margin-bottom: 4px;
+}
+
+.pending-trade-card__form-title {
+  font-family: var(--font-display);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+/* ── Nav badge ─────────────────────────────────────────────────────────────── */
+
+.nav-tab__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #e02020;
+  color: #fff;
+  font-size: 9px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 0;
+  padding: 0 4px;
+  margin-left: 5px;
+  vertical-align: middle;
+  line-height: 1;
+}
+
+/* ── Danger button ─────────────────────────────────────────────────────────── */
+
+.btn-danger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: #c55;
+  border: 1px solid #c55;
+  padding: 8px 16px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.btn-danger:hover {
+  background: #c55;
+  color: #fff;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
    TOAST NOTIFICATIONS
 ───────────────────────────────────────────────────────────────────────────── */
 
