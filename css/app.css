@@ -221,7 +221,7 @@ body::before {
 ───────────────────────────────────────────────────────────────────────────── */
 
 #main-content {
-  padding-top: calc(72px + 17px);
+  padding-top: calc(72px + 26px);
   padding-bottom: 48px;
   min-height: 100dvh;
   position: relative;
@@ -1706,7 +1706,7 @@ body::before {
   top: 72px;
   left: 0;
   right: 0;
-  height: 17px;
+  height: 26px;
   background: #000;
   overflow: hidden;
   z-index: 99;
@@ -1718,12 +1718,12 @@ body::before {
   display: inline-block;
   white-space: nowrap;
   font-family: var(--font-display);
-  font-size: 9px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: .1em;
   text-transform: uppercase;
   line-height: 1;
-  animation: ticker-ltr 30s linear infinite;
+  animation: ticker-ltr 70s linear infinite;
 }
 
 .tk-g { color: #C5A028; }
