@@ -1350,7 +1350,7 @@ body::before {
 .gate-sweep {
   position: absolute;
   inset: 0;
-  background: #0033A0;
+  background: #226750;
   z-index: 2;
   transform: translateY(100%);
   animation: gate-sweep 1.3s cubic-bezier(0.76, 0, 0.24, 1) 0.9s forwards;
