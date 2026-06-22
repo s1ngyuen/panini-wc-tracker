@@ -222,7 +222,7 @@ body::before {
 
 #main-content {
   padding-top: 72px;
-  padding-bottom: 48px;
+  padding-bottom: calc(56px + env(safe-area-inset-bottom));
   min-height: 100dvh;
   position: relative;
   z-index: 1;
@@ -1706,21 +1706,21 @@ body::before {
   bottom: 0;
   left: 0;
   right: 0;
-  height: 20px;
   background: #226750;
   overflow: hidden;
   z-index: 200;
+  padding: 7px 0 calc(7px + env(safe-area-inset-bottom));
 }
 
 .bottom-ticker__inner {
   display: inline-block;
   white-space: nowrap;
   font-family: var(--font-display);
-  font-size: 10px;
+  font-size: 14px;
   font-weight: 700;
   color: #C5A028;
-  letter-spacing: .1em;
+  letter-spacing: .08em;
   text-transform: uppercase;
-  line-height: 20px;
+  line-height: 1;
   animation: ticker-ltr 30s linear infinite;
 }
