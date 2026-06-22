@@ -172,7 +172,7 @@ export function mountCardInput(container) {
       card = results[0];
     }
 
-    stagedCards.push(card);
+    stagedCards.unshift(card);
     input.value = '';
     selectedCard = null;
     dropdown.hidden = true;
