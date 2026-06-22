@@ -820,7 +820,7 @@ body::before {
 
 .card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  grid-template-columns: repeat(9, 1fr);
   gap: 12px;
   padding: 0 16px 16px;
 }
