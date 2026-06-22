@@ -269,13 +269,15 @@ const TICKER_CACHE_KEY = 'wc26_scores';
 const TICKER_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
 function buildTickerHtml(scores) {
-  const sep = `<span class="tk-w"> &nbsp;·&nbsp; </span>`;
-  const hashTag = `<span class="tk-g">#FIFAWORLDCUP</span>`;
-  const wc = `<span class="tk-w"> FIFA WORLD CUP 2026 </span>`;
+  const sep  = `<span class="tk-w"> &nbsp;·&nbsp; </span>`;
+  const label = `<span class="tk-w">TODAY'S SCORES</span>${sep}`;
+  const hashTag = `<span class="tk-g">#FIFAWORLDCUP</span><span class="tk-w"> FIFA WORLD CUP 2026 </span>`;
 
-  const scoreParts = scores.map(s => `<span class="tk-g">${s}</span>`).join(sep) + (scores.length ? sep : '');
-  const unit = scoreParts + hashTag + wc;
-  // Double the content so translateX(-50%) animation loops seamlessly
+  const scoreParts = scores.length
+    ? label + scores.map((s, i) => `<span class="${i % 2 === 0 ? 'tk-v' : 'tk-g'}">${s}</span>`).join(sep) + sep
+    : '';
+
+  const unit = scoreParts + hashTag + sep;
   return unit.repeat(10) + unit.repeat(10);
 }
 
