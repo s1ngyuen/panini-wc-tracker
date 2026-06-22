@@ -8,8 +8,7 @@ const LEFT_ITEMS = [
 ];
 
 const RIGHT_ITEMS = [
-  { id: 'progress', label: 'Progress' },
-  { id: 'swap',     label: 'Swaps'    },
+  { id: 'swap', label: 'Swaps' },
 ];
 
 const ALL_ITEMS = [...LEFT_ITEMS, ...RIGHT_ITEMS];

@@ -6,7 +6,6 @@
 import { initNav, setActive } from './components/nav.js';
 import { mountCardInput }     from './views/card-input.js';
 import { mountCollectionGrid } from './views/collection-grid.js';
-import { mountProgress }      from './views/progress.js';
 import { mountSwapAnalyser }  from './views/swap-analyser.js';
 import { clearCollection, getCollection }    from './store.js';
 
@@ -23,7 +22,6 @@ const DEFAULT_VIEW = 'collection-grid';
 // Map view IDs to their mount functions and the container element IDs
 const VIEWS = {
   'collection-grid':  { mountFn: mountCollectionGrid, containerId: 'view-collection-grid' },
-  'progress':         { mountFn: mountProgress,       containerId: 'view-progress' },
   'swap':             { mountFn: mountSwapAnalyser,   containerId: 'view-swap' },
 };
 

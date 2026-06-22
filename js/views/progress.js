@@ -82,10 +82,12 @@ const TEAM_FLAGS = {
   'Uruguay': '🇺🇾', 'Uzbekistan': '🇺🇿',
 };
 
-export async function mountProgress(container) {
+/**
+ * Render full progress breakdown into `container` using a pre-loaded collection.
+ * Sync — no network or storage calls. Called from the progress modal.
+ */
+export function buildProgressContent(container, collection) {
   container.innerHTML = '';
-
-  const collection = await getCollection();
 
   const ownedCount = CARDS.filter(c => (collection[String(c.id)] ?? 0) >= 1).length;
   const dupCount   = CARDS.reduce((sum, c) => {
@@ -95,19 +97,7 @@ export async function mountProgress(container) {
   const needCount  = TOTAL - ownedCount;
   const pct        = TOTAL > 0 ? ((ownedCount / TOTAL) * 100).toFixed(1) : '0.0';
 
-  const wrap = document.createElement('div');
-  wrap.className = 'view-inner';
-
-  // ── Heading ──────────────────────────────────────────────────────────────
-  wrap.innerHTML = `
-    <div class="section-heading-wrap">
-      <div class="section-heading-bar"></div>
-      <span class="fx" style="font-size:32px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-primary); line-height:1;">Progress</span>
-    </div>
-    <p class="section-sub">How close are you to completing the set?</p>
-  `;
-
-  // ── Stat tiles ────────────────────────────────────────────────────────────
+  // ── Stat tiles ──────────────────────────────────────────────────────────
   const tilesBlock = document.createElement('div');
   tilesBlock.className = 'overall-block';
   tilesBlock.innerHTML = `
@@ -133,18 +123,17 @@ export async function mountProgress(container) {
       <div class="progress-fill" style="width:${pct}%"></div>
     </div>
   `;
-  wrap.appendChild(tilesBlock);
+  container.appendChild(tilesBlock);
 
   if (ownedCount === 0) {
     const zero = document.createElement('p');
-    zero.style.cssText = 'padding:32px 0; color:var(--text-muted); font-size:14px;';
+    zero.style.cssText = 'padding:32px 0; color:var(--text-muted); font-size:14px; text-align:center;';
     zero.textContent = 'No cards yet. Start adding packs in Add Cards.';
-    wrap.appendChild(zero);
-    container.appendChild(wrap);
+    container.appendChild(zero);
     return;
   }
 
-  // ── Two-column grid ───────────────────────────────────────────────────────
+  // ── Per-team totals ──────────────────────────────────────────────────────
   const teamTotals = {};
   TEAMS.forEach(t => { teamTotals[t] = { total: 0, owned: 0 }; });
   CARDS.forEach(c => {
@@ -164,7 +153,7 @@ export async function mountProgress(container) {
   });
 
   const twoCol = document.createElement('div');
-  twoCol.style.cssText = 'display:flex; gap:24px; align-items:flex-start;';
+  twoCol.className = 'progress-two-col';
 
   // By Team column
   const teamCol = document.createElement('div');
@@ -173,17 +162,15 @@ export async function mountProgress(container) {
     <div class="category-heading">
       <span class="fx category-heading__text">By Team</span>
     </div>
-    <div class="prog-rows" id="team-rows"></div>
+    <div class="prog-rows" id="pm-team-rows"></div>
   `;
-
-  const teamRows = teamCol.querySelector('#team-rows');
+  const teamRows = teamCol.querySelector('#pm-team-rows');
   TEAMS.forEach(team => {
     const { total, owned } = teamTotals[team];
     if (total === 0) return;
     const p = Math.round((owned / total) * 100);
     const colors = TEAM_COLORS[team] || { fill: '#304FFE', track: '#E4EAFF' };
     const flag = TEAM_FLAGS[team] || '';
-
     const row = document.createElement('div');
     row.style.cssText = `--fill:${colors.fill}; --track:${colors.track};`;
     row.innerHTML = `
@@ -206,16 +193,14 @@ export async function mountProgress(container) {
     <div class="category-heading">
       <span class="fx category-heading__text">By Card Type</span>
     </div>
-    <div class="prog-rows" id="type-rows"></div>
+    <div class="prog-rows" id="pm-type-rows"></div>
   `;
-
-  const typeRows = typeCol.querySelector('#type-rows');
+  const typeRows = typeCol.querySelector('#pm-type-rows');
   CARD_TYPES.forEach(type => {
     const { total, owned } = typeTotals[type];
     if (total === 0) return;
     const p = Math.round((owned / total) * 100);
     const colors = TYPE_COLORS[type] || { fill: '#304FFE', track: '#E4EAFF' };
-
     const row = document.createElement('div');
     row.style.cssText = `--fill:${colors.fill}; --track:${colors.track};`;
     row.innerHTML = `
@@ -233,9 +218,7 @@ export async function mountProgress(container) {
 
   twoCol.appendChild(teamCol);
   twoCol.appendChild(typeCol);
-  wrap.appendChild(twoCol);
-
-  container.appendChild(wrap);
+  container.appendChild(twoCol);
 }
 
 function escapeText(str) {
