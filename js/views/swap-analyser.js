@@ -4,7 +4,7 @@ import { CARDS, CARDS_BY_ID } from '../cards-data.js';
 import { getCollection, addCard, removeCard } from '../store.js';
 import {
   getPendingTrades, addPendingTrade, updatePendingTrade,
-  removePendingTrade, getLockedCardIds,
+  removePendingTrade, getLockedCardIds, getPendingReceiveIds,
 } from '../store-trades.js';
 import { showToast } from '../components/toast.js';
 import { updateSwapBadge } from '../components/nav.js';
@@ -527,10 +527,16 @@ export async function mountSwapAnalyser(container) {
       return;
     }
 
-    const collection = await getCollection();
-    const lockedIds  = getLockedCardIds();
+    const collection       = await getCollection();
+    const lockedIds        = getLockedCardIds();
+    const pendingReceiveIds = getPendingReceiveIds();
 
-    const userMissing  = new Set(CARDS.filter(c => (collection[String(c.id)] ?? 0) === 0).map(c => c.id));
+    // Cards with count 0, minus any already pending to receive (treat as owned)
+    const userMissing  = new Set(
+      CARDS
+        .filter(c => (collection[String(c.id)] ?? 0) === 0 && !pendingReceiveIds.has(c.id))
+        .map(c => c.id)
+    );
     const myDuplicates = CARDS.filter(c => (collection[String(c.id)] ?? 0) > 1);
     const { matched: partnerHas,   unmatched: unmatchedHas  } = parseInput(havesText);
     const { matched: partnerWants, unmatched: unmatchedWants } = parseInput(wantsText);
