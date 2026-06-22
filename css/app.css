@@ -238,14 +238,7 @@ body::before {
 
 .section-heading-wrap .fx { font-weight: 800; }
 
-.section-heading-bar {
-  width: 4px;
-  border-radius: 0;
-  background: var(--gold);
-  flex-shrink: 0;
-  align-self: stretch;
-  min-height: 28px;
-}
+.section-heading-bar { display: none; }
 
 /* legacy .section-heading used by older views */
 .section-heading {
