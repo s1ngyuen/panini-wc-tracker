@@ -681,7 +681,7 @@ export async function mountSwapAnalyser(container) {
         <input type="checkbox" id="eq-mode-toggle" style="position:absolute;opacity:0;width:0;height:0;">
         <span class="eq-toggle__thumb"></span>
       </span>
-      <span style="font-size:12px; color:var(--text-muted); font-family:var(--font-display); text-transform:uppercase; letter-spacing:.04em;">Max matches (ignore rarity)</span>
+      <span style="font-size:12px; color:var(--text-muted); font-family:var(--font-display); text-transform:uppercase; letter-spacing:.04em;">Optimise matches</span>
     </label>
   `;
   const eqCheckbox = toggleWrap.querySelector('#eq-mode-toggle');

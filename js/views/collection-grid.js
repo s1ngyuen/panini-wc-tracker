@@ -358,7 +358,6 @@ export async function mountCollectionGrid(container) {
         <div class="section-heading-bar"></div>
         <span class="fx" style="font-size:28px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-primary); line-height:1;">Special Cards</span>
       </div>
-      <p class="section-sub">${ownedBonus} of ${BONUS_CARDS.length} special cards — not counted in progress</p>
     `;
     bonusSection.appendChild(heading);
 
