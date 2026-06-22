@@ -236,6 +236,8 @@ body::before {
   margin-bottom: 4px;
 }
 
+.section-heading-wrap .fx { font-weight: 800; }
+
 .section-heading-bar {
   width: 4px;
   border-radius: 0;
