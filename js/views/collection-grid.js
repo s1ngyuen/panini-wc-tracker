@@ -1,7 +1,7 @@
 // js/views/collection-grid.js
 // Collection grid view — all 630 cards with filter and status overlay.
 
-import { CARDS, TEAMS, CARD_TYPES } from '../cards-data.js';
+import { CARDS, TEAMS, CARD_TYPES, BONUS_CARDS } from '../cards-data.js';
 import { getCollection, removeCard } from '../store.js';
 import { getPendingReceiveIds } from '../store-trades.js';
 import { createCardElement } from '../components/card-visual.js';
@@ -225,6 +225,11 @@ export async function mountCollectionGrid(container) {
   grid.setAttribute('aria-label', 'Card collection');
   container.appendChild(grid);
 
+  // ── Bonus cards section (appended once, updated on refresh) ──────────────
+  const bonusSection = document.createElement('div');
+  bonusSection.className = 'bonus-cards-section';
+  container.appendChild(bonusSection);
+
   // ── Load collection & render ─────────────────────────────────────────────
   let collection = await getCollection();
   let pendingReceiveIds = getPendingReceiveIds();
@@ -306,6 +311,54 @@ export async function mountCollectionGrid(container) {
     grid.appendChild(frag);
   }
 
+  // ── Render bonus cards section ───────────────────────────────────────────
+  function renderBonusSection() {
+    bonusSection.innerHTML = '';
+
+    const ownedBonus = BONUS_CARDS.filter(c => (collection[String(c.id)] ?? 0) >= 1).length;
+    if (ownedBonus === 0) return;
+
+    const heading = document.createElement('div');
+    heading.className = 'px-4 pt-6 pb-2';
+    heading.innerHTML = `
+      <div class="section-heading-wrap">
+        <div class="section-heading-bar"></div>
+        <span class="fx" style="font-size:28px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-primary); line-height:1;">Special Cards</span>
+      </div>
+      <p class="section-sub">${ownedBonus} of ${BONUS_CARDS.length} special cards — not counted in progress</p>
+    `;
+    bonusSection.appendChild(heading);
+
+    const categories = [...new Set(BONUS_CARDS.map(c => c.bonusCategory))];
+    categories.forEach(cat => {
+      const cards = BONUS_CARDS.filter(c => c.bonusCategory === cat);
+      const ownedInCat = cards.filter(c => (collection[String(c.id)] ?? 0) >= 1).length;
+      if (ownedInCat === 0) return;
+
+      const catLabel = document.createElement('p');
+      catLabel.className = 'bonus-cat-label';
+      catLabel.textContent = `${cat} · ${ownedInCat} / ${cards.length}`;
+      bonusSection.appendChild(catLabel);
+
+      const catGrid = document.createElement('div');
+      catGrid.className = 'card-grid';
+      catGrid.setAttribute('role', 'list');
+
+      const frag = document.createDocumentFragment();
+      cards.forEach(card => {
+        const count = collection[String(card.id)] ?? 0;
+        if (count === 0) return;
+        const el = createCardElement(card, count);
+        el.setAttribute('role', 'listitem');
+        el.style.cursor = 'pointer';
+        el.addEventListener('click', () => openLightbox(card, count));
+        frag.appendChild(el);
+      });
+      catGrid.appendChild(frag);
+      bonusSection.appendChild(catGrid);
+    });
+  }
+
   // Render filter bar
   renderFilterBar(filterWrap, {
     teams: TEAMS,
@@ -317,11 +370,13 @@ export async function mountCollectionGrid(container) {
   });
 
   renderGrid();
+  renderBonusSection();
 
   // Expose refresh so app.js can call it when the view becomes active
   container._refresh = async () => {
     collection = await getCollection();
     pendingReceiveIds = getPendingReceiveIds();
     renderGrid();
+    renderBonusSection();
   };
 }

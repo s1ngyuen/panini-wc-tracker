@@ -1,6 +1,6 @@
 // js/views/card-input.js
 
-import { CARDS, CARDS_BY_ID } from '../cards-data.js';
+import { CARDS, CARDS_BY_ID, BONUS_CARDS, BONUS_CARDS_BY_ID } from '../cards-data.js';
 import { addCard, removeCard, getCollection } from '../store.js';
 import { showToast } from '../components/toast.js';
 
@@ -74,18 +74,25 @@ export function mountCardInput(container) {
   getCollection().then(c => { collection = c; renderStaging(); });
 
   // ── Search logic ─────────────────────────────────────────────────────────
+  const ALL_CARDS = [...CARDS, ...BONUS_CARDS];
+
   function searchCards(query) {
     const trimmed = query.trim();
     if (trimmed.length < 2) return [];
     const numeric = Number(trimmed);
     if (!isNaN(numeric) && Number.isInteger(numeric)) {
-      const found = CARDS_BY_ID[numeric];
+      const found = CARDS_BY_ID[numeric] || BONUS_CARDS_BY_ID[String(numeric)];
       return found ? [found] : [];
     }
+    // Exact bonus card ID match (e.g. "DB1", "LE-LM", "624b")
+    const upperTrimmed = trimmed.toUpperCase();
+    const bonusById = BONUS_CARDS_BY_ID[upperTrimmed] || BONUS_CARDS_BY_ID[trimmed];
+    if (bonusById) return [bonusById];
+    // Name search across all cards
     const lower = trimmed.toLowerCase();
-    const exact   = CARDS.filter(c => c.playerName.toLowerCase() === lower);
-    if (exact.length) return exact;
-    return CARDS.filter(c => c.playerName.toLowerCase().includes(lower)).slice(0, 8);
+    const exact = ALL_CARDS.filter(c => c.playerName.toLowerCase() === lower);
+    if (exact.length) return exact.slice(0, 8);
+    return ALL_CARDS.filter(c => c.playerName.toLowerCase().includes(lower)).slice(0, 8);
   }
 
   function updateDropdown(results) {
@@ -160,8 +167,8 @@ export function mountCardInput(container) {
     if (!query || query.length < 2) { showToast('Enter a card number or name.', 'error'); return; }
 
     const numeric = Number(query);
-    if (!isNaN(numeric) && Number.isInteger(numeric) && (numeric < 1 || numeric > 630)) {
-      showToast('Card numbers run from 1 to 630.', 'error'); return;
+    if (!isNaN(numeric) && Number.isInteger(numeric) && numeric < 1) {
+      showToast('Invalid card number.', 'error'); return;
     }
 
     let card = selectedCard;
@@ -269,7 +276,8 @@ export function mountCardInput(container) {
 
     for (const card of stagedCards) {
       const { isNew } = await addCard(card.id);
-      binderPages.add(Math.ceil(card.id / 9));
+      const page = Math.ceil(card.id / 9);
+      if (Number.isFinite(page) && page >= 1 && page <= 70) binderPages.add(page);
       if (isNew) newCount++; else dupeCount++;
     }
 
