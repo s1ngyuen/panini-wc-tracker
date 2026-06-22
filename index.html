@@ -117,6 +117,11 @@
         <button id="clear-collection-btn"  type="button" class="btn-reset" aria-label="Clear entire collection">Reset</button>
       </div>
 
+      <!-- Mobile hamburger (hidden on desktop via CSS) -->
+      <button id="mobile-menu-btn" type="button" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+
       <!-- Add Cards modal -->
       <div id="add-cards-modal" style="display:none; position:fixed; inset:0; z-index:500; background:rgba(0,0,0,0.55); align-items:flex-start; justify-content:center; padding-top:80px;">
         <div style="background:#fff; width:min(480px,92vw); max-height:80vh; overflow-y:auto; position:relative;">
@@ -140,6 +145,21 @@
       </div>
 
     </header>
+
+    <!-- ── Mobile Nav Drawer ────────────────────────────────────────────── -->
+    <div id="mobile-nav-drawer" aria-modal="true" role="dialog" aria-label="Navigation menu" hidden>
+      <div class="mobile-drawer__backdrop"></div>
+      <nav class="mobile-drawer__panel">
+        <button class="mobile-drawer__close" aria-label="Close menu">✕</button>
+        <div class="mobile-drawer__nav" id="mobile-drawer-nav"></div>
+        <div class="mobile-drawer__actions">
+          <button type="button" class="mobile-drawer__action-btn" id="m-add-cards-btn">Add Cards</button>
+          <button type="button" class="mobile-drawer__action-btn" id="m-export-btn">Export</button>
+          <button type="button" class="mobile-drawer__action-btn" id="m-import-btn">Import</button>
+          <button type="button" class="mobile-drawer__action-btn mobile-drawer__action-btn--danger" id="m-reset-btn">Reset</button>
+        </div>
+      </nav>
+    </div>
 
     <!-- ── Main Scrollable Content ─────────────────────────────────────── -->
     <main id="main-content" aria-label="Main content">
