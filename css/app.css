@@ -1056,6 +1056,28 @@ body::before {
 .card-lightbox__status--missing { background: #888;          color: #fff; }
 .card-lightbox__status--dupe    { background: #e02020;       color: #fff; }
 
+.card-lightbox__actions {
+  padding: 12px 20px 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.card-lightbox__remove {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  background: transparent;
+  color: #c55;
+  border: 1px solid #c55;
+  transition: background .15s, color .15s;
+}
+
+.card-lightbox__remove:hover:not(:disabled) { background: #c55; color: #fff; }
+.card-lightbox__remove:disabled { opacity: .4; cursor: default; }
+
 /* ─────────────────────────────────────────────────────────────────────────────
    BINDER PAGE CALLOUT
 ───────────────────────────────────────────────────────────────────────────── */
@@ -1086,6 +1108,78 @@ body::before {
   line-height: 1;
   letter-spacing: .02em;
 }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   BULK ADD LIST
+───────────────────────────────────────────────────────────────────────────── */
+
+.bulk-add-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.bulk-add-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+
+.bulk-add-row__thumb {
+  width: 40px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 3px;
+  flex-shrink: 0;
+  background: var(--border);
+}
+
+.bulk-add-row__info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.bulk-add-row__name {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bulk-add-row__meta {
+  font-family: var(--font-body);
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.bulk-add-row__remove {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: #999;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .15s, color .15s;
+}
+
+.bulk-add-row__remove:hover { background: #fee; color: #c55; }
 
 /* ─────────────────────────────────────────────────────────────────────────────
    PENDING TRADE CARDS

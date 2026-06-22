@@ -1,18 +1,11 @@
 // js/views/card-input.js
-// Card Input view — search and add cards by ID or name.
 
 import { CARDS, CARDS_BY_ID } from '../cards-data.js';
 import { addCard, removeCard } from '../store.js';
 import { showToast } from '../components/toast.js';
-import { createCardElement } from '../components/card-visual.js';
 
-// Module-level ref so we can remove the outside-click listener on remount
 let _outsideClickHandler = null;
 
-/**
- * Mount the Card Input view.
- * @param {HTMLElement} container - The view's root div
- */
 export function mountCardInput(container) {
   container.innerHTML = '';
 
@@ -24,7 +17,7 @@ export function mountCardInput(container) {
       <div class="section-heading-bar"></div>
       <span class="fx" style="font-size:32px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-primary); line-height:1;">Add Cards</span>
     </div>
-    <p class="section-sub">Type a number or player name</p>
+    <p class="section-sub">Search for a card and add it to your list, then commit them all at once.</p>
   `;
   container.appendChild(heading);
 
@@ -50,68 +43,47 @@ export function mountCardInput(container) {
   input.autocapitalize = 'off';
   input.spellcheck = false;
   input.setAttribute('aria-label', 'Card number or player name');
-  input.setAttribute('aria-describedby', 'card-input-hint');
 
-  const hint = document.createElement('p');
-  hint.id = 'card-input-hint';
-  hint.className = 'form-hint';
-  hint.textContent = 'Accepts any card ID (1–630) or a player name. Partial names work too.';
-
-  // Dropdown for multiple matches
   const dropdown = document.createElement('div');
   dropdown.className = 'search-dropdown mt-1';
   dropdown.hidden = true;
   dropdown.setAttribute('role', 'listbox');
-  dropdown.setAttribute('aria-label', 'Matching cards');
 
   inputWrap.appendChild(input);
   inputWrap.appendChild(dropdown);
 
-  const addBtn = document.createElement('button');
-  addBtn.type = 'button';
-  addBtn.className = 'btn-primary w-full mt-3';
-  addBtn.textContent = 'Add to Collection';
-  addBtn.setAttribute('aria-label', 'Add card to collection');
+  const addToListBtn = document.createElement('button');
+  addToListBtn.type = 'button';
+  addToListBtn.className = 'btn-secondary w-full mt-3';
+  addToListBtn.textContent = '+ Add to List';
 
   formWrap.appendChild(label);
   formWrap.appendChild(inputWrap);
-  formWrap.appendChild(hint);
-  formWrap.appendChild(addBtn);
+  formWrap.appendChild(addToListBtn);
   container.appendChild(formWrap);
 
-  // ── Last added card preview ──────────────────────────────────────────────
-  const previewSection = document.createElement('div');
-  previewSection.className = 'px-4 py-4';
-  previewSection.id = 'last-added-preview';
-
-  const emptyState = document.createElement('p');
-  emptyState.className = 'text-center py-8 text-sm';
-  emptyState.style.color = 'var(--text-muted)';
-  emptyState.textContent = 'Open a pack and start typing.';
-  previewSection.appendChild(emptyState);
-  container.appendChild(previewSection);
+  // ── Staging area ─────────────────────────────────────────────────────────
+  const stagingSection = document.createElement('div');
+  stagingSection.className = 'px-4 pb-4';
+  container.appendChild(stagingSection);
 
   // ── State ────────────────────────────────────────────────────────────────
   let selectedCard = null;
+  const stagedCards = []; // { card, id } — same card can be added multiple times
 
-  // ── Fuzzy search logic ───────────────────────────────────────────────────
+  // ── Search logic ─────────────────────────────────────────────────────────
   function searchCards(query) {
     const trimmed = query.trim();
     if (trimmed.length < 2) return [];
-
     const numeric = Number(trimmed);
     if (!isNaN(numeric) && Number.isInteger(numeric)) {
-      // Exact numeric ID lookup
       const found = CARDS_BY_ID[numeric];
       return found ? [found] : [];
     }
-
     const lower = trimmed.toLowerCase();
-    // Exact name match first, then includes fallback
-    const exact    = CARDS.filter(c => c.playerName.toLowerCase() === lower);
+    const exact   = CARDS.filter(c => c.playerName.toLowerCase() === lower);
     if (exact.length) return exact;
-    const partial  = CARDS.filter(c => c.playerName.toLowerCase().includes(lower));
-    return partial.slice(0, 8); // cap dropdown at 8
+    return CARDS.filter(c => c.playerName.toLowerCase().includes(lower)).slice(0, 8);
   }
 
   function updateDropdown(results) {
@@ -121,14 +93,12 @@ export function mountCardInput(container) {
       if (results.length === 1) selectedCard = results[0];
       return;
     }
-
     selectedCard = null;
     results.forEach(card => {
       const item = document.createElement('div');
       item.className = 'search-dropdown-item';
       item.setAttribute('role', 'option');
       item.setAttribute('tabindex', '0');
-      item.setAttribute('data-card-id', card.id);
 
       const idSpan = document.createElement('span');
       idSpan.className = 'search-dropdown-item__id';
@@ -141,7 +111,7 @@ export function mountCardInput(container) {
       const metaSpan = document.createElement('span');
       metaSpan.className = 'text-xs ml-auto';
       metaSpan.style.color = '#666';
-      metaSpan.textContent = `${card.country}`;
+      metaSpan.textContent = card.country;
 
       item.appendChild(idSpan);
       item.appendChild(nameSpan);
@@ -153,177 +123,154 @@ export function mountCardInput(container) {
         dropdown.hidden = true;
         input.focus();
       };
-
       item.addEventListener('click', selectItem);
-      item.addEventListener('keydown', e => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          selectItem();
-        }
-      });
-
+      item.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectItem(); } });
       dropdown.appendChild(item);
     });
-
     dropdown.hidden = false;
   }
 
-  // ── Input events ─────────────────────────────────────────────────────────
   input.addEventListener('input', () => {
     const val = input.value;
-    if (val.trim().length < 2) {
-      dropdown.hidden = true;
-      selectedCard = null;
-      return;
-    }
+    if (val.trim().length < 2) { dropdown.hidden = true; selectedCard = null; return; }
     const results = searchCards(val);
-    if (results.length === 1) {
-      selectedCard = results[0];
-    } else {
-      selectedCard = null;
-    }
+    if (results.length === 1) selectedCard = results[0];
+    else selectedCard = null;
     updateDropdown(results);
   });
 
-  // Close dropdown on Escape
   input.addEventListener('keydown', e => {
-    if (e.key === 'Escape') {
-      dropdown.hidden = true;
-    }
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      handleAdd();
-    }
+    if (e.key === 'Escape') dropdown.hidden = true;
+    if (e.key === 'Enter') { e.preventDefault(); handleAddToList(); }
     if (e.key === 'ArrowDown' && !dropdown.hidden) {
       e.preventDefault();
-      const first = dropdown.querySelector('.search-dropdown-item');
-      if (first) first.focus();
+      dropdown.querySelector('.search-dropdown-item')?.focus();
     }
   });
 
-  // Close dropdown when clicking outside — remove previous listener first to prevent accumulation
-  if (_outsideClickHandler) {
-    document.removeEventListener('click', _outsideClickHandler);
-  }
-  _outsideClickHandler = e => {
-    if (!formWrap.contains(e.target)) {
-      dropdown.hidden = true;
-    }
-  };
+  if (_outsideClickHandler) document.removeEventListener('click', _outsideClickHandler);
+  _outsideClickHandler = e => { if (!formWrap.contains(e.target)) dropdown.hidden = true; };
   document.addEventListener('click', _outsideClickHandler);
 
-  // ── Add card handler ──────────────────────────────────────────────────────
-  async function handleAdd() {
+  // ── Add to list ───────────────────────────────────────────────────────────
+  function handleAddToList() {
     const query = input.value.trim();
+    if (!query || query.length < 2) { showToast('Enter a card number or name.', 'error'); return; }
 
-    if (!query) {
-      showToast('Enter a card number or player name.', 'error');
-      return;
-    }
-    if (query.length < 2) {
-      showToast('Enter at least 2 characters to search.', 'error');
-      return;
-    }
-
-    // Validate numeric range
     const numeric = Number(query);
-    if (!isNaN(numeric) && Number.isInteger(numeric)) {
-      if (numeric < 1 || numeric > 630) {
-        showToast('Card numbers run from 1 to 630.', 'error');
-        return;
-      }
+    if (!isNaN(numeric) && Number.isInteger(numeric) && (numeric < 1 || numeric > 630)) {
+      showToast('Card numbers run from 1 to 630.', 'error'); return;
     }
 
-    // Resolve card
     let card = selectedCard;
     if (!card) {
       const results = searchCards(query);
-      if (results.length === 0) {
-        showToast(`No card found for "${query}". Check the number or spelling and try again.`, 'error');
-        return;
-      }
-      if (results.length > 1) {
-        updateDropdown(results);
-        showToast('Multiple matches — pick one from the list.', 'info');
-        return;
-      }
+      if (results.length === 0) { showToast(`No card found for "${query}".`, 'error'); return; }
+      if (results.length > 1) { updateDropdown(results); showToast('Multiple matches — pick one from the list.', 'info'); return; }
       card = results[0];
     }
 
-    // Add to store
-    const { count, isNew } = await addCard(card.id);
-
-    // Toast feedback
-    const binderPage = Math.ceil(card.id / 9);
-    if (isNew) {
-      showToast(`New card! #${card.id} ${card.playerName} → Binder page ${binderPage}.`, 'success');
-    } else {
-      showToast(`Dupe! You already have #${card.id} ${card.playerName}. Copy #${count} recorded.`, 'warning');
-    }
-
-    // Update last-added preview
-    renderLastAdded(card, count);
-
-    // Reset input
+    stagedCards.push(card);
     input.value = '';
     selectedCard = null;
     dropdown.hidden = true;
     input.focus();
+    renderStaging();
   }
 
-  addBtn.addEventListener('click', handleAdd);
+  addToListBtn.addEventListener('click', handleAddToList);
 
-  // ── Render last-added card ────────────────────────────────────────────────
-  function renderLastAdded(card, count) {
-    previewSection.innerHTML = '';
+  // ── Render staging list ───────────────────────────────────────────────────
+  function renderStaging() {
+    stagingSection.innerHTML = '';
 
-    const label = document.createElement('p');
-    label.className = 'form-label';
-    label.textContent = 'Last added:';
+    if (stagedCards.length === 0) {
+      const empty = document.createElement('p');
+      empty.className = 'text-sm text-center py-4';
+      empty.style.color = 'var(--text-muted)';
+      empty.textContent = 'No cards in your list yet.';
+      stagingSection.appendChild(empty);
+      return;
+    }
 
-    // Binder page callout
-    const binderPage = Math.ceil(card.id / 9);
-    const pageCallout = document.createElement('div');
-    pageCallout.className = 'binder-page-callout';
-    pageCallout.innerHTML = `
-      <span class="binder-page-callout__label">Binder page</span>
-      <span class="binder-page-callout__num">${binderPage}</span>
-    `;
+    const listLabel = document.createElement('p');
+    listLabel.className = 'form-label';
+    listLabel.textContent = `Cards to add (${stagedCards.length})`;
+    stagingSection.appendChild(listLabel);
 
-    const cardWrap = document.createElement('div');
-    cardWrap.className = 'flex justify-center';
-    const cardEl = createCardElement(card, count);
-    cardWrap.appendChild(cardEl);
+    const list = document.createElement('div');
+    list.className = 'bulk-add-list';
+    stagingSection.appendChild(list);
 
-    const undoWrap = document.createElement('div');
-    undoWrap.className = 'flex justify-center mt-3';
+    stagedCards.forEach((card, idx) => {
+      const row = document.createElement('div');
+      row.className = 'bulk-add-row';
 
-    const undoBtn = document.createElement('button');
-    undoBtn.type = 'button';
-    undoBtn.className = 'btn-secondary';
-    undoBtn.setAttribute('aria-label', `Remove one copy of card #${card.id}`);
-    undoBtn.textContent = '− Undo (remove one)';
+      const thumb = document.createElement('img');
+      thumb.src = `assets/cards/${card.id}.jpg`;
+      thumb.alt = card.playerName;
+      thumb.className = 'bulk-add-row__thumb';
 
-    undoBtn.addEventListener('click', async () => {
-      const { count: newCount } = await removeCard(card.id);
-      if (newCount === 0) {
-        showToast(`#${card.id} ${card.playerName} removed from collection.`, 'info');
-        previewSection.innerHTML = '';
-        const msg = document.createElement('p');
-        msg.className = 'text-center py-8 text-sm';
-        msg.style.color = '#555';
-        msg.textContent = 'Card removed from collection.';
-        previewSection.appendChild(msg);
-      } else {
-        showToast(`Removed one. You now have ${newCount}× #${card.id}.`, 'info');
-        renderLastAdded(card, newCount);
-      }
+      const info = document.createElement('div');
+      info.className = 'bulk-add-row__info';
+      info.innerHTML = `<span class="bulk-add-row__name">${card.playerName}</span><span class="bulk-add-row__meta">#${card.id} · ${card.country}</span>`;
+
+      const removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      removeBtn.className = 'bulk-add-row__remove';
+      removeBtn.setAttribute('aria-label', `Remove ${card.playerName} from list`);
+      removeBtn.textContent = '×';
+      removeBtn.addEventListener('click', () => {
+        stagedCards.splice(idx, 1);
+        renderStaging();
+      });
+
+      row.appendChild(thumb);
+      row.appendChild(info);
+      row.appendChild(removeBtn);
+      list.appendChild(row);
     });
 
-    undoWrap.appendChild(undoBtn);
-    previewSection.appendChild(label);
-    previewSection.appendChild(pageCallout);
-    previewSection.appendChild(cardWrap);
-    previewSection.appendChild(undoWrap);
+    // Commit button
+    const commitBtn = document.createElement('button');
+    commitBtn.type = 'button';
+    commitBtn.className = 'btn-primary w-full mt-4';
+    commitBtn.textContent = `Add ${stagedCards.length} card${stagedCards.length > 1 ? 's' : ''} to Collection`;
+    commitBtn.addEventListener('click', handleCommit);
+    stagingSection.appendChild(commitBtn);
   }
+
+  // ── Commit all staged cards ───────────────────────────────────────────────
+  async function handleCommit() {
+    if (stagedCards.length === 0) return;
+
+    const confirmed = window.confirm(
+      `Add ${stagedCards.length} card${stagedCards.length > 1 ? 's' : ''} to your collection?\n\n` +
+      stagedCards.map(c => `• #${c.id} ${c.playerName}`).join('\n')
+    );
+    if (!confirmed) return;
+
+    const binderPages = new Set();
+    let newCount = 0;
+    let dupeCount = 0;
+
+    for (const card of stagedCards) {
+      const { isNew } = await addCard(card.id);
+      binderPages.add(Math.ceil(card.id / 9));
+      if (isNew) newCount++; else dupeCount++;
+    }
+
+    const pageList = [...binderPages].sort((a, b) => a - b).join(', ');
+    showToast(
+      `Added ${newCount} new${dupeCount > 0 ? ` + ${dupeCount} dupe${dupeCount > 1 ? 's' : ''}` : ''}. Binder pages: ${pageList}.`,
+      'success'
+    );
+
+    stagedCards.length = 0;
+    renderStaging();
+    input.focus();
+  }
+
+  // Initial render
+  renderStaging();
 }

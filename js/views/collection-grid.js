@@ -2,7 +2,7 @@
 // Collection grid view — all 630 cards with filter and status overlay.
 
 import { CARDS, TEAMS, CARD_TYPES } from '../cards-data.js';
-import { getCollection } from '../store.js';
+import { getCollection, removeCard } from '../store.js';
 import { getPendingReceiveIds } from '../store-trades.js';
 import { createCardElement } from '../components/card-visual.js';
 import { renderFilterBar } from '../components/filters.js';
@@ -73,24 +73,38 @@ export async function mountCollectionGrid(container) {
         <div class="card-lightbox__sub"></div>
         <div class="card-lightbox__status"></div>
       </div>
+      <div class="card-lightbox__actions">
+        <button class="card-lightbox__remove btn-danger" aria-label="Remove one copy from collection">Remove Card</button>
+      </div>
     </div>
   `;
   document.body.appendChild(lightbox);
 
-  const lbImg    = lightbox.querySelector('.card-lightbox__img');
-  const lbName   = lightbox.querySelector('.card-lightbox__name');
-  const lbSub    = lightbox.querySelector('.card-lightbox__sub');
-  const lbStatus = lightbox.querySelector('.card-lightbox__status');
+  const lbImg       = lightbox.querySelector('.card-lightbox__img');
+  const lbName      = lightbox.querySelector('.card-lightbox__name');
+  const lbSub       = lightbox.querySelector('.card-lightbox__sub');
+  const lbStatus    = lightbox.querySelector('.card-lightbox__status');
+  const lbRemoveBtn = lightbox.querySelector('.card-lightbox__remove');
 
-  function openLightbox(card, count) {
-    lbImg.src = `assets/cards/${card.id}.jpg`;
-    lbImg.alt = card.playerName;
-    lbName.textContent = card.playerName;
-    lbSub.textContent  = `#${card.id} · ${card.country} · ${card.cardType}`;
+  let _lbCard  = null;
+  let _lbCount = 0;
+
+  function updateLightboxStatus(count) {
     if (count === 0)      lbStatus.textContent = 'Missing';
     else if (count === 1) lbStatus.textContent = 'Owned';
     else                  lbStatus.textContent = `×${count} — ${count - 1} spare`;
     lbStatus.className = `card-lightbox__status card-lightbox__status--${count === 0 ? 'missing' : count >= 2 ? 'dupe' : 'owned'}`;
+    lbRemoveBtn.disabled = count === 0;
+  }
+
+  function openLightbox(card, count) {
+    _lbCard  = card;
+    _lbCount = count;
+    lbImg.src = `assets/cards/${card.id}.jpg`;
+    lbImg.alt = card.playerName;
+    lbName.textContent = card.playerName;
+    lbSub.textContent  = `#${card.id} · ${card.country} · ${card.cardType}`;
+    updateLightboxStatus(count);
     lightbox.hidden = false;
     document.body.style.overflow = 'hidden';
     lightbox.querySelector('.card-lightbox__close').focus();
@@ -99,7 +113,21 @@ export async function mountCollectionGrid(container) {
   function closeLightbox() {
     lightbox.hidden = true;
     document.body.style.overflow = '';
+    _lbCard  = null;
+    _lbCount = 0;
   }
+
+  lbRemoveBtn.addEventListener('click', async () => {
+    if (!_lbCard) return;
+    const confirmed = window.confirm(`Remove one copy of #${_lbCard.id} ${_lbCard.playerName} from your collection?`);
+    if (!confirmed) return;
+    const { count: newCount } = await removeCard(_lbCard.id);
+    collection = await getCollection();
+    _lbCount = newCount;
+    updateLightboxStatus(newCount);
+    renderGrid();
+    if (newCount === 0) closeLightbox();
+  });
 
   lightbox.querySelector('.card-lightbox__backdrop').addEventListener('click', closeLightbox);
   lightbox.querySelector('.card-lightbox__close').addEventListener('click', closeLightbox);
