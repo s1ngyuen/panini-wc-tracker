@@ -74,8 +74,26 @@ const NATION_RANK = {
 function nationRank(country) { return NATION_RANK[country] ?? 99; }
 
 // ── Parse card input text ─────────────────────────────────────────────────────
+function cleanseText(raw) {
+  return raw
+    // Strip emoji and unicode symbols broadly
+    .replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}\u{2300}-\u{23FF}\u{2700}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE00}-\u{FEFF}\u{200D}]/gu, '')
+    // Strip common Facebook trade labels at line/token start
+    .replace(/\b(i\s+have|i\s+offer|i\s+am\s+looking\s+for|i\s+need|looking\s+for|lf|iso|ft|for\s+trade|offering|offers?|haves?|wants?|needs?|dupes?|duplicates?|extras?|spares?)\s*[:\-]?\s*/gi, '')
+    // Strip quantity markers like x2, (x2), ×2
+    .replace(/[(\[]?\s*[x×]\s*\d+\s*[)\]]?/gi, '')
+    // Strip content in parens if it looks like extra info (not a short name)
+    .replace(/\([^)]{0,30}\)/g, '')
+    // Strip standalone asterisks, dashes used as bullets
+    .replace(/^\s*[-•*]\s*/gm, '')
+    // Collapse whitespace
+    .replace(/[ \t]+/g, ' ')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+
 function parseInput(text) {
-  const tokens = text
+  const tokens = cleanseText(text)
     .split(/[\n,;]+/)
     .map(t => t.trim().replace(/^[#\s]+/, '').trim())
     .filter(t => t.length > 0);
@@ -85,6 +103,7 @@ function parseInput(text) {
   const unmatched = [];
 
   tokens.forEach(token => {
+    // Try pure number first
     const num = Number(token);
     if (!isNaN(num) && Number.isInteger(num) && num >= 1 && num <= 630) {
       const card = CARDS_BY_ID[num];
@@ -92,11 +111,22 @@ function parseInput(text) {
       else if (!card) unmatched.push(token);
       return;
     }
+    // Try extracting a leading number from token like "45 Messi"
+    const leadNum = token.match(/^(\d+)/);
+    if (leadNum) {
+      const n = Number(leadNum[1]);
+      if (n >= 1 && n <= 630 && CARDS_BY_ID[n]) {
+        const card = CARDS_BY_ID[n];
+        if (!seen.has(card.id)) { seen.add(card.id); matched.push(card); }
+        return;
+      }
+    }
+    // Name match
     const lower = token.toLowerCase();
     let found = CARDS.find(c => c.playerName.toLowerCase() === lower);
-    if (!found) found = CARDS.find(c => c.playerName.toLowerCase().includes(lower));
+    if (!found) found = CARDS.find(c => c.playerName.toLowerCase().includes(lower) && lower.length >= 3);
     if (found && !seen.has(found.id)) { seen.add(found.id); matched.push(found); }
-    else if (!found) unmatched.push(token);
+    else if (!found && token.length >= 2) unmatched.push(token);
   });
 
   return { matched, unmatched };
@@ -148,6 +178,23 @@ function buildSuggestedOffer(youGet, myDuplicates, partnerWants, lockedIds = new
   }
 
   return groups;
+}
+
+// Equal-match mode: ignore rarity, just match card-for-card count
+function buildEqualOffer(youGet, myDuplicates, partnerWants, lockedIds = new Set()) {
+  if (partnerWants.length === 0) return [];
+  const partnerWantIds = new Set(partnerWants.map(c => c.id));
+  const available = myDuplicates.filter(d => partnerWantIds.has(d.id) && !lockedIds.has(d.id));
+  const offer = available.slice(0, youGet.length);
+  return [{
+    tierLabel: 'Best match',
+    tier: 0,
+    need: youGet.length,
+    needCards: youGet,
+    offer,
+    shortfall: youGet.length - offer.length,
+    equalMode: true,
+  }];
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -611,6 +658,34 @@ export async function mountSwapAnalyser(container) {
   const { wrap: havesWrap, input: havesTextarea }  = makeField('swap-haves', 'Cards they HAVE (they offer you)', 'textarea', 'Card IDs or names — one per line or comma-separated');
   const { wrap: wantsWrap, input: wantsTextarea }  = makeField('swap-wants', 'Cards they WANT (from you)', 'textarea', 'Card IDs or names — one per line or comma-separated');
 
+  // Auto-cleanse on paste for both textareas
+  [havesTextarea, wantsTextarea].forEach(ta => {
+    ta.addEventListener('paste', e => {
+      e.preventDefault();
+      const raw = e.clipboardData.getData('text');
+      const cleaned = cleanseText(raw);
+      const start = ta.selectionStart;
+      const before = ta.value.slice(0, start);
+      const after  = ta.value.slice(ta.selectionEnd);
+      ta.value = before + cleaned + after;
+      ta.selectionStart = ta.selectionEnd = start + cleaned.length;
+    });
+  });
+
+  // Equal-match toggle
+  const toggleWrap = document.createElement('div');
+  toggleWrap.style.cssText = 'display:flex; align-items:center; gap:10px; padding:10px 0 2px;';
+  toggleWrap.innerHTML = `
+    <label class="eq-toggle" style="display:flex; align-items:center; gap:8px; cursor:pointer; user-select:none;">
+      <span class="eq-toggle__track">
+        <input type="checkbox" id="eq-mode-toggle" style="position:absolute;opacity:0;width:0;height:0;">
+        <span class="eq-toggle__thumb"></span>
+      </span>
+      <span style="font-size:12px; color:var(--text-muted); font-family:var(--font-display); text-transform:uppercase; letter-spacing:.04em;">Max matches (ignore rarity)</span>
+    </label>
+  `;
+  const eqCheckbox = toggleWrap.querySelector('#eq-mode-toggle');
+
   const analyseBtn = document.createElement('button');
   analyseBtn.type = 'button';
   analyseBtn.className = 'btn-primary w-full';
@@ -619,6 +694,7 @@ export async function mountSwapAnalyser(container) {
   inputsSection.appendChild(partnerWrap);
   inputsSection.appendChild(havesWrap);
   inputsSection.appendChild(wantsWrap);
+  inputsSection.appendChild(toggleWrap);
   inputsSection.appendChild(analyseBtn);
   container.appendChild(inputsSection);
 
@@ -674,16 +750,19 @@ export async function mountSwapAnalyser(container) {
       .filter(c => userMissing.has(c.id))
       .sort((a, b) => nationRank(a.country) - nationRank(b.country));
 
-    const tradeGroups = buildSuggestedOffer(youGet, myDuplicates, partnerWants, lockedIds);
+    const equalMode   = eqCheckbox.checked;
+    const tradeGroups = equalMode
+      ? buildEqualOffer(youGet, myDuplicates, partnerWants, lockedIds)
+      : buildSuggestedOffer(youGet, myDuplicates, partnerWants, lockedIds);
     const unmatched   = [...new Set([...unmatchedHas, ...unmatchedWants])];
 
-    renderResults({ youGet, tradeGroups, unmatched, hasWants: partnerWants.length > 0 }, partnerInput.value.trim());
+    renderResults({ youGet, tradeGroups, unmatched, hasWants: partnerWants.length > 0, equalMode }, partnerInput.value.trim());
     resultsSection.hidden = false;
     resultsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   });
 
   // ── Render results ───────────────────────────────────────────────────────
-  function renderResults({ youGet, tradeGroups, unmatched, hasWants }, partnerName) {
+  function renderResults({ youGet, tradeGroups, unmatched, hasWants, equalMode }, partnerName) {
     resultsSection.innerHTML = '';
 
     const totalOffer     = tradeGroups.reduce((s, g) => s + g.offer.length, 0);
@@ -731,10 +810,12 @@ export async function mountSwapAnalyser(container) {
         const block = document.createElement('div');
         block.style.marginBottom = '12px';
 
-        const label = document.createElement('p');
-        label.style.cssText = 'font-family:var(--font-display); font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--gold); margin-bottom:4px;';
-        label.innerHTML = `${group.tierLabel}${group.shortfall > 0 ? ` <span style="color:#c55; background:#fee; padding:1px 6px; font-size:10px;">${group.shortfall} short</span>` : ''}`;
-        block.appendChild(label);
+        if (!group.equalMode) {
+          const label = document.createElement('p');
+          label.style.cssText = 'font-family:var(--font-display); font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--gold); margin-bottom:4px;';
+          label.innerHTML = `${group.tierLabel}${group.shortfall > 0 ? ` <span style="color:#c55; background:#fee; padding:1px 6px; font-size:10px;">${group.shortfall} short</span>` : ''}`;
+          block.appendChild(label);
+        }
 
         group.offer.forEach(c => block.appendChild(cardLine(c)));
         if (group.offer.length === 0) {
@@ -749,9 +830,15 @@ export async function mountSwapAnalyser(container) {
       // Summary
       const summary = document.createElement('div');
       summary.style.cssText = 'background:#f9f9f9; padding:12px 14px; margin:12px 0 16px; font-size:12px;';
-      summary.innerHTML = totalShortfall === 0
-        ? `<span style="color:var(--green); font-weight:700;">Balanced:</span> You get <strong>${youGet.length}</strong> cards, offer <strong>${totalOffer}</strong> of matching rarity.`
-        : `<span style="color:#c55; font-weight:700;">Uneven:</span> You want <strong>${youGet.length}</strong> but can only offer <strong>${totalOffer}</strong> — <strong>${totalShortfall}</strong> short.`;
+      if (equalMode) {
+        summary.innerHTML = totalShortfall === 0
+          ? `<span style="color:var(--green); font-weight:700;">Even trade:</span> ${youGet.length} cards each.`
+          : `<span style="color:#c55; font-weight:700;">Uneven:</span> You want <strong>${youGet.length}</strong> but can only match <strong>${totalOffer}</strong> — <strong>${totalShortfall}</strong> short.`;
+      } else {
+        summary.innerHTML = totalShortfall === 0
+          ? `<span style="color:var(--green); font-weight:700;">Balanced:</span> You get <strong>${youGet.length}</strong> cards, offer <strong>${totalOffer}</strong> of matching rarity.`
+          : `<span style="color:#c55; font-weight:700;">Uneven:</span> You want <strong>${youGet.length}</strong> but can only offer <strong>${totalOffer}</strong> — <strong>${totalShortfall}</strong> short.`;
+      }
       resultsSection.appendChild(summary);
     }
 

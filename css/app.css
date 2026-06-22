@@ -1759,6 +1759,35 @@ body::before {
 .tk-v { color: #00A84F; }
 .tk-w { color: #ffffff; }
 
+/* ── Equal-match toggle switch ──────────────────────────────────────────── */
+.eq-toggle__track {
+  position: relative;
+  display: inline-block;
+  width: 36px;
+  height: 20px;
+  background: var(--border);
+  border-radius: 10px;
+  transition: background .2s;
+  flex-shrink: 0;
+}
+
+.eq-toggle__track:has(#eq-mode-toggle:checked) { background: var(--accent-primary); }
+
+.eq-toggle__thumb {
+  position: absolute;
+  left: 2px;
+  top: 2px;
+  width: 16px;
+  height: 16px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform .2s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  pointer-events: none;
+}
+
+#eq-mode-toggle:checked + .eq-toggle__thumb { transform: translateX(16px); }
+
 /* ── Trade edit — card thumbnails with X remove ─────────────────────────── */
 .et-thumbs {
   display: flex;
