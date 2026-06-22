@@ -448,7 +448,7 @@ export async function mountSwapAnalyser(container) {
   const analyseHead = document.createElement('div');
   analyseHead.className = 'px-4 pb-3';
   analyseHead.innerHTML = `
-    <span style="font-family:var(--font-display); font-size:20px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-primary);">Analyse New Trade</span>
+    <span style="font-family:var(--font-display); font-size:20px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-primary);">Generate New Trade</span>
     <p class="form-hint" style="margin-top:4px;">Cards currently in pending trades are excluded from suggestions.</p>
   `;
   container.appendChild(analyseHead);
