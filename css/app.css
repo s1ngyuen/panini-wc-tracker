@@ -1759,6 +1759,13 @@ body::before {
 .tk-v { color: #00A84F; }
 .tk-w { color: #ffffff; }
 
+/* ── Trading message button ─────────────────────────────────────────────── */
+.trading-msg-btn {
+  display: block;
+  width: calc(100% - 32px);
+  margin: 0 16px 12px;
+}
+
 /* ── Bonus / Special Cards section ─────────────────────────────────────── */
 .bonus-cards-section {
   padding-bottom: 48px;

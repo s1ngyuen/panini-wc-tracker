@@ -7,6 +7,7 @@ import { getPendingReceiveIds } from '../store-trades.js';
 import { createCardElement } from '../components/card-visual.js';
 import { renderFilterBar } from '../components/filters.js';
 import { buildProgressContent } from './progress.js';
+import { showToast } from '../components/toast.js';
 
 /**
  * Mount the Collection Grid view.
@@ -95,6 +96,38 @@ export async function mountCollectionGrid(container) {
   progressModal.querySelector('.progress-modal__backdrop').addEventListener('click', closeProgressModal);
   progressModal.querySelector('.progress-modal__close').addEventListener('click', closeProgressModal);
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && !progressModal.hidden) closeProgressModal(); });
+
+  // ── Trading message button ───────────────────────────────────────────────
+  const tradingMsgBtn = document.createElement('button');
+  tradingMsgBtn.type = 'button';
+  tradingMsgBtn.className = 'btn-secondary trading-msg-btn';
+  tradingMsgBtn.textContent = 'Generate Trading Message';
+  container.appendChild(tradingMsgBtn);
+
+  tradingMsgBtn.addEventListener('click', async () => {
+    const current    = await getCollection();
+    const missing    = CARDS.filter(c => (current[String(c.id)] ?? 0) === 0);
+    const duplicates = CARDS.filter(c => (current[String(c.id)] ?? 0) >= 2);
+
+    const needList  = missing.map(c => `#${c.id}`).join(', ') || 'None';
+    const dupeList  = duplicates.map(c => `#${c.id}`).join(', ') || 'None';
+
+    const msg = `I am looking for: ${needList}\n\nI have duplicates of: ${dupeList}`;
+
+    navigator.clipboard.writeText(msg).then(() => {
+      showToast('Trading message copied to clipboard!', 'success');
+    }).catch(() => {
+      // Fallback for browsers without clipboard API
+      const ta = document.createElement('textarea');
+      ta.value = msg;
+      ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      ta.remove();
+      showToast('Trading message copied!', 'success');
+    });
+  });
 
   // ── Filter bar container ─────────────────────────────────────────────────
   const filterWrap = document.createElement('div');
