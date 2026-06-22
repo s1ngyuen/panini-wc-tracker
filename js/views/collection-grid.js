@@ -80,7 +80,7 @@ export async function mountCollectionGrid(container) {
   const pmBody = progressModal.querySelector('.progress-modal__body');
 
   function openProgressModal() {
-    buildProgressContent(pmBody, collection);
+    buildProgressContent(pmBody, collection, getPendingReceiveIds());
     progressModal.hidden = false;
     document.body.style.overflow = 'hidden';
     progressModal.querySelector('.progress-modal__close').focus();

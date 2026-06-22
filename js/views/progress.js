@@ -86,16 +86,18 @@ const TEAM_FLAGS = {
  * Render full progress breakdown into `container` using a pre-loaded collection.
  * Sync — no network or storage calls. Called from the progress modal.
  */
-export function buildProgressContent(container, collection) {
+export function buildProgressContent(container, collection, pendingReceiveIds = new Set()) {
   container.innerHTML = '';
 
-  const ownedCount = CARDS.filter(c => (collection[String(c.id)] ?? 0) >= 1).length;
-  const dupCount   = CARDS.reduce((sum, c) => {
+  const ownedCount   = CARDS.filter(c => (collection[String(c.id)] ?? 0) >= 1).length;
+  const pendingCount = CARDS.filter(c => (collection[String(c.id)] ?? 0) === 0 && pendingReceiveIds.has(c.id)).length;
+  const dupCount     = CARDS.reduce((sum, c) => {
     const n = collection[String(c.id)] ?? 0;
     return sum + Math.max(0, n - 1);
   }, 0);
-  const needCount  = TOTAL - ownedCount;
-  const pct        = TOTAL > 0 ? ((ownedCount / TOTAL) * 100).toFixed(1) : '0.0';
+  const needCount    = TOTAL - ownedCount - pendingCount;
+  const pct          = TOTAL > 0 ? ((ownedCount / TOTAL) * 100).toFixed(1) : '0.0';
+  const pendingPct   = TOTAL > 0 ? ((pendingCount / TOTAL) * 100).toFixed(1) : '0.0';
 
   // ── Stat tiles ──────────────────────────────────────────────────────────
   const tilesBlock = document.createElement('div');
@@ -108,20 +110,26 @@ export function buildProgressContent(container, collection) {
       </div>
       <div class="stat-tile">
         <div class="stat-tile__label">Still need</div>
-        <span class="fx-c stat-tile__num" style="color:#111111;">${needCount}</span>
+        <span class="fx-c stat-tile__num" style="color:#111111;">${needCount < 0 ? 0 : needCount}</span>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-tile__label">Pending trades</div>
+        <span class="fx-c stat-tile__num" style="color:var(--accent-coral);">${pendingCount}</span>
       </div>
       <div class="stat-tile">
         <div class="stat-tile__label">Duplicates</div>
         <span class="fx-c stat-tile__num" style="color:#111111;">${dupCount}</span>
       </div>
-      <div class="stat-tile">
-        <div class="stat-tile__label">Complete</div>
-        <span class="fx-c stat-tile__num" style="color:#111111;">${pct}%</span>
-      </div>
     </div>
-    <div class="progress-track" style="--track:#E4EAFF; --fill:var(--accent);">
+    <div class="progress-track" style="--track:#E4EAFF; --fill:var(--accent); position:relative; overflow:hidden;">
       <div class="progress-fill" style="width:${pct}%"></div>
+      <div class="progress-fill" style="width:${pendingPct}%; background:var(--accent-coral); opacity:0.55; position:absolute; left:${pct}%; top:0; height:100%;"></div>
     </div>
+    ${pendingCount > 0 ? `
+    <div style="display:flex;gap:12px;margin-top:6px;font-size:10px;color:var(--text-muted);">
+      <span style="display:flex;align-items:center;gap:4px;"><span style="display:inline-block;width:10px;height:10px;background:var(--accent);border-radius:2px;"></span>Owned ${pct}%</span>
+      <span style="display:flex;align-items:center;gap:4px;"><span style="display:inline-block;width:10px;height:10px;background:var(--accent-coral);opacity:0.75;border-radius:2px;"></span>Pending ${pendingPct}%</span>
+    </div>` : ''}
   `;
   container.appendChild(tilesBlock);
 
@@ -135,20 +143,24 @@ export function buildProgressContent(container, collection) {
 
   // ── Per-team totals ──────────────────────────────────────────────────────
   const teamTotals = {};
-  TEAMS.forEach(t => { teamTotals[t] = { total: 0, owned: 0 }; });
+  TEAMS.forEach(t => { teamTotals[t] = { total: 0, owned: 0, pending: 0 }; });
   CARDS.forEach(c => {
     if (teamTotals[c.country]) {
       teamTotals[c.country].total++;
-      if ((collection[String(c.id)] ?? 0) >= 1) teamTotals[c.country].owned++;
+      const n = collection[String(c.id)] ?? 0;
+      if (n >= 1) teamTotals[c.country].owned++;
+      else if (pendingReceiveIds.has(c.id)) teamTotals[c.country].pending++;
     }
   });
 
   const typeTotals = {};
-  CARD_TYPES.forEach(t => { typeTotals[t] = { total: 0, owned: 0 }; });
+  CARD_TYPES.forEach(t => { typeTotals[t] = { total: 0, owned: 0, pending: 0 }; });
   CARDS.forEach(c => {
     if (typeTotals[c.cardType]) {
       typeTotals[c.cardType].total++;
-      if ((collection[String(c.id)] ?? 0) >= 1) typeTotals[c.cardType].owned++;
+      const n = collection[String(c.id)] ?? 0;
+      if (n >= 1) typeTotals[c.cardType].owned++;
+      else if (pendingReceiveIds.has(c.id)) typeTotals[c.cardType].pending++;
     }
   });
 
@@ -166,9 +178,10 @@ export function buildProgressContent(container, collection) {
   `;
   const teamRows = teamCol.querySelector('#pm-team-rows');
   TEAMS.forEach(team => {
-    const { total, owned } = teamTotals[team];
+    const { total, owned, pending } = teamTotals[team];
     if (total === 0) return;
-    const p = Math.round((owned / total) * 100);
+    const p  = Math.round((owned / total) * 100);
+    const pp = Math.round((pending / total) * 100);
     const colors = TEAM_COLORS[team] || { fill: '#304FFE', track: '#E4EAFF' };
     const flag = TEAM_FLAGS[team] || '';
     const row = document.createElement('div');
@@ -177,11 +190,14 @@ export function buildProgressContent(container, collection) {
       <div class="prog-row__header">
         <span class="fx prog-row__name">${flag ? flag + ' ' : ''}${escapeText(team)}</span>
         <div style="display:flex;gap:4px;align-items:baseline;">
-          <span class="prog-row__fraction fx">${owned} / ${total}</span>
+          <span class="prog-row__fraction fx">${owned}${pending > 0 ? `<span style="color:var(--accent-coral);">+${pending}</span>` : ''} / ${total}</span>
           <span class="prog-row__pct">${p}%</span>
         </div>
       </div>
-      <div class="progress-track"><div class="progress-fill" style="width:${p}%"></div></div>
+      <div class="progress-track" style="position:relative;overflow:hidden;">
+        <div class="progress-fill" style="width:${p}%"></div>
+        ${pending > 0 ? `<div class="progress-fill" style="width:${pp}%;background:var(--accent-coral);opacity:0.55;position:absolute;left:${p}%;top:0;height:100%;"></div>` : ''}
+      </div>
     `;
     teamRows.appendChild(row);
   });
@@ -197,9 +213,10 @@ export function buildProgressContent(container, collection) {
   `;
   const typeRows = typeCol.querySelector('#pm-type-rows');
   CARD_TYPES.forEach(type => {
-    const { total, owned } = typeTotals[type];
+    const { total, owned, pending } = typeTotals[type];
     if (total === 0) return;
-    const p = Math.round((owned / total) * 100);
+    const p  = Math.round((owned / total) * 100);
+    const pp = Math.round((pending / total) * 100);
     const colors = TYPE_COLORS[type] || { fill: '#304FFE', track: '#E4EAFF' };
     const row = document.createElement('div');
     row.style.cssText = `--fill:${colors.fill}; --track:${colors.track};`;
@@ -207,11 +224,14 @@ export function buildProgressContent(container, collection) {
       <div class="prog-row__header">
         <span class="fx prog-row__name">${escapeText(type)}</span>
         <div style="display:flex;gap:4px;align-items:baseline;">
-          <span class="prog-row__fraction fx">${owned} / ${total}</span>
+          <span class="prog-row__fraction fx">${owned}${pending > 0 ? `<span style="color:var(--accent-coral);">+${pending}</span>` : ''} / ${total}</span>
           <span class="prog-row__pct">${p}%</span>
         </div>
       </div>
-      <div class="progress-track"><div class="progress-fill" style="width:${p}%"></div></div>
+      <div class="progress-track" style="position:relative;overflow:hidden;">
+        <div class="progress-fill" style="width:${p}%"></div>
+        ${pending > 0 ? `<div class="progress-fill" style="width:${pp}%;background:var(--accent-coral);opacity:0.55;position:absolute;left:${p}%;top:0;height:100%;"></div>` : ''}
+      </div>
     `;
     typeRows.appendChild(row);
   });
