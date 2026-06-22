@@ -796,8 +796,86 @@ body::before {
   align-items: flex-start;
 }
 
+/* ─────────────────────────────────────────────────────────────────────────────
+   RESPONSIVE — tablet
+───────────────────────────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .card-grid { grid-template-columns: repeat(7, 1fr); gap: 8px; }
+}
+
+@media (max-width: 640px) {
+  .card-grid { grid-template-columns: repeat(5, 1fr); gap: 6px; }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   RESPONSIVE — mobile (≤ 480px)
+───────────────────────────────────────────────────────────────────────────── */
 @media (max-width: 480px) {
+
+  /* ── Header ── */
+  #app-header {
+    height: 52px;
+    padding: 0 12px;
+  }
+
+  .header-logo img { height: 32px; }
+
+  .nav-tab {
+    font-size: 12px;
+    padding: 0 8px;
+    height: 52px;
+    letter-spacing: .04em;
+  }
+
+  .btn-reset {
+    font-size: 10px;
+    padding: 5px 8px;
+    margin-left: 8px;
+  }
+
+  #main-content { padding-top: calc(52px + 16px); }
+
+  /* ── Card grid — 3 across ── */
+  .card-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+    padding: 0 8px 16px;
+  }
+
+  /* ── Card count overlay — smaller text ── */
+  .panini-card__count {
+    font-size: 11px;
+    padding: 2px 5px;
+  }
+
+  /* ── Collection progress bar ── */
+  .collection-progress { margin: 0 8px 10px; padding: 10px 12px 8px; }
+
+  /* ── Filter bar — 2 per row on mobile ── */
+  .filter-select { font-size: 12px; padding: 6px 28px 6px 8px; }
+
+  /* ── Trading message button ── */
+  .trading-msg-btn { width: calc(100% - 16px); margin: 0 8px 10px; }
+
+  /* ── Progress modal ── */
+  .progress-modal__body { padding: 16px 12px; }
+  .overall-tiles { grid-template-columns: 1fr 1fr; }
   .progress-two-col { flex-direction: column; gap: 0; }
+
+  /* ── Card lightbox — full-width on mobile ── */
+  .card-lightbox__panel {
+    width: 92vw;
+    padding: 24px 16px 20px;
+    gap: 14px;
+  }
+  .card-lightbox__img-wrap { width: 160px; height: 224px; }
+
+  /* ── Swap analyser ── */
+  .pending-trade-card { padding: 10px; }
+  .pending-trade-card__thumb { width: 40px; height: 56px; }
+
+  /* ── Bonus section category label ── */
+  .bonus-cat-label { padding: 10px 8px 4px; }
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
