@@ -186,18 +186,9 @@ body::before {
   -webkit-tap-highlight-color: transparent;
 }
 
-.nav-tab:hover { color: var(--text-secondary); }
+.nav-tab:hover { color: var(--accent-primary); }
 
-.nav-tab.active { color: var(--gold); }
-
-.nav-tab.active::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 10%; right: 10%;
-  height: 3px;
-  background: var(--gold);
-}
+.nav-tab.active { color: var(--text-primary); }
 
 .btn-reset {
   background: none;
