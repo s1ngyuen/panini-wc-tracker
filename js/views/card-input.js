@@ -254,8 +254,9 @@ export function mountCardInput(container) {
     const { count, isNew } = await addCard(card.id);
 
     // Toast feedback
+    const binderPage = Math.ceil(card.id / 9);
     if (isNew) {
-      showToast(`New card! #${card.id} ${card.playerName} added to your collection.`, 'success');
+      showToast(`New card! #${card.id} ${card.playerName} → Binder page ${binderPage}.`, 'success');
     } else {
       showToast(`Dupe! You already have #${card.id} ${card.playerName}. Copy #${count} recorded.`, 'warning');
     }
@@ -279,6 +280,15 @@ export function mountCardInput(container) {
     const label = document.createElement('p');
     label.className = 'form-label';
     label.textContent = 'Last added:';
+
+    // Binder page callout
+    const binderPage = Math.ceil(card.id / 9);
+    const pageCallout = document.createElement('div');
+    pageCallout.className = 'binder-page-callout';
+    pageCallout.innerHTML = `
+      <span class="binder-page-callout__label">Binder page</span>
+      <span class="binder-page-callout__num">${binderPage}</span>
+    `;
 
     const cardWrap = document.createElement('div');
     cardWrap.className = 'flex justify-center';
@@ -312,6 +322,7 @@ export function mountCardInput(container) {
 
     undoWrap.appendChild(undoBtn);
     previewSection.appendChild(label);
+    previewSection.appendChild(pageCallout);
     previewSection.appendChild(cardWrap);
     previewSection.appendChild(undoWrap);
   }
