@@ -188,7 +188,7 @@ body::before {
 
 .nav-tab:hover { color: var(--accent-primary); }
 
-.nav-tab.active { color: var(--text-primary); }
+.nav-tab.active { color: var(--gold); }
 
 .btn-reset {
   background: none;
