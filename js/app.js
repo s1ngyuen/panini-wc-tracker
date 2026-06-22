@@ -256,6 +256,54 @@ async function startApp() {
 
   // Show default view
   await showView(DEFAULT_VIEW);
+
+  // Populate ticker with live WC scores (non-blocking)
+  initTicker();
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Live Scores Ticker
+// ─────────────────────────────────────────────────────────────────────────────
+
+const TICKER_CACHE_KEY = 'wc26_scores';
+const TICKER_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+function buildTickerHtml(scores) {
+  const sep = `<span class="tk-w"> &nbsp;·&nbsp; </span>`;
+  const hashTag = `<span class="tk-g">#FIFAWORLDCUP</span>`;
+  const wc = `<span class="tk-w"> FIFA WORLD CUP 2026 </span>`;
+
+  const scoreParts = scores.map(s => `<span class="tk-g">${s}</span>`).join(sep) + (scores.length ? sep : '');
+  const unit = scoreParts + hashTag + wc;
+  // Double the content so translateX(-50%) animation loops seamlessly
+  return unit.repeat(10) + unit.repeat(10);
+}
+
+async function initTicker() {
+  const inner = document.querySelector('.bottom-ticker__inner');
+  if (!inner) return;
+
+  let scores = [];
+  try {
+    const cached = JSON.parse(sessionStorage.getItem(TICKER_CACHE_KEY) || 'null');
+    if (cached && Date.now() - cached.ts < TICKER_CACHE_TTL) {
+      scores = cached.scores;
+    } else {
+      const res = await fetch('https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard');
+      const data = await res.json();
+      scores = (data.events || []).map(ev => {
+        const comp = ev.competitions?.[0];
+        const home = comp?.competitors?.find(c => c.homeAway === 'home');
+        const away = comp?.competitors?.find(c => c.homeAway === 'away');
+        if (!home || !away) return null;
+        const status = ev.status?.type?.shortDetail || '';
+        return `${home.team.shortDisplayName} ${home.score ?? ''}–${away.score ?? ''} ${away.team.shortDisplayName} ${status ? '(' + status + ')' : ''}`.trim();
+      }).filter(Boolean);
+      sessionStorage.setItem(TICKER_CACHE_KEY, JSON.stringify({ ts: Date.now(), scores }));
+    }
+  } catch { /* fall back to static text */ }
+
+  inner.innerHTML = buildTickerHtml(scores);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
