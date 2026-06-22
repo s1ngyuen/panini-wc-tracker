@@ -212,7 +212,7 @@ body::before {
 ───────────────────────────────────────────────────────────────────────────── */
 
 #main-content {
-  padding-top: calc(72px + 26px);
+  padding-top: calc(72px + 36px);
   padding-bottom: 48px;
   min-height: 100dvh;
   position: relative;
@@ -931,80 +931,109 @@ body::before {
 .mobile-drawer__action-btn--danger { color: rgba(255,100,100,0.7); }
 .mobile-drawer__action-btn--danger:hover { color: #ff8080; }
 
-/* ─────────────────────────────────────────────────────────────────────────────
-   RESPONSIVE — tablet
-───────────────────────────────────────────────────────────────────────────── */
-@media (max-width: 900px) {
-  .card-grid { grid-template-columns: repeat(7, 1fr); gap: 8px; }
-}
-
-@media (max-width: 640px) {
-  .card-grid { grid-template-columns: repeat(5, 1fr); gap: 6px; }
-}
+/* (tablet grid overrides are co-located with .card-grid below) */
 
 /* ─────────────────────────────────────────────────────────────────────────────
    RESPONSIVE — mobile (≤ 480px)
 ───────────────────────────────────────────────────────────────────────────── */
 @media (max-width: 480px) {
 
-  /* ── Header — hide desktop nav, show hamburger ── */
+  /* ── Header — slim, hamburger only ── */
   #app-header {
-    height: 52px;
-    padding: 0 12px;
+    height: 48px;
+    padding: 0 16px;
     grid-template-columns: 40px 1fr 40px;
   }
 
-  .header-logo img { height: 34px; }
+  .header-logo img { height: 30px; }
 
   #nav-left,
   #nav-right-wrap { display: none; }
 
   #mobile-menu-btn { display: flex; }
 
-  #main-content { padding-top: calc(52px + 16px); }
+  /* ── Ticker — sit below 48px header ── */
+  .bottom-ticker { top: 48px; height: 32px; }
+  .bottom-ticker__inner { font-size: 11px; }
 
-  /* ── Card grid — 3 across ── */
-  .card-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 4px;
-    padding: 0 8px 16px;
-  }
+  /* ── Main content — clear header + ticker ── */
+  #main-content { padding-top: calc(48px + 32px + 16px); padding-bottom: 64px; }
 
-  /* ── Card count overlay — smaller text ── */
-  .panini-card__count {
-    font-size: 11px;
-    padding: 2px 5px;
-  }
+  /* ── Section headings — tighter on mobile ── */
+  .px-4 { padding-left: 12px; padding-right: 12px; }
+  .pt-6 { padding-top: 20px; }
+  .pb-3 { padding-bottom: 10px; }
 
   /* ── Collection progress bar ── */
-  .collection-progress { margin: 0 8px 10px; padding: 10px 12px 8px; }
+  .collection-progress { margin: 0 12px 12px; padding: 12px 14px 10px; }
 
-  /* ── Filter bar — 2 per row on mobile ── */
-  .filter-select { font-size: 12px; padding: 6px 28px 6px 8px; }
+  /* ── Filter bar ── */
+  .filter-select { font-size: 12px; padding: 7px 28px 7px 10px; min-height: 40px; }
 
   /* ── Trading message button ── */
-  .trading-msg-btn { width: calc(100% - 16px); margin: 0 8px 10px; }
+  .trading-msg-btn { width: calc(100% - 24px); margin: 0 12px 12px; }
+
+  /* ── Card count overlay — smaller text ── */
+  .panini-card__count { font-size: 10px; padding: 2px 4px; }
 
   /* ── Progress modal ── */
   .progress-modal__body { padding: 16px 12px; }
   .overall-tiles { grid-template-columns: 1fr 1fr; }
   .progress-two-col { flex-direction: column; gap: 0; }
 
-  /* ── Card lightbox — full-width on mobile ── */
-  .card-lightbox__panel {
-    width: 92vw;
-    padding: 24px 16px 20px;
-    gap: 14px;
-  }
+  /* ── Card lightbox ── */
+  .card-lightbox__panel { width: 92vw; padding: 24px 16px 20px; gap: 14px; }
   .card-lightbox__img-wrap { width: 160px; height: 224px; }
 
   /* ── Swap analyser ── */
-  .pending-trade-card { padding: 10px; }
+  .pending-trade-card { padding: 12px; }
   .pending-trade-card__thumb { width: 40px; height: 56px; }
 
-  /* ── Bonus section category label ── */
-  .bonus-cat-label { padding: 10px 8px 4px; }
+  /* ── Bonus section ── */
+  .bonus-cat-label { padding: 10px 12px 4px; }
+  .bonus-cards-section { padding-bottom: 32px; }
 }
+
+/* ── Mobile drawer — white with gold text ─────────────────────────────────── */
+.mobile-drawer__panel {
+  background: #fff;
+}
+.mobile-drawer__close {
+  color: #bbb;
+}
+.mobile-drawer__close:hover { color: #333; }
+
+#mobile-drawer-nav {
+  border-bottom-color: #f0f0f0;
+}
+
+.mobile-drawer__nav-btn {
+  color: rgba(197,160,40,0.6);
+}
+.mobile-drawer__nav-btn:hover,
+.mobile-drawer__nav-btn.active {
+  color: var(--gold);
+  background: rgba(197,160,40,0.06);
+}
+.mobile-drawer__nav-btn.active::before {
+  background: var(--gold);
+}
+
+.mobile-drawer__actions {
+  border-top: 1px solid #f0f0f0;
+  margin-top: 4px;
+  padding-top: 4px;
+}
+
+.mobile-drawer__action-btn {
+  color: var(--text-muted);
+}
+.mobile-drawer__action-btn:hover {
+  color: var(--text-primary);
+  background: #f9f9f9;
+}
+.mobile-drawer__action-btn--danger { color: #e04040; }
+.mobile-drawer__action-btn--danger:hover { color: #c00; background: #fff5f5; }
 
 /* ─────────────────────────────────────────────────────────────────────────────
    CARD GRID  (collection view)
@@ -1016,6 +1045,11 @@ body::before {
   gap: 12px;
   padding: 0 16px 16px;
 }
+
+/* Responsive overrides — must live after base to win the cascade */
+@media (max-width: 900px) { .card-grid { grid-template-columns: repeat(7, 1fr); gap: 8px; } }
+@media (max-width: 640px) { .card-grid { grid-template-columns: repeat(5, 1fr); gap: 6px; } }
+@media (max-width: 480px) { .card-grid { grid-template-columns: repeat(3, 1fr); gap: 6px; padding: 0 12px 16px; } }
 
 /* ─────────────────────────────────────────────────────────────────────────────
    MISSING LIST ROWS  (legacy class — mapped to new .list-row style)
@@ -1941,7 +1975,7 @@ body::before {
   top: 72px;
   left: 0;
   right: 0;
-  height: 26px;
+  height: 36px;
   background: #000;
   overflow: hidden;
   z-index: 99;
@@ -1953,9 +1987,9 @@ body::before {
   display: inline-block;
   white-space: nowrap;
   font-family: var(--font-display);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
-  letter-spacing: .1em;
+  letter-spacing: .12em;
   text-transform: uppercase;
   line-height: 1;
   animation: ticker-ltr 200s linear infinite;
