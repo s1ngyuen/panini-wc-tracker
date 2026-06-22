@@ -3,6 +3,7 @@
 
 import { CARDS, TEAMS, CARD_TYPES } from '../cards-data.js';
 import { getCollection } from '../store.js';
+import { getLockedCardIds } from '../store-trades.js';
 import { createCardElement } from '../components/card-visual.js';
 import { renderFilterBar } from '../components/filters.js';
 
@@ -113,6 +114,7 @@ export async function mountCollectionGrid(container) {
 
   // ── Load collection & render ─────────────────────────────────────────────
   let collection = await getCollection();
+  let lockedIds  = getLockedCardIds();
   let currentFilter = { country: '', cardType: '', status: '' };
 
   function getFilteredCards() {
@@ -167,7 +169,7 @@ export async function mountCollectionGrid(container) {
     const frag = document.createDocumentFragment();
     filtered.forEach(card => {
       const count = collection[String(card.id)] ?? 0;
-      const el = createCardElement(card, count);
+      const el = createCardElement(card, count, { isPending: lockedIds.has(card.id) });
       el.setAttribute('role', 'listitem');
       el.style.cursor = 'pointer';
       el.addEventListener('click', () => openLightbox(card, count));
@@ -191,6 +193,7 @@ export async function mountCollectionGrid(container) {
   // Expose refresh so app.js can call it when the view becomes active
   container._refresh = async () => {
     collection = await getCollection();
+    lockedIds  = getLockedCardIds();
     renderGrid();
   };
 }

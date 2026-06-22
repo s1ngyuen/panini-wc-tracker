@@ -81,7 +81,7 @@ function typeToClass(cardType) {
  * @param {number} count - Number of copies owned (0 = missing, 1 = owned, 2+ = duplicate)
  * @returns {HTMLElement}
  */
-export function createCardElement(card, count) {
+export function createCardElement(card, count, { isPending = false } = {}) {
   const isOwned     = count >= 1;
   const isDuplicate = count >= 2;
   const isMissing   = count === 0;
@@ -127,6 +127,16 @@ export function createCardElement(card, count) {
     dupeBadge.textContent = `×${count}`;
     dupeBadge.title = `You have ${count} copies — ${count - 1} available for swapping.`;
     outer.appendChild(dupeBadge);
+  }
+
+  // Pending badge — card is locked in a pending trade
+  if (isPending) {
+    const pendingBadge = document.createElement('div');
+    pendingBadge.className = 'panini-card__pending-badge';
+    pendingBadge.setAttribute('aria-hidden', 'true');
+    pendingBadge.textContent = 'PENDING';
+    pendingBadge.title = 'This card is locked in a pending trade.';
+    outer.appendChild(pendingBadge);
   }
 
   return outer;
