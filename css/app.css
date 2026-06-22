@@ -1388,16 +1388,47 @@ body::before {
 .pending-trade-card__thumbs {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
+  gap: 6px;
   margin-bottom: 6px;
 }
 
+.pending-trade-card__thumb-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
 .pending-trade-card__thumb {
-  width: 40px;
-  height: 56px;
+  width: 52px;
+  height: 73px;
   object-fit: cover;
   display: block;
   background: #1a1a2e;
+  cursor: pointer;
+  transition: box-shadow .15s;
+}
+
+.pending-trade-card__thumb:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.35);
+}
+
+.pending-trade-card__thumb-zoom {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 160px;
+  height: 224px;
+  object-fit: cover;
+  background: #1a1a2e;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.45);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .15s;
+  z-index: 50;
+}
+
+.pending-trade-card__thumb-wrap:hover .pending-trade-card__thumb-zoom {
+  opacity: 1;
 }
 
 .pending-trade-card__card-line {

@@ -226,12 +226,23 @@ function renderTradeCard(trade, { onComplete, onRefresh }) {
         const thumbRow = document.createElement('div');
         thumbRow.className = 'pending-trade-card__thumbs';
         cards.forEach(c => {
+          const wrap = document.createElement('div');
+          wrap.className = 'pending-trade-card__thumb-wrap';
+
           const img = document.createElement('img');
           img.src = `assets/cards/${c.id}.jpg`;
           img.alt = c.playerName;
           img.className = 'pending-trade-card__thumb';
           img.title = `#${c.id} ${c.playerName}`;
-          thumbRow.appendChild(img);
+
+          const zoom = document.createElement('img');
+          zoom.src = `assets/cards/${c.id}.jpg`;
+          zoom.alt = '';
+          zoom.className = 'pending-trade-card__thumb-zoom';
+
+          wrap.appendChild(img);
+          wrap.appendChild(zoom);
+          thumbRow.appendChild(wrap);
         });
         col.appendChild(thumbRow);
         // Names list below
