@@ -371,11 +371,60 @@ body::before {
    PROGRESS ROWS  (per team / type)
 ───────────────────────────────────────────────────────────────────────────── */
 
-.prog-rows       { display: flex; flex-direction: column; gap: 16px; }
-.prog-row__header  { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
-.prog-row__name    { font-size: 14px; color: var(--fill, var(--text-primary)); line-height: 1; text-transform: uppercase; }
-.prog-row__fraction{ font-size: 13px; color: var(--track, var(--text-muted)); font-family: var(--font-display); display: inline-block; transform: scaleX(var(--squeeze)); transform-origin: left center; }
-.prog-row__pct     { font-size: 14px; font-family: var(--font-display); color: var(--fill, var(--accent)); flex-shrink: 0; min-width: 42px; text-align: right; display: inline-block; transform: scaleX(var(--squeeze)); transform-origin: right center; }
+.prog-rows { display: flex; flex-direction: column; gap: 10px; }
+
+.prog-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.prog-row__flag {
+  font-size: 20px;
+  line-height: 1;
+  flex-shrink: 0;
+  width: 26px;
+  text-align: center;
+}
+
+.prog-row__name {
+  font-size: 11px;
+  font-family: var(--font-display);
+  color: #111;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  flex-shrink: 0;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+.prog-row__bar {
+  flex: 1;
+  min-width: 32px;
+  height: 8px;
+}
+
+.prog-row__fraction {
+  font-size: 11px;
+  font-family: var(--font-display);
+  color: rgba(197,160,40,0.55);
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.prog-row__of { color: rgba(197,160,40,0.35); }
+
+.prog-row__pending-count { color: var(--accent-coral); }
+
+.prog-row__pct {
+  font-size: 12px;
+  font-family: var(--font-display);
+  color: var(--gold);
+  flex-shrink: 0;
+  min-width: 34px;
+  text-align: right;
+  font-weight: 700;
+}
 
 /* ─────────────────────────────────────────────────────────────────────────────
    LIST ROWS  (missing, swaps)

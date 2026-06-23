@@ -185,19 +185,17 @@ export function buildProgressContent(container, collection, pendingReceiveIds = 
     const colors = TEAM_COLORS[team] || { fill: '#304FFE', track: '#E4EAFF' };
     const flag = TEAM_FLAGS[team] || '';
     const row = document.createElement('div');
+    row.className = 'prog-row prog-row--team';
     row.style.cssText = `--fill:${colors.fill}; --track:${colors.track};`;
     row.innerHTML = `
-      <div class="prog-row__header">
-        <span class="fx prog-row__name">${flag ? flag + ' ' : ''}${escapeText(team)}</span>
-        <div style="display:flex;gap:4px;align-items:baseline;">
-          <span class="prog-row__fraction fx">${owned}${pending > 0 ? `<span style="color:var(--accent-coral);">+${pending}</span>` : ''} / ${total}</span>
-          <span class="prog-row__pct">${p}%</span>
-        </div>
-      </div>
-      <div class="progress-track" style="position:relative;overflow:hidden;">
+      <span class="prog-row__flag">${flag}</span>
+      <span class="prog-row__name">${escapeText(team)}</span>
+      <div class="progress-track prog-row__bar" style="position:relative;overflow:hidden;">
         <div class="progress-fill" style="width:${p}%"></div>
         ${pending > 0 ? `<div class="progress-fill" style="width:${pp}%;background:var(--accent-coral);opacity:0.55;position:absolute;left:${p}%;top:0;height:100%;"></div>` : ''}
       </div>
+      <span class="prog-row__fraction">${owned}${pending > 0 ? `<span class="prog-row__pending-count">+${pending}</span>` : ''}<span class="prog-row__of"> / ${total}</span></span>
+      <span class="prog-row__pct">${p}%</span>
     `;
     teamRows.appendChild(row);
   });
@@ -220,18 +218,15 @@ export function buildProgressContent(container, collection, pendingReceiveIds = 
     const colors = TYPE_COLORS[type] || { fill: '#304FFE', track: '#E4EAFF' };
     const row = document.createElement('div');
     row.style.cssText = `--fill:${colors.fill}; --track:${colors.track};`;
+    row.className = 'prog-row';
     row.innerHTML = `
-      <div class="prog-row__header">
-        <span class="fx prog-row__name">${escapeText(type)}</span>
-        <div style="display:flex;gap:4px;align-items:baseline;">
-          <span class="prog-row__fraction fx">${owned}${pending > 0 ? `<span style="color:var(--accent-coral);">+${pending}</span>` : ''} / ${total}</span>
-          <span class="prog-row__pct">${p}%</span>
-        </div>
-      </div>
-      <div class="progress-track" style="position:relative;overflow:hidden;">
+      <span class="prog-row__name">${escapeText(type)}</span>
+      <div class="progress-track prog-row__bar" style="position:relative;overflow:hidden;">
         <div class="progress-fill" style="width:${p}%"></div>
         ${pending > 0 ? `<div class="progress-fill" style="width:${pp}%;background:var(--accent-coral);opacity:0.55;position:absolute;left:${p}%;top:0;height:100%;"></div>` : ''}
       </div>
+      <span class="prog-row__fraction">${owned}${pending > 0 ? `<span class="prog-row__pending-count">+${pending}</span>` : ''}<span class="prog-row__of"> / ${total}</span></span>
+      <span class="prog-row__pct">${p}%</span>
     `;
     typeRows.appendChild(row);
   });
