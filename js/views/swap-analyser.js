@@ -686,16 +686,29 @@ export async function mountSwapAnalyser(container) {
   `;
   const eqCheckbox = toggleWrap.querySelector('#eq-mode-toggle');
 
+  const btnRow = document.createElement('div');
+  btnRow.style.cssText = 'display:flex; gap:8px;';
+
   const analyseBtn = document.createElement('button');
   analyseBtn.type = 'button';
-  analyseBtn.className = 'btn-primary w-full';
+  analyseBtn.className = 'btn-primary';
+  analyseBtn.style.flex = '1';
   analyseBtn.textContent = 'Analyse Swap';
+
+  const maxBtn = document.createElement('button');
+  maxBtn.type = 'button';
+  maxBtn.className = 'btn-secondary';
+  maxBtn.style.flex = '1';
+  maxBtn.textContent = 'Maximise Trade';
+
+  btnRow.appendChild(analyseBtn);
+  btnRow.appendChild(maxBtn);
 
   inputsSection.appendChild(partnerWrap);
   inputsSection.appendChild(havesWrap);
   inputsSection.appendChild(wantsWrap);
   inputsSection.appendChild(toggleWrap);
-  inputsSection.appendChild(analyseBtn);
+  inputsSection.appendChild(btnRow);
   container.appendChild(inputsSection);
 
   // Results
@@ -760,6 +773,123 @@ export async function mountSwapAnalyser(container) {
     resultsSection.hidden = false;
     resultsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   });
+
+  maxBtn.addEventListener('click', async () => {
+    const havesText = havesTextarea.value;
+    const wantsText = wantsTextarea.value;
+    if (!havesText.trim()) {
+      showToast("Enter the cards they have first.", 'error');
+      return;
+    }
+
+    const collection        = await getCollection();
+    const pendingReceiveIds = getPendingReceiveIds();
+
+    const userMissing  = new Set(
+      CARDS.filter(c => (collection[String(c.id)] ?? 0) === 0 && !pendingReceiveIds.has(c.id)).map(c => c.id)
+    );
+    const myDuplicates = CARDS.filter(c => (collection[String(c.id)] ?? 0) > 1);
+
+    const { matched: partnerHas,   unmatched: unmatchedHas  } = parseInput(havesText);
+    const { matched: partnerWants, unmatched: unmatchedWants } = parseInput(wantsText);
+
+    const iWant   = partnerHas.filter(c => userMissing.has(c.id)).sort((a, b) => a.id - b.id);
+    const iCanGive = myDuplicates.filter(c => partnerWants.some(w => w.id === c.id)).sort((a, b) => a.id - b.id);
+    const unmatched = [...new Set([...unmatchedHas, ...unmatchedWants])];
+
+    renderMaxResults({ iWant, iCanGive, unmatched }, partnerInput.value.trim());
+    resultsSection.hidden = false;
+    resultsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  });
+
+  function renderMaxResults({ iWant, iCanGive, unmatched }, partnerName) {
+    resultsSection.innerHTML = '';
+
+    if (iWant.length === 0 && iCanGive.length === 0) {
+      resultsSection.innerHTML = `<div style="background:#f9f9f9;padding:16px;text-align:center;"><p style="color:#555;font-size:13px;">No overlap found between their cards and yours.</p></div>`;
+      return;
+    }
+
+    function makeList(label, cards, labelColor) {
+      const block = document.createElement('div');
+      block.style.marginBottom = '20px';
+      const head = document.createElement('p');
+      head.style.cssText = `font-size:10px; text-transform:uppercase; letter-spacing:.06em; color:${labelColor}; margin-bottom:6px; font-family:var(--font-display);`;
+      head.textContent = `${label} (${cards.length})`;
+      block.appendChild(head);
+      if (cards.length === 0) {
+        const none = document.createElement('p');
+        none.style.cssText = 'font-size:12px; color:#aaa;';
+        none.textContent = 'None';
+        block.appendChild(none);
+      } else {
+        cards.forEach(c => block.appendChild(cardLine(c)));
+      }
+      return block;
+    }
+
+    resultsSection.appendChild(makeList('Cards I want from them', iWant, 'var(--green)'));
+    resultsSection.appendChild(makeList('Cards I can give them', iCanGive, 'rgba(197,160,40,0.9)'));
+
+    if (unmatched.length > 0) {
+      const um = document.createElement('div');
+      um.style.cssText = 'background:#fff5f5; padding:12px 14px; margin-bottom:12px;';
+      um.innerHTML = `<p style="font-size:11px; color:#c55; margin-bottom:4px; font-weight:700;">Couldn't match:</p>`;
+      unmatched.forEach(token => {
+        const p = document.createElement('p');
+        p.style.cssText = 'font-size:11px; color:#c55;';
+        p.textContent = `"${token}" — not found`;
+        um.appendChild(p);
+      });
+      resultsSection.appendChild(um);
+    }
+
+    const actionRow = document.createElement('div');
+    actionRow.style.cssText = 'display:flex; gap:8px; margin-top:8px;';
+
+    const copyBtn = document.createElement('button');
+    copyBtn.type = 'button';
+    copyBtn.className = 'btn-secondary';
+    copyBtn.style.flex = '1';
+    copyBtn.textContent = 'Copy Message';
+    copyBtn.addEventListener('click', async () => {
+      const wantLines = iWant.map(c => `#${c.id} ${c.playerName}`).join('\n') || '(none)';
+      const giveLines = iCanGive.map(c => `#${c.id} ${c.playerName}`).join('\n') || '(none)';
+      try {
+        await navigator.clipboard.writeText(`Hi mate, I am looking for:\n${wantLines}\n\nFor:\n${giveLines}`);
+        showToast('Copied!', 'success');
+      } catch {
+        showToast("Couldn't copy.", 'error');
+      }
+    });
+
+    const saveBtn = document.createElement('button');
+    saveBtn.type = 'button';
+    saveBtn.className = 'btn-primary';
+    saveBtn.style.flex = '1';
+    saveBtn.textContent = 'Save as Pending';
+    saveBtn.addEventListener('click', async () => {
+      addPendingTrade({
+        id: `trade_${Date.now()}`,
+        partner: partnerName || 'Unknown',
+        createdAt: new Date().toISOString(),
+        iGive: iCanGive.map(c => c.id),
+        iGet:  iWant.map(c => c.id),
+      });
+      updateSwapBadge();
+      showToast(`Trade with ${partnerName || 'partner'} saved.`, 'success');
+      havesTextarea.value = '';
+      wantsTextarea.value = '';
+      partnerInput.value  = '';
+      resultsSection.hidden = true;
+      await refreshAll();
+      container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    actionRow.appendChild(copyBtn);
+    actionRow.appendChild(saveBtn);
+    resultsSection.appendChild(actionRow);
+  }
 
   // ── Render results ───────────────────────────────────────────────────────
   function renderResults({ youGet, tradeGroups, unmatched, hasWants, equalMode }, partnerName) {
