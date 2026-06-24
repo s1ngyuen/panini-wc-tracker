@@ -1001,9 +1001,7 @@ body::before {
 
   #mobile-menu-btn { display: flex; }
 
-  /* ── Ticker — sit below 48px header ── */
-  .bottom-ticker { top: 48px; height: 32px; }
-  .bottom-ticker__inner { font-size: 11px; }
+  /* ticker override moved to after base definition — see end of file */
 
   /* ── Main content — clear header + ticker ── */
   #main-content { padding-top: calc(48px + 32px + 16px); padding-bottom: 64px; }
@@ -2047,6 +2045,11 @@ body::before {
 .tk-g { color: #C5A028; }
 .tk-v { color: #00A84F; }
 .tk-w { color: #ffffff; }
+
+@media (max-width: 480px) {
+  .bottom-ticker { top: 48px; height: 32px; }
+  .bottom-ticker__inner { font-size: 11px; }
+}
 
 /* ── Equal-match toggle switch ──────────────────────────────────────────── */
 .eq-toggle__track {
