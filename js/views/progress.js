@@ -106,7 +106,7 @@ export function buildProgressContent(container, collection, pendingReceiveIds = 
     <div class="overall-tiles">
       <div class="stat-tile">
         <div class="stat-tile__label">Cards collected</div>
-        <span class="fx-c stat-tile__num" style="color:#111111;">${ownedCount} <span style="color:rgba(197,160,40,0.6);">of ${TOTAL}</span></span>
+        <span class="fx-c stat-tile__num" style="color:var(--green);">${ownedCount} <span style="color:rgba(197,160,40,0.55);">of ${TOTAL}</span></span>
       </div>
       <div class="stat-tile">
         <div class="stat-tile__label">Still need</div>
@@ -194,7 +194,7 @@ export function buildProgressContent(container, collection, pendingReceiveIds = 
         <div class="progress-fill" style="width:${p}%"></div>
         ${pending > 0 ? `<div class="progress-fill" style="width:${pp}%;background:var(--accent-coral);opacity:0.55;position:absolute;left:${p}%;top:0;height:100%;"></div>` : ''}
       </div>
-      <span class="prog-row__fraction">${owned}${pending > 0 ? `<span class="prog-row__pending-count">+${pending}</span>` : ''}<span class="prog-row__of"> / ${total}</span></span>
+      <span class="prog-row__fraction"><span class="prog-row__owned-n">${owned}</span>${pending > 0 ? `<span class="prog-row__pending-count">+${pending}</span>` : ''}<span class="prog-row__of"> / ${total}</span></span>
       <span class="prog-row__pct">${p}%</span>
     `;
     teamRows.appendChild(row);
@@ -225,7 +225,7 @@ export function buildProgressContent(container, collection, pendingReceiveIds = 
         <div class="progress-fill" style="width:${p}%"></div>
         ${pending > 0 ? `<div class="progress-fill" style="width:${pp}%;background:var(--accent-coral);opacity:0.55;position:absolute;left:${p}%;top:0;height:100%;"></div>` : ''}
       </div>
-      <span class="prog-row__fraction">${owned}${pending > 0 ? `<span class="prog-row__pending-count">+${pending}</span>` : ''}<span class="prog-row__of"> / ${total}</span></span>
+      <span class="prog-row__fraction"><span class="prog-row__owned-n">${owned}</span>${pending > 0 ? `<span class="prog-row__pending-count">+${pending}</span>` : ''}<span class="prog-row__of"> / ${total}</span></span>
       <span class="prog-row__pct">${p}%</span>
     `;
     typeRows.appendChild(row);

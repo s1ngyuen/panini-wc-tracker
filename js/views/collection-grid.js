@@ -306,7 +306,7 @@ export async function mountCollectionGrid(container) {
     progressPendingBar.style.width  = `${pendingPct}%`;
 
     const hasPending = pending > 0;
-    progressCount.textContent = `${combined}${hasPending ? '*' : ''} of ${total} cards`;
+    progressCount.innerHTML = `<span class="cp-owned-n">${combined}${hasPending ? '*' : ''}</span><span class="cp-total"> of ${total} cards</span>`;
     progressPct.textContent   = `${combinedPct}%`;
 
     progressKey.hidden = !hasPending;
