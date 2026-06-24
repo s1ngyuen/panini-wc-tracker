@@ -412,7 +412,7 @@ body::before {
   white-space: nowrap;
 }
 
-.prog-row__owned-n { color: var(--green); }
+.prog-row__owned-n { color: var(--accent); }
 .prog-row__of { color: rgba(197,160,40,0.35); }
 
 .prog-row__pending-count { color: var(--accent-coral); }
@@ -702,7 +702,7 @@ body::before {
   letter-spacing: .02em;
 }
 
-.cp-owned-n { color: var(--green); }
+.cp-owned-n { color: var(--accent); }
 .cp-total   { color: rgba(197,160,40,0.55); }
 
 .collection-progress__pct {

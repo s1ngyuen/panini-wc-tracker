@@ -106,7 +106,7 @@ export function buildProgressContent(container, collection, pendingReceiveIds = 
     <div class="overall-tiles">
       <div class="stat-tile">
         <div class="stat-tile__label">Cards collected</div>
-        <span class="fx-c stat-tile__num" style="color:var(--green);">${ownedCount} <span style="color:rgba(197,160,40,0.55);">of ${TOTAL}</span></span>
+        <span class="fx-c stat-tile__num" style="color:var(--accent);">${ownedCount} <span style="color:rgba(197,160,40,0.55);">of ${TOTAL}</span></span>
       </div>
       <div class="stat-tile">
         <div class="stat-tile__label">Still need</div>
