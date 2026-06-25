@@ -271,6 +271,12 @@ body::before {
   margin: 0 auto;
 }
 
+/* Spacing utility classes used by view heading wrappers */
+.px-4 { padding-left: 16px; padding-right: 16px; }
+.pt-6 { padding-top: 32px; }
+.pb-2 { padding-bottom: 32px; }
+.pb-3 { padding-bottom: 32px; }
+
 /* ─────────────────────────────────────────────────────────────────────────────
    SECTION HEADINGS
 ───────────────────────────────────────────────────────────────────────────── */
@@ -279,7 +285,7 @@ body::before {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 4px;
+  margin-bottom: 0;
 }
 
 .section-heading-wrap .fx { font-family: 'FIFA26', var(--font-display); font-weight: 800; color: #aaa !important; }
@@ -1166,7 +1172,8 @@ body::before {
   /* ── Section headings — tighter on mobile ── */
   .px-4 { padding-left: 12px; padding-right: 12px; }
   .pt-6 { padding-top: 20px; }
-  .pb-3 { padding-bottom: 10px; }
+  .pb-2 { padding-bottom: 20px; }
+  .pb-3 { padding-bottom: 20px; }
 
   /* ── Collection progress bar ── */
   .collection-progress { margin: 0 12px 12px; padding: 12px 14px 10px; }
