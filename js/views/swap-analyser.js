@@ -621,12 +621,12 @@ export async function mountSwapAnalyser(container) {
 
   const newTradeTab = document.createElement('button');
   newTradeTab.type = 'button';
-  newTradeTab.className = 'btn-primary gen-tab gen-tab--active';
+  newTradeTab.className = 'gen-tab gen-tab--active';
   newTradeTab.textContent = 'Generate New Trade';
 
   const customTradeTab = document.createElement('button');
   customTradeTab.type = 'button';
-  customTradeTab.className = 'btn-secondary gen-tab';
+  customTradeTab.className = 'gen-tab';
   customTradeTab.textContent = 'Generate Custom Trade';
 
   tabBar.appendChild(newTradeTab);
@@ -647,8 +647,8 @@ export async function mountSwapAnalyser(container) {
     const isNew = tab === 'new';
     generateTile.hidden    = !isNew;
     customTradePanel.hidden = isNew;
-    newTradeTab.className    = `btn-primary gen-tab${isNew ? ' gen-tab--active' : ''}`;
-    customTradeTab.className = `btn-secondary gen-tab${!isNew ? ' gen-tab--active' : ''}`;
+    newTradeTab.className    = `gen-tab${isNew ? ' gen-tab--active' : ''}`;
+    customTradeTab.className = `gen-tab${!isNew ? ' gen-tab--active' : ''}`;
     if (!isNew) {
       renderCustomTradeForm(customTradePanel, {
         onSave:   () => { customTradePanel.innerHTML = ''; showTab('custom'); refreshAll(); },
@@ -743,6 +743,11 @@ export async function mountSwapAnalyser(container) {
 
   btnRow.appendChild(analyseBtn);
   btnRow.appendChild(maxBtn);
+
+  const newTradePanelTitle = document.createElement('p');
+  newTradePanelTitle.className = 'pending-trade-card__form-title';
+  newTradePanelTitle.textContent = 'Generate New Trade';
+  generateTile.appendChild(newTradePanelTitle);
 
   inputsSection.appendChild(partnerWrap);
   inputsSection.appendChild(havesWrap);

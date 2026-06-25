@@ -1865,26 +1865,51 @@ body::before {
 
 .pending-trades-scroll {
   max-height: 70vh;
-  overflow-y: auto;
+  overflow-y: scroll;
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
 
-.pending-trades-scroll::-webkit-scrollbar { display: none; }
+.pending-trades-scroll::-webkit-scrollbar,
+.pending-trades-scroll::-webkit-scrollbar-track,
+.pending-trades-scroll::-webkit-scrollbar-thumb {
+  display: none;
+  width: 0;
+  background: transparent;
+}
 
 .gen-tab-bar {
   display: flex;
-  gap: var(--tile-gap);
-  margin-bottom: var(--tile-gap);
+  gap: 4px;
+  margin-bottom: 0;
 }
 
 .gen-tab {
   flex: 1;
+  height: 38px;
+  background: #e2e4e6;
+  color: #8a8f94;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  border: none;
+  border-radius: 4px 4px 0 0;
+  cursor: pointer;
+  transition: background .15s, color .15s;
+}
+
+.gen-tab:hover:not(.gen-tab--active) {
+  background: #d8dadc;
+  color: var(--accent);
 }
 
 .gen-tab--active {
-  background: var(--accent) !important;
-  color: #fff !important;
+  background: #f2f3f5 !important;
+  color: var(--accent) !important;
+  border-top: 3px solid var(--accent);
+  font-weight: 700;
 }
 
 .pending-trades-list {
@@ -2037,11 +2062,11 @@ body::before {
 
 .pending-trade-card__form-title {
   font-family: var(--font-display);
-  font-size: 13px;
+  font-size: 20px;
   text-transform: uppercase;
   letter-spacing: .04em;
   color: var(--accent);
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
 
 /* ── Nav badge ─────────────────────────────────────────────────────────────── */
