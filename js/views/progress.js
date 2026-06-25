@@ -49,6 +49,13 @@ const TEAM_COLORS = {
   'United States':  { fill: '#002868', track: '#D9E1F5' },
   'Uruguay':        { fill: '#5CB8E4', track: '#E0F3FC' },
   'Uzbekistan':     { fill: '#1EB53A', track: '#DDF5E3' },
+  'Curaçao':        { fill: '#002B7F', track: '#D9E2F5' },
+  'Denmark':        { fill: '#C60C30', track: '#FDDDE0' },
+  'Italy':          { fill: '#003399', track: '#D9E3F8' },
+  'Jamaica':        { fill: '#000000', track: '#E8F5D0' },
+  'Poland':         { fill: '#DC143C', track: '#FDDDE0' },
+  'Sweden':         { fill: '#006AA7', track: '#D9E8F5' },
+  'Turkey':         { fill: '#E30A17', track: '#FDDDE0' },
 };
 
 const TYPE_COLORS = {
@@ -183,7 +190,8 @@ export function buildProgressContent(container, collection, pendingReceiveIds = 
     const p  = Math.round((owned / total) * 100);
     const pp = Math.round((pending / total) * 100);
     const colors = TEAM_COLORS[team] || { fill: '#304FFE', track: '#E4EAFF' };
-    const crestSlug = team.toLowerCase().replace(/\s+/g, '-').replace(/'/g, '');
+    const CREST_SLUG_OVERRIDES = { 'Curaçao': 'curacao' };
+    const crestSlug = CREST_SLUG_OVERRIDES[team] || team.toLowerCase().replace(/\s+/g, '-').replace(/'/g, '');
     const crestSrc  = `assets/crests/${crestSlug}.png`;
     const initials  = team.split(' ').map(w => w[0]).join('').slice(0, 3).toUpperCase();
     const row = document.createElement('div');
