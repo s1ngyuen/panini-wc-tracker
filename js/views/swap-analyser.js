@@ -555,9 +555,9 @@ function renderPendingSection(container, { onComplete, onRefresh }) {
 
   const trades = getPendingTrades();
 
-  const head = document.createElement('div');
-  head.className = 'pb-3';
-  head.innerHTML = `
+  const titleTile = document.createElement('div');
+  titleTile.className = 'pending-title-tile';
+  titleTile.innerHTML = `
     <div style="display:flex; align-items:center; justify-content:space-between;">
       <span style="font-family:var(--font-display); font-size:20px; text-transform:uppercase; letter-spacing:.04em; color:var(--accent);">
         Pending Trades${trades.length > 0 ? ` <span style="color:var(--accent);">(${trades.length})</span>` : ''}
@@ -565,12 +565,12 @@ function renderPendingSection(container, { onComplete, onRefresh }) {
       <button id="add-custom-btn" type="button" class="btn-secondary">+ Custom</button>
     </div>
   `;
-  container.appendChild(head);
+  container.appendChild(titleTile);
 
   const customFormWrap = document.createElement('div');
   container.appendChild(customFormWrap);
 
-  head.querySelector('#add-custom-btn').addEventListener('click', () => {
+  titleTile.querySelector('#add-custom-btn').addEventListener('click', () => {
     renderCustomTradeForm(customFormWrap, {
       onSave:   () => { customFormWrap.innerHTML = ''; onRefresh(); },
       onCancel: () => { customFormWrap.innerHTML = ''; },
@@ -582,14 +582,18 @@ function renderPendingSection(container, { onComplete, onRefresh }) {
     const empty = document.createElement('p');
     empty.className = 'pb-4 text-sm';
     empty.style.color = 'var(--text-muted)';
-    empty.textContent = 'No pending trades. Analyse a swap below and save it, or add a custom trade above.';
+    empty.textContent = 'No pending trades. Generate a swap below and save it, or add a custom trade.';
     container.appendChild(empty);
     return;
   }
 
+  const scroll = document.createElement('div');
+  scroll.className = 'pending-trades-scroll';
+  container.appendChild(scroll);
+
   const list = document.createElement('div');
   list.className = 'pending-trades-list';
-  container.appendChild(list);
+  scroll.appendChild(list);
 
   trades.forEach(trade => list.appendChild(renderTradeCard(trade, { onComplete, onRefresh })));
 }
