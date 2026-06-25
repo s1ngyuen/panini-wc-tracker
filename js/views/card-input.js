@@ -15,7 +15,7 @@ export function mountCardInput(container) {
   heading.innerHTML = `
     <div class="section-heading-wrap">
       <div class="section-heading-bar"></div>
-      <div class="page-title-wrap"><div class="page-title-scrl"><div class="page-title-scrl-inner"><span class="page-title-bg">Add Cards</span><span class="page-title-bg page-title-bg--green">Add Cards</span></div></div></div>
+      <span class="fx page-title">Add Cards</span>
     </div>
     <p class="section-sub">Add card(s) to your collection here.</p>
   `;

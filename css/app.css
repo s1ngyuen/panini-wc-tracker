@@ -283,58 +283,28 @@ body::before {
   margin-bottom: 0;
 }
 
-.section-heading-wrap .fx { font-family: 'FIFA26', var(--font-display); font-weight: 800; color: #aaa; }
+.section-heading-wrap .fx { font-family: var(--font-display); font-weight: 800; color: var(--accent); }
 
-.page-title-wrap {
-  display: inline-block;
-  cursor: default;
-}
-
-.page-title-scrl {
-  display: block;
-  overflow: hidden;
-  height: 72px;
-}
-
-.page-title-scrl-inner {
-  display: flex;
-  flex-direction: column;
-  will-change: transform;
-  transition: transform 0.3s ease;
-}
-
-.page-title-bg {
-  font-family: 'FIFA26', var(--font-display);
+.page-title {
+  font-family: var(--font-display);
   font-size: 72px;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: .04em;
-  color: #f2f3f5;
-  line-height: 1;
-  height: 72px;
-  display: flex;
-  align-items: center;
-  flex-shrink: 0;
-}
-
-.page-title-bg--green {
   color: var(--accent);
-  font-family: var(--font-display);
-}
-
-.page-title-wrap:hover .page-title-scrl-inner {
-  transform: translateY(-72px);
+  line-height: 1;
+  display: block;
 }
 
 .section-heading-bar { display: none; }
 
 /* legacy .section-heading used by older views */
 .section-heading {
-  font-family: 'FIFA26', var(--font-display);
+  font-family: var(--font-display);
   font-size: 42px;
   text-transform: uppercase;
   letter-spacing: .04em;
-  color: var(--text-primary);
+  color: var(--accent);
   line-height: 1;
   display: inline-block;
   transform: scaleX(var(--squeeze));
@@ -346,7 +316,7 @@ body::before {
   color: rgba(197,160,40,0.6);
   margin-bottom: 24px;
   padding-left: 16px;
-  font-family: 'FIFA26', var(--font-display);
+  font-family: var(--font-display);
   text-transform: uppercase;
   display: inline-block;
   transform: scaleX(var(--squeeze));
@@ -448,11 +418,11 @@ body::before {
 }
 
 .category-heading__text {
-  font-family: 'FIFA26', var(--font-display);
+  font-family: var(--font-display);
   font-size: 20px;
   text-transform: uppercase;
   letter-spacing: .06em;
-  color: var(--text-primary);
+  color: var(--accent);
   line-height: 1;
 }
 
@@ -1007,11 +977,11 @@ body::before {
 }
 
 .progress-modal__title {
-  font-family: 'FIFA26', var(--font-display);
+  font-family: var(--font-display);
   font-size: 22px;
   text-transform: uppercase;
   letter-spacing: .06em;
-  color: var(--text-primary);
+  color: var(--accent);
   line-height: 1;
 }
 

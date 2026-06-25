@@ -605,7 +605,7 @@ export async function mountSwapAnalyser(container) {
   header.innerHTML = `
     <div class="section-heading-wrap">
       <div class="section-heading-bar"></div>
-      <div class="page-title-wrap"><div class="page-title-scrl"><div class="page-title-scrl-inner"><span class="page-title-bg">Swaps</span><span class="page-title-bg page-title-bg--green">Swaps</span></div></div></div>
+      <span class="fx page-title">Swaps</span>
     </div>
   `;
   container.appendChild(header);

@@ -22,7 +22,7 @@ export async function mountCollectionGrid(container) {
   header.innerHTML = `
     <div class="section-heading-wrap">
       <div class="section-heading-bar"></div>
-      <div class="page-title-wrap"><div class="page-title-scrl"><div class="page-title-scrl-inner"><span class="page-title-bg">Collection</span><span class="page-title-bg page-title-bg--green">Collection</span></div></div></div>
+      <span class="fx page-title">Collection</span>
     </div>
   `;
   container.appendChild(header);
