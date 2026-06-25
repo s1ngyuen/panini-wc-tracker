@@ -729,9 +729,9 @@ body::before {
   font-family: var(--font-display);
   font-size: 11px;
   font-weight: 700;
-  color: rgba(197,160,40,0.7);
+  color: var(--gold);
   text-transform: uppercase;
-  letter-spacing: .1em;
+  letter-spacing: .08em;
   margin-bottom: 6px;
 }
 
@@ -1907,15 +1907,11 @@ body::before {
 
 .pending-trade-card__col-head {
   font-family: var(--font-display);
-  font-size: 10px;
+  font-size: 11px;
   text-transform: uppercase;
-  letter-spacing: .06em;
+  letter-spacing: .08em;
   color: var(--gold);
   margin-bottom: 5px;
-}
-
-.pending-trade-card__col-head--get {
-  color: var(--accent-primary);
 }
 
 .pending-trade-card__thumbs {
@@ -1988,10 +1984,11 @@ body::before {
 }
 
 .pending-trade-card__edit-label {
-  font-size: 10px;
+  font-family: var(--font-display);
+  font-size: 11px;
   text-transform: uppercase;
-  letter-spacing: .06em;
-  color: var(--text-muted);
+  letter-spacing: .08em;
+  color: var(--gold);
   display: block;
   margin-bottom: 4px;
 }
