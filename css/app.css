@@ -282,14 +282,14 @@ body::before {
   margin-bottom: 4px;
 }
 
-.section-heading-wrap .fx { font-family: 'FIFA26', var(--font-display); font-weight: 800; color: var(--gold) !important; }
+.section-heading-wrap .fx { font-family: 'FIFA26', var(--font-display); font-weight: 800; color: #aaa !important; }
 
 .section-heading-bar { display: none; }
 
 /* legacy .section-heading used by older views */
 .section-heading {
   font-family: 'FIFA26', var(--font-display);
-  font-size: 28px;
+  font-size: 42px;
   text-transform: uppercase;
   letter-spacing: .04em;
   color: var(--text-primary);
