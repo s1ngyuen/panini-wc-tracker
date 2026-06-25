@@ -1844,8 +1844,8 @@ body::before {
 ───────────────────────────────────────────────────────────────────────────── */
 
 .pending-trade-card {
-  border: 1px solid var(--border);
-  background: #fff;
+  border: none;
+  background: #f2f3f5;
   padding: 14px;
 }
 
