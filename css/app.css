@@ -319,6 +319,7 @@ body::before {
 
 .page-title-bg--green {
   color: var(--accent);
+  font-family: var(--font-display);
 }
 
 .page-title-wrap:hover .page-title-scrl-inner {
