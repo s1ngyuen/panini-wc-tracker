@@ -615,6 +615,27 @@ body::before {
   color: #fff;
 }
 
+.btn-cancel {
+  background: #CC3333;
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  border: none;
+  border-radius: 0;
+  padding: 0 20px;
+  cursor: pointer;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  transition: background .2s;
+}
+
+.btn-cancel:hover { background: #CC3333; }
+
 .btn-primary:active,
 .btn-secondary:active { opacity: 0.85; }
 

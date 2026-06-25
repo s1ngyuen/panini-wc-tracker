@@ -324,7 +324,7 @@ function renderTradeCard(trade, { onComplete, onRefresh }) {
     const completeBtn = document.createElement('button');
     completeBtn.type = 'button';
     completeBtn.className = 'btn-primary';
-    completeBtn.textContent = '✓ Trade Done';
+    completeBtn.textContent = 'Trade Done';
     completeBtn.addEventListener('click', () => {
       if (!confirm(`Mark trade with ${trade.partner || 'partner'} as complete? Your collection will be updated.`)) return;
       onComplete(trade);
@@ -332,8 +332,8 @@ function renderTradeCard(trade, { onComplete, onRefresh }) {
 
     const cancelBtn = document.createElement('button');
     cancelBtn.type = 'button';
-    cancelBtn.className = 'btn-danger';
-    cancelBtn.textContent = '✗ Cancel';
+    cancelBtn.className = 'btn-cancel';
+    cancelBtn.textContent = 'Cancel';
     cancelBtn.addEventListener('click', () => {
       if (!confirm('Remove this pending trade?')) return;
       removePendingTrade(trade.id);
