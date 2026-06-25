@@ -50,6 +50,34 @@ export async function mountCollectionGrid(container) {
   `;
   container.appendChild(progressWrap);
 
+  // ── Quick stat tiles ──────────────────────────────────────────────────────
+  const statTilesWrap = document.createElement('div');
+  statTilesWrap.className = 'collection-stat-tiles';
+  statTilesWrap.innerHTML = `
+    <div class="cst-tile">
+      <span class="cst-tile__num cst-total">—</span>
+      <span class="cst-tile__label">Total cards</span>
+    </div>
+    <div class="cst-tile">
+      <span class="cst-tile__num cst-unique">—</span>
+      <span class="cst-tile__label">Unique</span>
+    </div>
+    <div class="cst-tile">
+      <span class="cst-tile__num cst-need">—</span>
+      <span class="cst-tile__label">Still need</span>
+    </div>
+    <div class="cst-tile">
+      <span class="cst-tile__num cst-dupe">—</span>
+      <span class="cst-tile__label">Duplicates</span>
+    </div>
+  `;
+  container.appendChild(statTilesWrap);
+
+  const cstTotal  = statTilesWrap.querySelector('.cst-total');
+  const cstUnique = statTilesWrap.querySelector('.cst-unique');
+  const cstNeed   = statTilesWrap.querySelector('.cst-need');
+  const cstDupe   = statTilesWrap.querySelector('.cst-dupe');
+
   const progressCount      = progressWrap.querySelector('.collection-progress__count');
   const progressPct        = progressWrap.querySelector('.collection-progress__pct');
   const progressFill       = progressWrap.querySelector('.collection-progress__bar-fill');
@@ -314,6 +342,13 @@ export async function mountCollectionGrid(container) {
       progressKeyOwned.textContent   = `${owned} owned`;
       progressKeyPending.textContent = `${pending} pending`;
     }
+
+    const totalOwned = filtered.reduce((sum, c) => sum + (collection[String(c.id)] ?? 0), 0);
+    const dupCount   = filtered.reduce((sum, c) => sum + Math.max(0, (collection[String(c.id)] ?? 0) - 1), 0);
+    cstTotal.textContent  = totalOwned;
+    cstUnique.textContent = owned;
+    cstNeed.textContent   = total - owned;
+    cstDupe.textContent   = dupCount;
   }
 
   function renderGrid() {

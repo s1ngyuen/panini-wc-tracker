@@ -771,6 +771,51 @@ body::before {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
+   COLLECTION STAT TILES (below progress bar)
+───────────────────────────────────────────────────────────────────────────── */
+
+.collection-stat-tiles {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin: 0 16px 12px;
+}
+
+.cst-tile {
+  background: #f2f3f5;
+  padding: 12px 8px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.cst-tile__num {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1;
+  color: #111;
+}
+
+.cst-tile__label {
+  font-size: 10px;
+  color: rgba(197,160,40,0.6);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  font-family: var(--font-body);
+  font-weight: 600;
+  text-align: center;
+}
+
+.cst-unique { color: var(--accent); }
+.cst-need   { color: rgba(197,160,40,0.65); }
+
+@media (max-width: 480px) {
+  .collection-stat-tiles { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
    PROGRESS BREAKDOWN MODAL
 ───────────────────────────────────────────────────────────────────────────── */
 
