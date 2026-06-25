@@ -114,7 +114,7 @@ export function buildProgressContent(container, collection, pendingReceiveIds = 
       </div>
       <div class="stat-tile">
         <div class="stat-tile__label">Pending trades</div>
-        <span class="fx-c stat-tile__num" style="color:var(--accent-coral);">${pendingCount}</span>
+        <span class="fx-c stat-tile__num" style="color:rgba(197,160,40,0.8);">${pendingCount}</span>
       </div>
       <div class="stat-tile">
         <div class="stat-tile__label">Duplicates</div>
@@ -123,12 +123,12 @@ export function buildProgressContent(container, collection, pendingReceiveIds = 
     </div>
     <div class="progress-track" style="--track:#E4EAFF; --fill:var(--accent); position:relative; overflow:hidden;">
       <div class="progress-fill" style="width:${pct}%"></div>
-      <div class="progress-fill" style="width:${pendingPct}%; background:var(--accent-coral); opacity:0.55; position:absolute; left:${pct}%; top:0; height:100%;"></div>
+      <div class="progress-fill" style="width:${pendingPct}%; background:rgba(197,160,40,0.4); position:absolute; left:${pct}%; top:0; height:100%;"></div>
     </div>
     ${pendingCount > 0 ? `
     <div style="display:flex;gap:12px;margin-top:6px;font-size:10px;color:var(--text-muted);">
       <span style="display:flex;align-items:center;gap:4px;"><span style="display:inline-block;width:10px;height:10px;background:var(--accent);border-radius:2px;"></span>Owned ${pct}%</span>
-      <span style="display:flex;align-items:center;gap:4px;"><span style="display:inline-block;width:10px;height:10px;background:var(--accent-coral);opacity:0.75;border-radius:2px;"></span>Pending ${pendingPct}%</span>
+      <span style="display:flex;align-items:center;gap:4px;"><span style="display:inline-block;width:10px;height:10px;background:rgba(197,160,40,0.55);border-radius:2px;"></span>Pending ${pendingPct}%</span>
     </div>` : ''}
   `;
   container.appendChild(tilesBlock);
@@ -192,7 +192,7 @@ export function buildProgressContent(container, collection, pendingReceiveIds = 
       <span class="prog-row__name">${escapeText(team)}</span>
       <div class="progress-track prog-row__bar" style="position:relative;overflow:hidden;">
         <div class="progress-fill" style="width:${p}%"></div>
-        ${pending > 0 ? `<div class="progress-fill" style="width:${pp}%;background:var(--accent-coral);opacity:0.55;position:absolute;left:${p}%;top:0;height:100%;"></div>` : ''}
+        ${pending > 0 ? `<div class="progress-fill" style="width:${pp}%;background:rgba(197,160,40,0.4);position:absolute;left:${p}%;top:0;height:100%;"></div>` : ''}
       </div>
       <span class="prog-row__fraction"><span class="prog-row__owned-n">${owned}</span>${pending > 0 ? `<span class="prog-row__pending-count">+${pending}</span>` : ''}<span class="prog-row__of"> / ${total}</span></span>
       <span class="prog-row__pct">${p}%</span>
@@ -223,7 +223,7 @@ export function buildProgressContent(container, collection, pendingReceiveIds = 
       <span class="prog-row__name">${escapeText(type)}</span>
       <div class="progress-track prog-row__bar" style="position:relative;overflow:hidden;">
         <div class="progress-fill" style="width:${p}%"></div>
-        ${pending > 0 ? `<div class="progress-fill" style="width:${pp}%;background:var(--accent-coral);opacity:0.55;position:absolute;left:${p}%;top:0;height:100%;"></div>` : ''}
+        ${pending > 0 ? `<div class="progress-fill" style="width:${pp}%;background:rgba(197,160,40,0.4);position:absolute;left:${p}%;top:0;height:100%;"></div>` : ''}
       </div>
       <span class="prog-row__fraction"><span class="prog-row__owned-n">${owned}</span>${pending > 0 ? `<span class="prog-row__pending-count">+${pending}</span>` : ''}<span class="prog-row__of"> / ${total}</span></span>
       <span class="prog-row__pct">${p}%</span>

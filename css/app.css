@@ -415,7 +415,7 @@ body::before {
 .prog-row__owned-n { color: var(--accent); }
 .prog-row__of { color: rgba(197,160,40,0.35); }
 
-.prog-row__pending-count { color: var(--accent-coral); }
+.prog-row__pending-count { color: rgba(197,160,40,0.8); }
 
 .prog-row__pct {
   font-size: 12px;
