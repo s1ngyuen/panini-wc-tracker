@@ -210,17 +210,18 @@ body::before {
   background: none;
   color: var(--text-muted);
   font-family: var(--font-display);
-  font-size: 18px;
+  font-size: 11px;
   text-transform: uppercase;
   letter-spacing: .08em;
   border: 1px solid var(--border);
   border-radius: 0;
-  padding: 6px 14px;
+  padding: 4px 10px;
   cursor: pointer;
-  margin-left: 16px;
+  margin-left: 10px;
   transform: scaleX(var(--squeeze));
   transform-origin: right;
   white-space: nowrap;
+  height: 28px;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
