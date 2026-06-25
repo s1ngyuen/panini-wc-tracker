@@ -291,16 +291,14 @@ body::before {
 }
 
 .page-title-scrl {
-  position: relative;
+  display: block;
   overflow: hidden;
-  display: inline-flex;
-  align-items: flex-start;
   height: 72px;
 }
 
 .page-title-scrl-inner {
-  display: grid;
-  grid-template-columns: auto;
+  display: flex;
+  flex-direction: column;
   will-change: transform;
   transition: transform 0.3s ease;
 }
@@ -314,8 +312,9 @@ body::before {
   color: #f2f3f5;
   line-height: 1;
   height: 72px;
-  display: inline-flex;
+  display: flex;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .page-title-bg--green {
