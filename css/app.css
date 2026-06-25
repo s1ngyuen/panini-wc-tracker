@@ -1866,12 +1866,26 @@ body::before {
 .pending-trades-scroll {
   max-height: 70vh;
   overflow-y: auto;
-  padding-right: 4px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
-.pending-trades-scroll::-webkit-scrollbar { width: 4px; }
-.pending-trades-scroll::-webkit-scrollbar-track { background: transparent; }
-.pending-trades-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+.pending-trades-scroll::-webkit-scrollbar { display: none; }
+
+.gen-tab-bar {
+  display: flex;
+  gap: var(--tile-gap);
+  margin-bottom: var(--tile-gap);
+}
+
+.gen-tab {
+  flex: 1;
+}
+
+.gen-tab--active {
+  background: var(--accent) !important;
+  color: #fff !important;
+}
 
 .pending-trades-list {
   display: flex;

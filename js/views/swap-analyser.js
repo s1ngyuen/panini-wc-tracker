@@ -604,25 +604,73 @@ export async function mountSwapAnalyser(container) {
   columns.className = 'swap-layout';
   container.appendChild(columns);
 
-  // Left: Generate New Trade tile
+  // ── Left column ──────────────────────────────────────────────────────────
+  const leftColWrap = document.createElement('div');
+  columns.appendChild(leftColWrap);
+
+  // Title tile (same style as pending trades)
+  const genTitleTile = document.createElement('div');
+  genTitleTile.className = 'pending-title-tile';
+  genTitleTile.innerHTML = `<span style="font-family:var(--font-display); font-size:20px; text-transform:uppercase; letter-spacing:.04em; color:var(--accent);">Generate Trade</span>`;
+  leftColWrap.appendChild(genTitleTile);
+
+  // Tab bar
+  const tabBar = document.createElement('div');
+  tabBar.className = 'gen-tab-bar';
+  leftColWrap.appendChild(tabBar);
+
+  const newTradeTab = document.createElement('button');
+  newTradeTab.type = 'button';
+  newTradeTab.className = 'btn-primary gen-tab gen-tab--active';
+  newTradeTab.textContent = 'New Trade';
+
+  const customTradeTab = document.createElement('button');
+  customTradeTab.type = 'button';
+  customTradeTab.className = 'btn-secondary gen-tab';
+  customTradeTab.textContent = 'Custom Trade';
+
+  tabBar.appendChild(newTradeTab);
+  tabBar.appendChild(customTradeTab);
+
+  // New Trade panel (visible by default)
   const generateTile = document.createElement('div');
   generateTile.className = 'swap-generate-tile';
-  columns.appendChild(generateTile);
+  leftColWrap.appendChild(generateTile);
 
-  // Right: Pending trades
+  // Custom Trade panel (hidden by default)
+  const customTradePanel = document.createElement('div');
+  customTradePanel.className = 'swap-generate-tile';
+  customTradePanel.hidden = true;
+  leftColWrap.appendChild(customTradePanel);
+
+  function showTab(tab) {
+    const isNew = tab === 'new';
+    generateTile.hidden    = !isNew;
+    customTradePanel.hidden = isNew;
+    newTradeTab.className    = `btn-primary gen-tab${isNew ? ' gen-tab--active' : ''}`;
+    customTradeTab.className = `btn-secondary gen-tab${!isNew ? ' gen-tab--active' : ''}`;
+    if (!isNew) {
+      renderCustomTradeForm(customTradePanel, {
+        onSave:   () => { customTradePanel.innerHTML = ''; showTab('custom'); refreshAll(); },
+        onCancel: () => { showTab('new'); },
+      });
+    }
+  }
+
+  newTradeTab.addEventListener('click',    () => showTab('new'));
+  customTradeTab.addEventListener('click', () => showTab('custom'));
+
+  // ── Right column ─────────────────────────────────────────────────────────
   const pendingCol = document.createElement('div');
   columns.appendChild(pendingCol);
 
   const pendingSection = document.createElement('div');
   pendingCol.appendChild(pendingSection);
 
-  // Analyse heading (inside tile)
+  // Hint inside new trade tile
   const analyseHead = document.createElement('div');
   analyseHead.className = 'pb-3';
-  analyseHead.innerHTML = `
-    <span style="font-family:var(--font-display); font-size:20px; text-transform:uppercase; letter-spacing:.04em; color:var(--accent);">Generate New Trade</span>
-    <p class="form-hint" style="margin-top:4px;">Cards currently in pending trades are excluded from suggestions.</p>
-  `;
+  analyseHead.innerHTML = `<p class="form-hint">Cards in pending trades are excluded from suggestions.</p>`;
   generateTile.appendChild(analyseHead);
 
   // Inputs (inside tile)
@@ -714,30 +762,6 @@ export async function mountSwapAnalyser(container) {
   resultsSection.hidden = true;
   generateTile.appendChild(resultsSection);
 
-  // Custom trade button — below the generate tile, in the left column
-  const customBtn = document.createElement('button');
-  customBtn.type = 'button';
-  customBtn.className = 'btn-secondary w-full';
-  customBtn.style.marginTop = '12px';
-  customBtn.textContent = '+ Add Custom Trade';
-
-  const customFormWrap = document.createElement('div');
-
-  const leftColWrap = document.createElement('div');
-  leftColWrap.appendChild(customBtn);
-  leftColWrap.appendChild(customFormWrap);
-
-  // Replace generateTile's column slot with a wrapper containing both
-  generateTile.parentElement.insertBefore(leftColWrap, generateTile);
-  leftColWrap.insertBefore(generateTile, leftColWrap.firstChild);
-
-  customBtn.addEventListener('click', () => {
-    renderCustomTradeForm(customFormWrap, {
-      onSave:   () => { customFormWrap.innerHTML = ''; refreshAll(); },
-      onCancel: () => { customFormWrap.innerHTML = ''; },
-    });
-    customFormWrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  });
 
   // ── Refresh pending section ──────────────────────────────────────────────
   async function refreshAll() {
