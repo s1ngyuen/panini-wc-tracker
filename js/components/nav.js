@@ -23,7 +23,7 @@ function makeTab(item) {
   btn.type = 'button';
   btn.setAttribute('aria-label', item.label);
   btn.setAttribute('aria-pressed', item.id === _activeId ? 'true' : 'false');
-  btn.textContent = item.label;
+  btn.innerHTML = `<span class="nav-scrl"><span class="nav-scrl-inner"><span>${item.label}</span><span>${item.label}</span></span></span>`;
 
   if (item.id === 'swap') {
     const count = getPendingTrades().length;

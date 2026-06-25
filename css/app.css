@@ -206,6 +206,35 @@ body::before {
 
 .nav-tab.active { color: var(--gold); }
 
+/* Scroll-reveal hover effect */
+.nav-scrl {
+  position: relative;
+  overflow: hidden;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: flex-start;
+  height: 1.2em;
+}
+
+.nav-scrl-inner {
+  display: grid;
+  grid-template-columns: auto;
+  height: 1.2em;
+  will-change: transform;
+  transition: transform 0.25s ease;
+}
+
+.nav-scrl-inner span {
+  height: 1.2em;
+  display: inline-flex;
+  align-items: center;
+  line-height: 1 !important;
+}
+
+.nav-tab:hover .nav-scrl-inner {
+  transform: translateY(-100%);
+}
+
 .btn-reset {
   background: none;
   color: var(--text-muted);
