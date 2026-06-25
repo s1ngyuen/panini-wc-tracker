@@ -601,7 +601,7 @@ export async function mountSwapAnalyser(container) {
 
   // Header
   const header = document.createElement('div');
-  header.className = 'px-4 pt-6 pb-3';
+  header.className = 'px-4 py-10';
   header.innerHTML = `
     <div class="section-heading-wrap">
       <div class="section-heading-bar"></div>

@@ -11,7 +11,7 @@ export function mountCardInput(container) {
 
   // ── Heading ─────────────────────────────────────────────────────────────
   const heading = document.createElement('div');
-  heading.className = 'px-4 pt-6 pb-2';
+  heading.className = 'px-4 py-10';
   heading.innerHTML = `
     <div class="section-heading-wrap">
       <div class="section-heading-bar"></div>
