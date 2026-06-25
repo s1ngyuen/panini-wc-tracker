@@ -237,12 +237,12 @@ body::before {
 
 .btn-reset {
   background: none;
-  color: var(--text-muted);
+  color: var(--accent);
   font-family: var(--font-display);
   font-size: 13px;
   text-transform: uppercase;
   letter-spacing: .08em;
-  border: 1px solid var(--border);
+  border: 1px solid var(--accent);
   border-radius: 0;
   padding: 4px 10px;
   cursor: pointer;
@@ -251,6 +251,7 @@ body::before {
   transform-origin: right;
   white-space: nowrap;
   height: 28px;
+  overflow: hidden;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -592,10 +593,9 @@ body::before {
   gap: 6px;
   transform: scaleX(var(--squeeze));
   transform-origin: center;
-  transition: opacity .15s;
+  overflow: hidden;
 }
 
-.btn-primary:hover  { opacity: 0.9; }
 .btn-primary:active { opacity: 0.8; }
 
 .btn-primary:focus-visible {
@@ -604,13 +604,13 @@ body::before {
 }
 
 .btn-secondary {
-  background: #f9f9f9;
-  color: var(--text-secondary);
+  background: transparent;
+  color: var(--accent);
   font-family: var(--font-display);
   font-size: 13px;
   text-transform: uppercase;
   letter-spacing: .06em;
-  border: 1.5px solid var(--border);
+  border: 1.5px solid var(--accent);
   border-radius: 0;
   padding: 10px 20px;
   cursor: pointer;
@@ -621,14 +621,45 @@ body::before {
   gap: 6px;
   transform: scaleX(var(--squeeze));
   transform-origin: center;
-  transition: background .15s;
+  overflow: hidden;
 }
 
-.btn-secondary:hover { background: var(--surface); }
+.btn-secondary:hover { background: var(--accent-light); }
 
 .btn-secondary:focus-visible {
   outline: 2px solid var(--accent-primary);
   outline-offset: 2px;
+}
+
+/* ── Button scroll-reveal (matches navbar tab animation) ── */
+.btn-scrl {
+  position: relative;
+  overflow: hidden;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: flex-start;
+  height: 1.2em;
+}
+
+.btn-scrl-inner {
+  display: grid;
+  grid-template-columns: auto;
+  height: 1.2em;
+  will-change: transform;
+  transition: transform 0.25s ease;
+}
+
+.btn-scrl-inner span {
+  height: 1.2em;
+  display: inline-flex;
+  align-items: center;
+  line-height: 1 !important;
+}
+
+.btn-primary:hover .btn-scrl-inner,
+.btn-secondary:hover .btn-scrl-inner,
+.btn-reset:hover .btn-scrl-inner {
+  transform: translateY(-100%);
 }
 
 .btn-danger {

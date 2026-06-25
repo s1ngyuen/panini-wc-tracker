@@ -8,6 +8,7 @@ import { mountCardInput }     from './views/card-input.js';
 import { mountCollectionGrid } from './views/collection-grid.js';
 import { mountSwapAnalyser }  from './views/swap-analyser.js';
 import { clearCollection, getCollection }    from './store.js';
+import { initBtnScroll }      from './btn-scroll.js';
 
 const STORAGE_KEY = 'panini_wc_collection';
 
@@ -311,6 +312,8 @@ async function initTicker() {
 // ─────────────────────────────────────────────────────────────────────────────
 
 document.addEventListener('DOMContentLoaded', () => {
+  initBtnScroll();
+
   if (isAuthenticated()) {
     // Already unlocked this session — remove gate and start
     const gate = document.getElementById('password-gate');
