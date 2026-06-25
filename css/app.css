@@ -318,7 +318,7 @@ body::before {
 }
 
 .page-title-bg--green {
-  color: var(--green);
+  color: var(--accent);
 }
 
 .page-title-wrap:hover .page-title-scrl-inner {
