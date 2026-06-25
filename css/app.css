@@ -1847,7 +1847,7 @@ body::before {
 /* ── Swaps two-column layout & tile spacing ──────────────────────────────── */
 .pending-title-tile {
   background: #f2f3f5;
-  padding: 16px 20px;
+  padding: 10px 16px;
   margin-bottom: var(--tile-gap);
 }
 

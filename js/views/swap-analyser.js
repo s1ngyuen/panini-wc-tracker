@@ -558,25 +558,11 @@ function renderPendingSection(container, { onComplete, onRefresh }) {
   const titleTile = document.createElement('div');
   titleTile.className = 'pending-title-tile';
   titleTile.innerHTML = `
-    <div style="display:flex; align-items:center; justify-content:space-between;">
-      <span style="font-family:var(--font-display); font-size:20px; text-transform:uppercase; letter-spacing:.04em; color:var(--accent);">
-        Pending Trades${trades.length > 0 ? ` <span style="color:var(--accent);">(${trades.length})</span>` : ''}
-      </span>
-      <button id="add-custom-btn" type="button" class="btn-secondary">+ Custom</button>
-    </div>
+    <span style="font-family:var(--font-display); font-size:20px; text-transform:uppercase; letter-spacing:.04em; color:var(--accent);">
+      Pending Trades${trades.length > 0 ? ` <span style="color:var(--accent);">(${trades.length})</span>` : ''}
+    </span>
   `;
   container.appendChild(titleTile);
-
-  const customFormWrap = document.createElement('div');
-  container.appendChild(customFormWrap);
-
-  titleTile.querySelector('#add-custom-btn').addEventListener('click', () => {
-    renderCustomTradeForm(customFormWrap, {
-      onSave:   () => { customFormWrap.innerHTML = ''; onRefresh(); },
-      onCancel: () => { customFormWrap.innerHTML = ''; },
-    });
-    customFormWrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  });
 
   if (trades.length === 0) {
     const empty = document.createElement('p');
@@ -727,6 +713,31 @@ export async function mountSwapAnalyser(container) {
   resultsSection.className = 'pt-4';
   resultsSection.hidden = true;
   generateTile.appendChild(resultsSection);
+
+  // Custom trade button — below the generate tile, in the left column
+  const customBtn = document.createElement('button');
+  customBtn.type = 'button';
+  customBtn.className = 'btn-secondary w-full';
+  customBtn.style.marginTop = '12px';
+  customBtn.textContent = '+ Add Custom Trade';
+
+  const customFormWrap = document.createElement('div');
+
+  const leftColWrap = document.createElement('div');
+  leftColWrap.appendChild(customBtn);
+  leftColWrap.appendChild(customFormWrap);
+
+  // Replace generateTile's column slot with a wrapper containing both
+  generateTile.parentElement.insertBefore(leftColWrap, generateTile);
+  leftColWrap.insertBefore(generateTile, leftColWrap.firstChild);
+
+  customBtn.addEventListener('click', () => {
+    renderCustomTradeForm(customFormWrap, {
+      onSave:   () => { customFormWrap.innerHTML = ''; refreshAll(); },
+      onCancel: () => { customFormWrap.innerHTML = ''; },
+    });
+    customFormWrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  });
 
   // ── Refresh pending section ──────────────────────────────────────────────
   async function refreshAll() {
