@@ -23,7 +23,7 @@ export async function mountMissingCards(container) {
   header.innerHTML = `
     <div class="section-heading-wrap">
       <div class="section-heading-bar"></div>
-      <span class="fx" style="font-size:32px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-primary); line-height:1;">Missing</span>
+      <span class="fx page-title">Missing</span>
     </div>
   `;
 
