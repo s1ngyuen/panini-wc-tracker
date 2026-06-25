@@ -198,7 +198,7 @@ export function buildProgressContent(container, collection, pendingReceiveIds = 
       <div class="prog-row__content">
         <div class="prog-row__header">
           <span class="prog-row__name">${escapeText(team)}</span>
-          <span class="prog-row__fraction"><span class="prog-row__owned-n">${owned}</span>${pending > 0 ? `<span class="prog-row__pending-count">+${pending}</span>` : ''}<span class="prog-row__of"> of ${total}</span></span>
+          <span class="prog-row__fraction"><span class="prog-row__owned-n">${owned}</span><span class="prog-row__of"> of ${total} cards</span></span>
         </div>
         <div class="progress-track prog-row__bar" style="position:relative;overflow:hidden;">
           <div class="progress-fill" style="width:${p}%"></div>
@@ -232,7 +232,7 @@ export function buildProgressContent(container, collection, pendingReceiveIds = 
       <div class="prog-row__content">
         <div class="prog-row__header">
           <span class="prog-row__name">${escapeText(type)}</span>
-          <span class="prog-row__fraction"><span class="prog-row__owned-n">${owned}</span>${pending > 0 ? `<span class="prog-row__pending-count">+${pending}</span>` : ''}<span class="prog-row__of"> of ${total}</span></span>
+          <span class="prog-row__fraction"><span class="prog-row__owned-n">${owned}</span><span class="prog-row__of"> of ${total} cards</span></span>
         </div>
         <div class="progress-track prog-row__bar" style="position:relative;overflow:hidden;">
           <div class="progress-fill" style="width:${p}%"></div>
