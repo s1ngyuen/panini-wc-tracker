@@ -622,12 +622,12 @@ export async function mountSwapAnalyser(container) {
   const newTradeTab = document.createElement('button');
   newTradeTab.type = 'button';
   newTradeTab.className = 'btn-primary gen-tab gen-tab--active';
-  newTradeTab.textContent = 'New Trade';
+  newTradeTab.textContent = 'Generate New Trade';
 
   const customTradeTab = document.createElement('button');
   customTradeTab.type = 'button';
   customTradeTab.className = 'btn-secondary gen-tab';
-  customTradeTab.textContent = 'Custom Trade';
+  customTradeTab.textContent = 'Generate Custom Trade';
 
   tabBar.appendChild(newTradeTab);
   tabBar.appendChild(customTradeTab);
@@ -667,11 +667,6 @@ export async function mountSwapAnalyser(container) {
   const pendingSection = document.createElement('div');
   pendingCol.appendChild(pendingSection);
 
-  // Hint inside new trade tile
-  const analyseHead = document.createElement('div');
-  analyseHead.className = 'pb-3';
-  analyseHead.innerHTML = `<p class="form-hint">Cards in pending trades are excluded from suggestions.</p>`;
-  generateTile.appendChild(analyseHead);
 
   // Inputs (inside tile)
   const inputsSection = document.createElement('div');
