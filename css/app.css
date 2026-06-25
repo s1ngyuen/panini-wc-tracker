@@ -616,8 +616,8 @@ body::before {
 }
 
 .btn-cancel {
-  background: #CC3333;
-  color: #fff;
+  background: #e2e4e6;
+  color: #CC3333;
   font-family: var(--font-display);
   font-size: 13px;
   text-transform: uppercase;
@@ -631,10 +631,10 @@ body::before {
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  transition: background .2s;
+  transition: background .2s, color .2s;
 }
 
-.btn-cancel:hover { background: #CC3333; }
+.btn-cancel:hover { background: #CC3333; color: #fff; }
 
 .btn-primary:active,
 .btn-secondary:active { opacity: 0.85; }
