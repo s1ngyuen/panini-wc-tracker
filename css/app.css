@@ -12,6 +12,14 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: 'FIFA26';
+  src: url('../assets/fonts/fifa-26.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 
 /* ─────────────────────────────────────────────────────────────────────────────
    TOKENS
@@ -244,13 +252,13 @@ body::before {
   margin-bottom: 4px;
 }
 
-.section-heading-wrap .fx { font-weight: 800; color: var(--gold) !important; }
+.section-heading-wrap .fx { font-family: 'FIFA26', var(--font-display); font-weight: 800; color: var(--gold) !important; }
 
 .section-heading-bar { display: none; }
 
 /* legacy .section-heading used by older views */
 .section-heading {
-  font-family: var(--font-display);
+  font-family: 'FIFA26', var(--font-display);
   font-size: 28px;
   text-transform: uppercase;
   letter-spacing: .04em;
@@ -266,7 +274,7 @@ body::before {
   color: rgba(197,160,40,0.6);
   margin-bottom: 24px;
   padding-left: 16px;
-  font-family: var(--font-display);
+  font-family: 'FIFA26', var(--font-display);
   text-transform: uppercase;
   display: inline-block;
   transform: scaleX(var(--squeeze));
@@ -368,6 +376,7 @@ body::before {
 }
 
 .category-heading__text {
+  font-family: 'FIFA26', var(--font-display);
   font-size: 20px;
   text-transform: uppercase;
   letter-spacing: .06em;
@@ -926,6 +935,7 @@ body::before {
 }
 
 .progress-modal__title {
+  font-family: 'FIFA26', var(--font-display);
   font-size: 22px;
   text-transform: uppercase;
   letter-spacing: .06em;
