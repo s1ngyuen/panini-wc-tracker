@@ -508,27 +508,68 @@ function renderTradeCard(trade, { onComplete, onRefresh }) {
 // ── Custom trade form ─────────────────────────────────────────────────────────
 function renderCustomTradeForm(container, { onSave, onCancel }) {
   container.innerHTML = '';
-  const form = document.createElement('div');
-  form.className = 'pending-trade-card';
-  form.style.marginBottom = '12px';
-  form.innerHTML = `
-    <p class="pending-trade-card__form-title">New Custom Trade</p>
-    <label class="pending-trade-card__edit-label">Partner name</label>
-    <input id="ct-partner" type="text" class="form-input" style="font-size:13px; margin-bottom:10px;" placeholder="e.g. John" />
-    <label class="pending-trade-card__edit-label">Cards I give (IDs or names)</label>
-    <textarea id="ct-give" class="form-textarea" style="font-size:12px; min-height:56px; margin-bottom:10px;" placeholder="42, Messi, 87"></textarea>
-    <label class="pending-trade-card__edit-label">Cards I get (IDs or names)</label>
-    <textarea id="ct-get" class="form-textarea" style="font-size:12px; min-height:56px; margin-bottom:12px;" placeholder="55, Ronaldo, 66"></textarea>
-    <div style="display:flex; gap:8px;">
-      <button id="ct-save" type="button" class="btn-primary" style="flex:1;">Save Trade</button>
-      <button id="ct-cancel" type="button" class="btn-secondary" style="flex:1;">Cancel</button>
-    </div>
-  `;
 
-  form.querySelector('#ct-save').addEventListener('click', () => {
-    const partner = form.querySelector('#ct-partner').value.trim();
-    const { matched: iGiveCards } = parseInput(form.querySelector('#ct-give').value);
-    const { matched: iGetCards  } = parseInput(form.querySelector('#ct-get').value);
+  const title = document.createElement('p');
+  title.className = 'pending-trade-card__form-title';
+  title.textContent = 'Generate Custom Trade';
+  container.appendChild(title);
+
+  function makeField(id, labelText, type = 'textarea', placeholder = '') {
+    const wrap = document.createElement('div');
+    const label = document.createElement('label');
+    label.setAttribute('for', id);
+    label.className = 'form-label';
+    label.textContent = labelText;
+    wrap.appendChild(label);
+    let input;
+    if (type === 'input') {
+      input = document.createElement('input');
+      input.type = 'text';
+      input.className = 'form-input';
+    } else {
+      input = document.createElement('textarea');
+      input.className = 'form-textarea';
+    }
+    input.id = id;
+    input.placeholder = placeholder;
+    wrap.appendChild(input);
+    return { wrap, input };
+  }
+
+  const { wrap: partnerWrap, input: partnerInput } = makeField('ct-partner', 'Partner name (optional)', 'input', 'e.g. John');
+  const { wrap: giveWrap,    input: giveTextarea  } = makeField('ct-give', 'Cards I give (IDs or names)', 'textarea', '42, Messi, 87');
+  const { wrap: getWrap,     input: getTextarea   } = makeField('ct-get',  'Cards I get (IDs or names)',  'textarea', '55, Ronaldo, 66');
+
+  const btnRow = document.createElement('div');
+  btnRow.style.cssText = 'display:flex; gap:8px;';
+
+  const saveBtn = document.createElement('button');
+  saveBtn.type = 'button';
+  saveBtn.className = 'btn-primary';
+  saveBtn.style.flex = '1';
+  saveBtn.textContent = 'Save Trade';
+
+  const cancelBtn = document.createElement('button');
+  cancelBtn.type = 'button';
+  cancelBtn.className = 'btn-secondary';
+  cancelBtn.style.flex = '1';
+  cancelBtn.textContent = 'Cancel';
+
+  btnRow.appendChild(saveBtn);
+  btnRow.appendChild(cancelBtn);
+
+  const fields = document.createElement('div');
+  fields.className = 'flex flex-col gap-4';
+  fields.appendChild(partnerWrap);
+  fields.appendChild(giveWrap);
+  fields.appendChild(getWrap);
+  fields.appendChild(btnRow);
+  container.appendChild(fields);
+
+  saveBtn.addEventListener('click', () => {
+    const partner = partnerInput.value.trim();
+    const { matched: iGiveCards } = parseInput(giveTextarea.value);
+    const { matched: iGetCards  } = parseInput(getTextarea.value);
     if (iGiveCards.length === 0 && iGetCards.length === 0) {
       showToast('Enter at least one card in give or get.', 'error');
       return;
@@ -538,15 +579,14 @@ function renderCustomTradeForm(container, { onSave, onCancel }) {
       partner: partner || 'Unknown',
       createdAt: new Date().toISOString(),
       iGive: iGiveCards.map(c => c.id),
-      iGet: iGetCards.map(c => c.id),
+      iGet:  iGetCards.map(c => c.id),
     });
     updateSwapBadge();
     showToast('Custom trade saved.', 'success');
     onSave();
   });
 
-  form.querySelector('#ct-cancel').addEventListener('click', onCancel);
-  container.appendChild(form);
+  cancelBtn.addEventListener('click', onCancel);
 }
 
 // ── Pending trades section ────────────────────────────────────────────────────
