@@ -301,6 +301,7 @@ body::before {
 .page-title-scrl-inner {
   display: grid;
   grid-template-columns: auto;
+  height: 72px;
   will-change: transform;
   transition: transform 0.3s ease;
 }
