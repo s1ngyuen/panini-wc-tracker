@@ -1846,7 +1846,7 @@ body::before {
 /* ── Swaps two-column layout ─────────────────────────────────────────────── */
 .swap-layout {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 35% 65%;
   gap: 24px;
   padding: 0 16px 32px;
   align-items: start;
