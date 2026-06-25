@@ -371,12 +371,17 @@ body::before {
    PROGRESS ROWS  (per team / type)
 ───────────────────────────────────────────────────────────────────────────── */
 
-.prog-rows { display: flex; flex-direction: column; gap: 12px; }
+.prog-rows { display: flex; flex-direction: column; gap: 8px; }
 
 .prog-row {
   display: flex;
   align-items: flex-start;
   gap: 10px;
+}
+
+.prog-row--team {
+  background: #f2f3f5;
+  padding: 12px 14px;
 }
 
 .prog-row__crest {
