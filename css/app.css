@@ -427,8 +427,8 @@ body::before {
 .prog-row__name {
   font-size: 16px;
   font-family: var(--font-display);
-  font-weight: 800;
-  color: #111;
+  font-weight: 700;
+  color: var(--fill);
   text-transform: uppercase;
   letter-spacing: .04em;
   flex: 1;
@@ -443,13 +443,13 @@ body::before {
   font-size: 16px;
   font-family: var(--font-body);
   font-weight: 400;
-  color: rgba(197,160,40,0.55);
+  color: color-mix(in srgb, var(--fill) 45%, white);
   flex-shrink: 0;
   white-space: nowrap;
 }
 
-.prog-row__owned-n { color: var(--accent); }
-.prog-row__of { color: rgba(197,160,40,0.35); }
+.prog-row__owned-n { color: var(--fill); }
+.prog-row__of { color: color-mix(in srgb, var(--fill) 35%, white); }
 
 .prog-row__pending-count { color: rgba(197,160,40,0.8); }
 
@@ -457,7 +457,7 @@ body::before {
   font-size: 16px;
   font-family: var(--font-body);
   font-weight: 400;
-  color: var(--accent);
+  color: color-mix(in srgb, var(--fill) 45%, white);
   flex-shrink: 0;
   min-width: 40px;
   text-align: right;
