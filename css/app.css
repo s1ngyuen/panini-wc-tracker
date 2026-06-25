@@ -659,6 +659,7 @@ body::before {
   border-radius: 0;
   font-family: var(--font-body);
   font-size: 15px;
+  font-weight: 400;
   color: var(--text-primary);
   background: #f9f9f9;
   outline: none;
@@ -666,7 +667,7 @@ body::before {
   transition: border-color .15s;
 }
 
-.form-input::placeholder { color: var(--text-muted); }
+.form-input::placeholder { color: var(--text-muted); font-weight: 400; }
 .form-input:focus { border-color: var(--accent-primary); }
 
 .form-textarea {
@@ -676,6 +677,7 @@ body::before {
   border-radius: 0;
   font-family: var(--font-body);
   font-size: 14px;
+  font-weight: 400;
   color: var(--text-primary);
   background: #f9f9f9;
   resize: vertical;
@@ -684,11 +686,12 @@ body::before {
   transition: border-color .15s;
 }
 
-.form-textarea::placeholder { color: var(--text-muted); }
+.form-textarea::placeholder { color: var(--text-muted); font-weight: 400; }
 .form-textarea:focus { border-color: var(--accent-primary); }
 
 .form-label {
   display: block;
+  font-family: var(--font-display);
   font-size: 11px;
   font-weight: 700;
   color: rgba(197,160,40,0.7);
