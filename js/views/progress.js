@@ -133,9 +133,9 @@ export function buildProgressContent(container, collection, pendingReceiveIds = 
       <div class="progress-fill" style="width:${pendingPct}%; background:rgba(197,160,40,0.4); position:absolute; left:${pct}%; top:0; height:100%;"></div>
     </div>
     ${pendingCount > 0 ? `
-    <div style="display:flex;gap:12px;margin-top:6px;font-size:10px;color:var(--text-muted);">
-      <span style="display:flex;align-items:center;gap:4px;"><span style="display:inline-block;width:10px;height:10px;background:var(--accent);border-radius:2px;"></span>Owned ${pct}%</span>
-      <span style="display:flex;align-items:center;gap:4px;"><span style="display:inline-block;width:10px;height:10px;background:rgba(197,160,40,0.55);border-radius:2px;"></span>Pending ${pendingPct}%</span>
+    <div class="collection-progress__key">
+      <span class="collection-progress__key-owned">${ownedCount} owned</span>
+      <span class="collection-progress__key-pending">${pendingCount} pending</span>
     </div>` : ''}
   `;
   container.appendChild(tilesBlock);
