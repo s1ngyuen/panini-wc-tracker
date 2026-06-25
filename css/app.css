@@ -301,7 +301,6 @@ body::before {
 .page-title-scrl-inner {
   display: grid;
   grid-template-columns: auto;
-  height: 72px;
   will-change: transform;
   transition: transform 0.3s ease;
 }
@@ -324,7 +323,7 @@ body::before {
 }
 
 .page-title-wrap:hover .page-title-scrl-inner {
-  transform: translateY(-100%);
+  transform: translateY(-72px);
 }
 
 .section-heading-bar { display: none; }
