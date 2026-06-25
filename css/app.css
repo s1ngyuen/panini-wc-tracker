@@ -371,20 +371,33 @@ body::before {
    PROGRESS ROWS  (per team / type)
 ───────────────────────────────────────────────────────────────────────────── */
 
-.prog-rows { display: flex; flex-direction: column; gap: 10px; }
+.prog-rows { display: flex; flex-direction: column; gap: 12px; }
 
 .prog-row {
   display: flex;
-  align-items: center;
-  gap: 8px;
+  align-items: flex-start;
+  gap: 10px;
 }
 
 .prog-row__flag {
-  font-size: 20px;
+  font-size: 22px;
   line-height: 1;
   flex-shrink: 0;
-  width: 26px;
+  width: 28px;
   text-align: center;
+  padding-top: 1px;
+}
+
+.prog-row__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.prog-row__header {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 5px;
 }
 
 .prog-row__name {
@@ -393,15 +406,12 @@ body::before {
   color: #111;
   text-transform: uppercase;
   letter-spacing: .04em;
-  flex-shrink: 0;
-  white-space: nowrap;
+  flex: 1;
   line-height: 1;
 }
 
 .prog-row__bar {
-  flex: 1;
-  min-width: 32px;
-  height: 8px;
+  height: 12px;
 }
 
 .prog-row__fraction {
@@ -418,14 +428,16 @@ body::before {
 .prog-row__pending-count { color: rgba(197,160,40,0.8); }
 
 .prog-row__pct {
-  font-size: 12px;
+  font-size: 11px;
   font-family: var(--font-display);
-  color: var(--gold);
+  color: var(--accent);
   flex-shrink: 0;
-  min-width: 34px;
+  min-width: 30px;
   text-align: right;
   font-weight: 700;
 }
+
+.progress-fill--pending { opacity: 0.3; }
 
 /* ─────────────────────────────────────────────────────────────────────────────
    LIST ROWS  (missing, swaps)
@@ -808,8 +820,10 @@ body::before {
   text-align: center;
 }
 
+.cst-total  { color: var(--accent); }
 .cst-unique { color: var(--accent); }
 .cst-need   { color: rgba(197,160,40,0.65); }
+.cst-dupe   { color: var(--accent); }
 
 @media (max-width: 480px) {
   .collection-stat-tiles { grid-template-columns: repeat(2, 1fr); }
