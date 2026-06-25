@@ -243,7 +243,7 @@ body::before {
   font-size: 13px;
   text-transform: uppercase;
   letter-spacing: .08em;
-  border: none;
+  border: 2px solid var(--accent);
   border-radius: 0;
   padding: 0 12px;
   cursor: pointer;
@@ -593,7 +593,7 @@ body::before {
   font-size: 13px;
   text-transform: uppercase;
   letter-spacing: .08em;
-  border: none;
+  border: 2px solid var(--accent);
   border-radius: 0;
   padding: 0 20px;
   cursor: pointer;
