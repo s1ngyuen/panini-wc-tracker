@@ -379,13 +379,37 @@ body::before {
   gap: 10px;
 }
 
-.prog-row__flag {
-  font-size: 22px;
-  line-height: 1;
+.prog-row__crest {
+  width: 36px;
+  height: 36px;
   flex-shrink: 0;
-  width: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.prog-row__crest-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 3px;
+}
+
+.prog-row__crest-initials {
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--crest-color, #226750);
+  letter-spacing: .02em;
   text-align: center;
-  padding-top: 1px;
+  line-height: 1;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
 }
 
 .prog-row__content {
@@ -401,7 +425,7 @@ body::before {
 }
 
 .prog-row__name {
-  font-size: 11px;
+  font-size: 13px;
   font-family: var(--font-display);
   color: #111;
   text-transform: uppercase;
@@ -415,7 +439,7 @@ body::before {
 }
 
 .prog-row__fraction {
-  font-size: 11px;
+  font-size: 12px;
   font-family: var(--font-display);
   color: rgba(197,160,40,0.55);
   flex-shrink: 0;
@@ -428,11 +452,11 @@ body::before {
 .prog-row__pending-count { color: rgba(197,160,40,0.8); }
 
 .prog-row__pct {
-  font-size: 11px;
+  font-size: 13px;
   font-family: var(--font-display);
   color: var(--accent);
   flex-shrink: 0;
-  min-width: 30px;
+  min-width: 36px;
   text-align: right;
   font-weight: 700;
 }

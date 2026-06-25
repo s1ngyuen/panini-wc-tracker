@@ -183,12 +183,18 @@ export function buildProgressContent(container, collection, pendingReceiveIds = 
     const p  = Math.round((owned / total) * 100);
     const pp = Math.round((pending / total) * 100);
     const colors = TEAM_COLORS[team] || { fill: '#304FFE', track: '#E4EAFF' };
-    const flag = TEAM_FLAGS[team] || '';
+    const crestSlug = team.toLowerCase().replace(/\s+/g, '-').replace(/'/g, '');
+    const crestSrc  = `assets/crests/${crestSlug}.png`;
+    const initials  = team.split(' ').map(w => w[0]).join('').slice(0, 3).toUpperCase();
     const row = document.createElement('div');
     row.className = 'prog-row prog-row--team';
     row.style.cssText = `--fill:${colors.fill}; --track:${colors.track};`;
     row.innerHTML = `
-      <span class="prog-row__flag">${flag}</span>
+      <div class="prog-row__crest" style="--crest-color:${colors.fill};">
+        <img class="prog-row__crest-img" src="${crestSrc}" alt="${escapeText(team)} badge"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+        <span class="prog-row__crest-initials" style="display:none;">${initials}</span>
+      </div>
       <div class="prog-row__content">
         <div class="prog-row__header">
           <span class="prog-row__name">${escapeText(team)}</span>
