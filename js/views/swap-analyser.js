@@ -559,7 +559,7 @@ function renderPendingSection(container, { onComplete, onRefresh }) {
   head.className = 'px-4 pb-3';
   head.innerHTML = `
     <div style="display:flex; align-items:center; justify-content:space-between;">
-      <span style="font-family:var(--font-display); font-size:20px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-primary);">
+      <span style="font-family:var(--font-display); font-size:20px; text-transform:uppercase; letter-spacing:.04em; color:var(--accent);">
         Pending Trades${trades.length > 0 ? ` <span style="color:var(--accent);">(${trades.length})</span>` : ''}
       </span>
       <button id="add-custom-btn" type="button" class="btn-secondary" style="font-size:11px; padding:5px 12px;">+ Custom</button>
@@ -623,7 +623,7 @@ export async function mountSwapAnalyser(container) {
   const analyseHead = document.createElement('div');
   analyseHead.className = 'px-4 pb-3';
   analyseHead.innerHTML = `
-    <span style="font-family:var(--font-display); font-size:20px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-primary);">Generate New Trade</span>
+    <span style="font-family:var(--font-display); font-size:20px; text-transform:uppercase; letter-spacing:.04em; color:var(--accent);">Generate New Trade</span>
     <p class="form-hint" style="margin-top:4px;">Cards currently in pending trades are excluded from suggestions.</p>
   `;
   container.appendChild(analyseHead);

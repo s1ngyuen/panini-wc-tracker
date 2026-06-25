@@ -1938,7 +1938,7 @@ body::before {
   font-size: 13px;
   text-transform: uppercase;
   letter-spacing: .04em;
-  color: var(--text-primary);
+  color: var(--accent);
   margin-bottom: 12px;
 }
 
