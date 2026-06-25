@@ -286,9 +286,23 @@ body::before {
 .section-heading-wrap .fx { font-family: 'FIFA26', var(--font-display); font-weight: 800; color: #aaa; }
 
 .page-title-wrap {
-  position: relative;
   display: inline-block;
-  line-height: 1;
+  cursor: default;
+}
+
+.page-title-scrl {
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: flex-start;
+  height: 72px;
+}
+
+.page-title-scrl-inner {
+  display: grid;
+  grid-template-columns: auto;
+  will-change: transform;
+  transition: transform 0.3s ease;
 }
 
 .page-title-bg {
@@ -299,25 +313,17 @@ body::before {
   letter-spacing: .04em;
   color: #f2f3f5;
   line-height: 1;
-  display: block;
-  pointer-events: none;
-  user-select: none;
+  height: 72px;
+  display: inline-flex;
+  align-items: center;
 }
 
-.page-title-fg {
-  position: absolute;
-  top: 50%;
-  left: 0;
-  transform: translateY(-50%);
-  font-family: var(--font-display);
-  font-size: 34px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: .08em;
-  color: #c8c8c8;
-  line-height: 1;
-  white-space: nowrap;
-  pointer-events: none;
+.page-title-bg--green {
+  color: var(--green);
+}
+
+.page-title-wrap:hover .page-title-scrl-inner {
+  transform: translateY(-100%);
 }
 
 .section-heading-bar { display: none; }
