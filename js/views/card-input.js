@@ -11,11 +11,11 @@ export function mountCardInput(container) {
 
   // ── Heading ─────────────────────────────────────────────────────────────
   const heading = document.createElement('div');
-  heading.className = 'px-4 py-10';
+  heading.className = 'px-4 py-8';
   heading.innerHTML = `
     <div class="section-heading-wrap">
       <div class="section-heading-bar"></div>
-      <span class="fx page-title">Add Cards</span>
+      <div class="page-title-wrap"><span class="page-title-bg">Add Cards</span><span class="fx page-title-fg">Add Cards</span></div>
     </div>
     <p class="section-sub">Add card(s) to your collection here.</p>
   `;

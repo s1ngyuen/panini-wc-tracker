@@ -285,15 +285,39 @@ body::before {
 
 .section-heading-wrap .fx { font-family: 'FIFA26', var(--font-display); font-weight: 800; color: #aaa; }
 
-.page-title {
+.page-title-wrap {
+  position: relative;
+  display: inline-block;
+  line-height: 1;
+}
+
+.page-title-bg {
   font-family: 'FIFA26', var(--font-display);
   font-size: 72px;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: .04em;
-  color: #f2f3f5 !important;
+  color: #f2f3f5;
   line-height: 1;
   display: block;
+  pointer-events: none;
+  user-select: none;
+}
+
+.page-title-fg {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  font-family: var(--font-display);
+  font-size: 34px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: #c8c8c8;
+  line-height: 1;
+  white-space: nowrap;
+  pointer-events: none;
 }
 
 .section-heading-bar { display: none; }

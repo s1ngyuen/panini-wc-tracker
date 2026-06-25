@@ -601,11 +601,11 @@ export async function mountSwapAnalyser(container) {
 
   // Header
   const header = document.createElement('div');
-  header.className = 'px-4 py-10';
+  header.className = 'px-4 py-8';
   header.innerHTML = `
     <div class="section-heading-wrap">
       <div class="section-heading-bar"></div>
-      <span class="fx page-title">Swaps</span>
+      <div class="page-title-wrap"><span class="page-title-bg">Swaps</span><span class="fx page-title-fg">Swaps</span></div>
     </div>
   `;
   container.appendChild(header);

@@ -18,11 +18,11 @@ export async function mountCollectionGrid(container) {
 
   // ── Header ───────────────────────────────────────────────────────────────
   const header = document.createElement('div');
-  header.className = 'px-4 py-10';
+  header.className = 'px-4 py-8';
   header.innerHTML = `
     <div class="section-heading-wrap">
       <div class="section-heading-bar"></div>
-      <span class="fx page-title">Collection</span>
+      <div class="page-title-wrap"><span class="page-title-bg">Collection</span><span class="fx page-title-fg">Collection</span></div>
     </div>
   `;
   container.appendChild(header);
@@ -388,7 +388,7 @@ export async function mountCollectionGrid(container) {
     if (ownedBonus === 0) return;
 
     const heading = document.createElement('div');
-    heading.className = 'px-4 py-10';
+    heading.className = 'px-4 py-8';
     heading.innerHTML = `
       <div class="section-heading-wrap">
         <div class="section-heading-bar"></div>
