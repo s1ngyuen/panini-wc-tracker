@@ -244,7 +244,7 @@ function renderTradeCard(trade, { onComplete, onRefresh }) {
     const header = document.createElement('div');
     header.className = 'pending-trade-card__header';
     header.innerHTML = `
-      <span class="pending-trade-card__partner">${trade.partner || 'Unknown'}</span>
+      <span class="pending-trade-card__partner">Trade with ${trade.partner || 'Unknown'}</span>
       <span class="pending-trade-card__age">${relativeTime(trade.createdAt)}</span>
     `;
     wrap.appendChild(header);
