@@ -96,6 +96,7 @@ export async function mountCollectionGrid(container) {
   progressModal.innerHTML = `
     <div class="progress-modal__backdrop"></div>
     <div class="progress-modal__panel">
+      <div class="progress-modal__handle"></div>
       <div class="progress-modal__header">
         <span class="fx progress-modal__title">Progress</span>
         <button class="progress-modal__close" aria-label="Close">✕</button>
