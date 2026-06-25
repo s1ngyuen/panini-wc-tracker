@@ -3,7 +3,7 @@
 
 import { CARDS, TEAMS, CARD_TYPES, BONUS_CARDS } from '../cards-data.js';
 import { getCollection, removeCard } from '../store.js';
-import { getPendingReceiveIds } from '../store-trades.js';
+import { getPendingReceiveIds, getPendingTrades } from '../store-trades.js';
 import { createCardElement } from '../components/card-visual.js';
 import { renderFilterBar } from '../components/filters.js';
 import { buildProgressContent } from './progress.js';
@@ -63,6 +63,10 @@ export async function mountCollectionGrid(container) {
       <span class="cst-tile__label">Unique</span>
     </div>
     <div class="cst-tile">
+      <span class="cst-tile__num cst-pending">—</span>
+      <span class="cst-tile__label">Pending trade</span>
+    </div>
+    <div class="cst-tile">
       <span class="cst-tile__num cst-need">—</span>
       <span class="cst-tile__label">Still need</span>
     </div>
@@ -73,10 +77,11 @@ export async function mountCollectionGrid(container) {
   `;
   container.appendChild(statTilesWrap);
 
-  const cstTotal  = statTilesWrap.querySelector('.cst-total');
-  const cstUnique = statTilesWrap.querySelector('.cst-unique');
-  const cstNeed   = statTilesWrap.querySelector('.cst-need');
-  const cstDupe   = statTilesWrap.querySelector('.cst-dupe');
+  const cstTotal   = statTilesWrap.querySelector('.cst-total');
+  const cstUnique  = statTilesWrap.querySelector('.cst-unique');
+  const cstPending = statTilesWrap.querySelector('.cst-pending');
+  const cstNeed    = statTilesWrap.querySelector('.cst-need');
+  const cstDupe    = statTilesWrap.querySelector('.cst-dupe');
 
   const progressCount      = progressWrap.querySelector('.collection-progress__count');
   const progressPct        = progressWrap.querySelector('.collection-progress__pct');
@@ -347,9 +352,10 @@ export async function mountCollectionGrid(container) {
     const totalOwned = filtered.reduce((sum, c) => sum + (collection[String(c.id)] ?? 0), 0);
     const dupCount   = filtered.reduce((sum, c) => sum + Math.max(0, (collection[String(c.id)] ?? 0) - 1), 0);
     cstTotal.textContent  = totalOwned;
-    cstUnique.textContent = owned;
-    cstNeed.textContent   = total - owned;
-    cstDupe.textContent   = dupCount;
+    cstUnique.textContent  = owned;
+    cstPending.textContent = getPendingTrades().length;
+    cstNeed.textContent    = total - owned;
+    cstDupe.textContent    = dupCount;
   }
 
   function renderGrid() {

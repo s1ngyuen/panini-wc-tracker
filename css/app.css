@@ -918,7 +918,7 @@ body::before {
 
 .collection-stat-tiles {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: var(--tile-gap);
   margin: 0 16px 12px;
 }
@@ -937,7 +937,7 @@ body::before {
   font-size: 24px;
   font-weight: 700;
   line-height: 1;
-  color: #111;
+  color: var(--accent);
 }
 
 .cst-tile__label {
