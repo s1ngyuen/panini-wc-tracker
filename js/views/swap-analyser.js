@@ -588,7 +588,7 @@ function renderPendingSection(container, { onComplete, onRefresh }) {
   }
 
   const list = document.createElement('div');
-  list.className = 'pb-2 flex flex-col gap-3';
+  list.className = 'pending-trades-list';
   container.appendChild(list);
 
   trades.forEach(trade => list.appendChild(renderTradeCard(trade, { onComplete, onRefresh })));
