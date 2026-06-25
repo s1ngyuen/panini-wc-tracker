@@ -237,13 +237,13 @@ body::before {
 }
 
 .btn-reset {
-  background: none;
+  background: #f2f3f5;
   color: var(--accent);
   font-family: var(--font-display);
   font-size: 13px;
   text-transform: uppercase;
   letter-spacing: .08em;
-  border: 1px solid var(--accent);
+  border: none;
   border-radius: 0;
   padding: 0 12px;
   cursor: pointer;
@@ -256,6 +256,12 @@ body::before {
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  transition: background .2s, color .2s;
+}
+
+.btn-reset:hover {
+  background: var(--accent);
+  color: #fff;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -579,9 +585,10 @@ body::before {
    BUTTONS
 ───────────────────────────────────────────────────────────────────────────── */
 
-.btn-primary {
-  background: var(--accent-primary);
-  color: #fff;
+.btn-primary,
+.btn-secondary {
+  background: #f2f3f5;
+  color: var(--accent);
   font-family: var(--font-display);
   font-size: 13px;
   text-transform: uppercase;
@@ -598,41 +605,22 @@ body::before {
   transform: scaleX(var(--squeeze));
   transform-origin: center;
   overflow: hidden;
+  transition: background .2s, color .2s;
 }
 
-.btn-primary:active { opacity: 0.8; }
-
-.btn-primary:focus-visible {
-  outline: 2px solid var(--accent-primary);
-  outline-offset: 3px;
+.btn-primary:hover,
+.btn-secondary:hover {
+  background: var(--accent);
+  color: #fff;
 }
 
-.btn-secondary {
-  background: transparent;
-  color: var(--accent);
-  font-family: var(--font-display);
-  font-size: 13px;
-  text-transform: uppercase;
-  letter-spacing: .06em;
-  border: 1.5px solid var(--accent);
-  border-radius: 0;
-  padding: 0 20px;
-  cursor: pointer;
-  height: 40px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  transform: scaleX(var(--squeeze));
-  transform-origin: center;
-  overflow: hidden;
-}
+.btn-primary:active,
+.btn-secondary:active { opacity: 0.85; }
 
-.btn-secondary:hover { background: var(--accent-light); }
-
+.btn-primary:focus-visible,
 .btn-secondary:focus-visible {
   outline: 2px solid var(--accent-primary);
-  outline-offset: 2px;
+  outline-offset: 3px;
 }
 
 /* ── Button scroll-reveal (matches navbar tab animation) ── */
