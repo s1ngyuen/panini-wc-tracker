@@ -248,7 +248,7 @@ body::before {
   padding: 0 12px;
   cursor: pointer;
   margin-left: 10px;
-  background: #e2e4e6;
+  background: #f2f3f5;
   transform: scaleX(var(--squeeze));
   transform-origin: right;
   white-space: nowrap;
@@ -588,7 +588,7 @@ body::before {
 
 .btn-primary,
 .btn-secondary {
-  background: #e2e4e6;
+  background: #f2f3f5;
   color: var(--accent);
   font-family: var(--font-display);
   font-size: 13px;
@@ -616,7 +616,7 @@ body::before {
 }
 
 .btn-cancel {
-  background: #e2e4e6;
+  background: #f2f3f5;
   color: #CC3333;
   font-family: var(--font-display);
   font-size: 13px;
