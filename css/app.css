@@ -243,11 +243,12 @@ body::before {
   font-size: 13px;
   text-transform: uppercase;
   letter-spacing: .08em;
-  border: 2px solid var(--accent);
+  border: none;
   border-radius: 0;
   padding: 0 12px;
   cursor: pointer;
   margin-left: 10px;
+  background: #e2e4e6;
   transform: scaleX(var(--squeeze));
   transform-origin: right;
   white-space: nowrap;
@@ -587,13 +588,13 @@ body::before {
 
 .btn-primary,
 .btn-secondary {
-  background: #f2f3f5;
+  background: #e2e4e6;
   color: var(--accent);
   font-family: var(--font-display);
   font-size: 13px;
   text-transform: uppercase;
   letter-spacing: .08em;
-  border: 2px solid var(--accent);
+  border: none;
   border-radius: 0;
   padding: 0 20px;
   cursor: pointer;
