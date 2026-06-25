@@ -117,7 +117,7 @@ export function buildProgressContent(container, collection, pendingReceiveIds = 
       </div>
       <div class="stat-tile">
         <div class="stat-tile__label">Still need</div>
-        <span class="fx-c stat-tile__num" style="color:#111111;">${needCount < 0 ? 0 : needCount}</span>
+        <span class="fx-c stat-tile__num" style="color:var(--accent);">${needCount < 0 ? 0 : needCount}</span>
       </div>
       <div class="stat-tile">
         <div class="stat-tile__label">Pending trades</div>
@@ -125,7 +125,7 @@ export function buildProgressContent(container, collection, pendingReceiveIds = 
       </div>
       <div class="stat-tile">
         <div class="stat-tile__label">Duplicates</div>
-        <span class="fx-c stat-tile__num" style="color:#111111;">${dupCount}</span>
+        <span class="fx-c stat-tile__num" style="color:var(--accent);">${dupCount}</span>
       </div>
     </div>
     <div class="progress-track" style="--track:#E4EAFF; --fill:var(--accent); position:relative; overflow:hidden;">
