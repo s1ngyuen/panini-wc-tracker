@@ -556,19 +556,18 @@ function renderPendingSection(container, { onComplete, onRefresh }) {
   const trades = getPendingTrades();
 
   const head = document.createElement('div');
-  head.className = 'px-4 pb-3';
+  head.className = 'pb-3';
   head.innerHTML = `
     <div style="display:flex; align-items:center; justify-content:space-between;">
       <span style="font-family:var(--font-display); font-size:20px; text-transform:uppercase; letter-spacing:.04em; color:var(--accent);">
         Pending Trades${trades.length > 0 ? ` <span style="color:var(--accent);">(${trades.length})</span>` : ''}
       </span>
-      <button id="add-custom-btn" type="button" class="btn-secondary" style="font-size:11px; padding:5px 12px;">+ Custom</button>
+      <button id="add-custom-btn" type="button" class="btn-secondary">+ Custom</button>
     </div>
   `;
   container.appendChild(head);
 
   const customFormWrap = document.createElement('div');
-  customFormWrap.className = 'px-4';
   container.appendChild(customFormWrap);
 
   head.querySelector('#add-custom-btn').addEventListener('click', () => {
@@ -581,7 +580,7 @@ function renderPendingSection(container, { onComplete, onRefresh }) {
 
   if (trades.length === 0) {
     const empty = document.createElement('p');
-    empty.className = 'px-4 pb-4 text-sm';
+    empty.className = 'pb-4 text-sm';
     empty.style.color = 'var(--text-muted)';
     empty.textContent = 'No pending trades. Analyse a swap below and save it, or add a custom trade above.';
     container.appendChild(empty);
@@ -589,7 +588,7 @@ function renderPendingSection(container, { onComplete, onRefresh }) {
   }
 
   const list = document.createElement('div');
-  list.className = 'px-4 pb-2 flex flex-col gap-3';
+  list.className = 'pb-2 flex flex-col gap-3';
   container.appendChild(list);
 
   trades.forEach(trade => list.appendChild(renderTradeCard(trade, { onComplete, onRefresh })));
@@ -610,27 +609,35 @@ export async function mountSwapAnalyser(container) {
   `;
   container.appendChild(header);
 
-  // Pending section
+  // Two-column layout
+  const columns = document.createElement('div');
+  columns.className = 'swap-layout';
+  container.appendChild(columns);
+
+  // Left: Generate New Trade tile
+  const generateTile = document.createElement('div');
+  generateTile.className = 'swap-generate-tile';
+  columns.appendChild(generateTile);
+
+  // Right: Pending trades
+  const pendingCol = document.createElement('div');
+  columns.appendChild(pendingCol);
+
   const pendingSection = document.createElement('div');
-  container.appendChild(pendingSection);
+  pendingCol.appendChild(pendingSection);
 
-  // Divider
-  const divider = document.createElement('div');
-  divider.style.cssText = 'border-top:2px solid var(--surface-high); margin:4px 16px 20px;';
-  container.appendChild(divider);
-
-  // Analyse heading
+  // Analyse heading (inside tile)
   const analyseHead = document.createElement('div');
-  analyseHead.className = 'px-4 pb-3';
+  analyseHead.className = 'pb-3';
   analyseHead.innerHTML = `
     <span style="font-family:var(--font-display); font-size:20px; text-transform:uppercase; letter-spacing:.04em; color:var(--accent);">Generate New Trade</span>
     <p class="form-hint" style="margin-top:4px;">Cards currently in pending trades are excluded from suggestions.</p>
   `;
-  container.appendChild(analyseHead);
+  generateTile.appendChild(analyseHead);
 
-  // Inputs
+  // Inputs (inside tile)
   const inputsSection = document.createElement('div');
-  inputsSection.className = 'px-4 pb-4 flex flex-col gap-4';
+  inputsSection.className = 'flex flex-col gap-4';
 
   function makeField(id, labelText, type = 'textarea', placeholder = '') {
     const wrap = document.createElement('div');
@@ -709,13 +716,13 @@ export async function mountSwapAnalyser(container) {
   inputsSection.appendChild(wantsWrap);
   inputsSection.appendChild(toggleWrap);
   inputsSection.appendChild(btnRow);
-  container.appendChild(inputsSection);
+  generateTile.appendChild(inputsSection);
 
-  // Results
+  // Results (inside tile)
   const resultsSection = document.createElement('div');
-  resultsSection.className = 'px-4 pb-8';
+  resultsSection.className = 'pt-4';
   resultsSection.hidden = true;
-  container.appendChild(resultsSection);
+  generateTile.appendChild(resultsSection);
 
   // ── Refresh pending section ──────────────────────────────────────────────
   async function refreshAll() {
