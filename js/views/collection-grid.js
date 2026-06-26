@@ -384,10 +384,10 @@ export async function mountCollectionGrid(container) {
   }
 
   function updateValueTile() {
-    const ownedIds = CARDS
+    const allOwned = [...CARDS, ...BONUS_CARDS]
       .filter(c => (collection[String(c.id)] ?? 0) >= 1)
       .map(c => c.id);
-    const { priced, value, currency } = getPriceSummary(ownedIds);
+    const { priced, value, currency } = getPriceSummary(allOwned);
     if (priced === 0) {
       cstValue.textContent = '—';
     } else {
