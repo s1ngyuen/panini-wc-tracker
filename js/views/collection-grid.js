@@ -368,8 +368,8 @@ export async function mountCollectionGrid(container) {
     const spFilterWrap = document.createElement('div');
     spFilterWrap.className = 'px-4 pb-3';
     spFilterWrap.innerHTML = `
-      <div class="flex gap-2 items-center">
-        <select class="sp-status filter-select flex-1" aria-label="Filter by status">
+      <div class="flex gap-2 items-center justify-end">
+        <select class="sp-status filter-select" aria-label="Filter by status">
           <option value="">All Cards</option>
           <option value="owned">Owned</option>
           <option value="missing">Missing</option>
@@ -552,8 +552,8 @@ export async function mountCollectionGrid(container) {
     const filterBar = document.createElement('div');
     filterBar.className = 'px-4 pb-3 pt-1';
     filterBar.innerHTML = `
-      <div class="flex gap-2 items-center">
-        <select class="all-status filter-select flex-1" aria-label="Filter by status">
+      <div class="flex gap-2 items-center justify-end">
+        <select class="all-status filter-select" aria-label="Filter by status">
           <option value="">All Cards</option>
           <option value="owned">Owned</option>
           <option value="missing">Missing</option>

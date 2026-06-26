@@ -17,7 +17,7 @@ export function renderFilterBar(container, { teams, cardTypes, onChange }) {
   const state = { country: '', cardType: '', status: '' };
 
   const bar = document.createElement('div');
-  bar.className = 'flex flex-wrap gap-2 items-center';
+  bar.className = 'flex flex-wrap gap-2 items-center justify-end';
 
   // ── Team select ────────────────────────────────────────────────────────
   const teamLabel = document.createElement('label');
@@ -27,7 +27,7 @@ export function renderFilterBar(container, { teams, cardTypes, onChange }) {
 
   const teamSelect = document.createElement('select');
   teamSelect.id = 'filter-team';
-  teamSelect.className = 'filter-select flex-1';
+  teamSelect.className = 'filter-select';
   teamSelect.setAttribute('aria-label', 'Filter by team');
 
   const allTeamsOpt = document.createElement('option');
@@ -56,7 +56,7 @@ export function renderFilterBar(container, { teams, cardTypes, onChange }) {
 
   const typeSelect = document.createElement('select');
   typeSelect.id = 'filter-type';
-  typeSelect.className = 'filter-select flex-1';
+  typeSelect.className = 'filter-select';
   typeSelect.setAttribute('aria-label', 'Filter by card type');
 
   const allTypesOpt = document.createElement('option');
@@ -85,7 +85,7 @@ export function renderFilterBar(container, { teams, cardTypes, onChange }) {
 
   const statusSelect = document.createElement('select');
   statusSelect.id = 'filter-status';
-  statusSelect.className = 'filter-select flex-1';
+  statusSelect.className = 'filter-select';
   statusSelect.setAttribute('aria-label', 'Filter by status');
 
   [['', 'All Cards'], ['owned', 'Owned'], ['missing', 'Missing'], ['duplicates', 'Duplicates']].forEach(([val, label]) => {

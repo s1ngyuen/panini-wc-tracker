@@ -756,23 +756,23 @@ body::before {
 ───────────────────────────────────────────────────────────────────────────── */
 
 .filter-select {
-  background: #f2f3f5;
+  background: var(--accent-light);
   color: var(--accent);
   border: none;
-  border-radius: 0;
-  padding: 8px 32px 8px 12px;
+  border-radius: 4px;
+  padding: 6px 26px 6px 10px;
   font-family: var(--font-body);
-  font-size: 13px;
-  font-weight: 400;
+  font-size: 12px;
+  font-weight: 500;
   text-transform: uppercase;
   letter-spacing: .04em;
   appearance: none;
   -webkit-appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23226750' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 10px center;
+  background-position: right 8px center;
   cursor: pointer;
-  min-height: 44px;
+  min-height: 34px;
 }
 
 .filter-select:focus {
@@ -1288,7 +1288,7 @@ body::before {
   .collection-progress { margin: 0 12px 12px; padding: 12px 14px 10px; }
 
   /* ── Filter bar ── */
-  .filter-select { font-size: 12px; padding: 7px 28px 7px 10px; min-height: 40px; }
+  .filter-select { font-size: 11px; min-height: 32px; }
 
   /* ── Trading message button ── */
   .trading-msg-btn { width: calc(100% - 24px); margin: 0 12px 12px; }
