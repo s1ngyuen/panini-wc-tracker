@@ -1924,7 +1924,8 @@ body::before {
 
 /* ── Swaps two-column layout & tile spacing ──────────────────────────────── */
 .pending-title-tile {
-  background: #d0d2d5;
+  background: rgba(34, 103, 80, 0.10);
+  color: var(--accent);
   padding: 10px 16px;
   margin-bottom: var(--tile-gap);
 }
@@ -1948,6 +1949,11 @@ body::before {
   display: flex;
   gap: 4px;
   margin-bottom: 0;
+}
+
+.coll-panel {
+  background: #f2f3f5;
+  padding-top: 12px;
 }
 
 .gen-tab {

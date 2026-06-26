@@ -169,27 +169,33 @@ export async function mountCollectionGrid(container) {
     });
   });
 
-  // ── Core Collection heading ───────────────────────────────────────────────
-  const coreHeading = document.createElement('div');
-  coreHeading.className = 'px-4 py-4';
-  coreHeading.innerHTML = `
-    <div class="section-heading-wrap">
-      <div class="section-heading-bar"></div>
-      <span class="fx page-title" style="font-size:28px;">Core Collection</span>
-    </div>
+  // ── Collection tab bar ───────────────────────────────────────────────────
+  const collTabBar = document.createElement('div');
+  collTabBar.className = 'gen-tab-bar px-4';
+  collTabBar.innerHTML = `
+    <button class="gen-tab gen-tab--active" data-tab="core">Core Collection</button>
+    <button class="gen-tab" data-tab="special">Special Cards</button>
   `;
-  container.appendChild(coreHeading);
+  container.appendChild(collTabBar);
+
+  const coreTab    = collTabBar.querySelector('[data-tab="core"]');
+  const specialTab = collTabBar.querySelector('[data-tab="special"]');
+
+  // ── Core Collection panel ────────────────────────────────────────────────
+  const corePanel = document.createElement('div');
+  corePanel.className = 'coll-panel';
+  container.appendChild(corePanel);
 
   // ── Filter bar container ─────────────────────────────────────────────────
   const filterWrap = document.createElement('div');
   filterWrap.className = 'px-4 pb-3';
-  container.appendChild(filterWrap);
+  corePanel.appendChild(filterWrap);
 
   // ── Results count label ──────────────────────────────────────────────────
   const countLabel = document.createElement('p');
   countLabel.className = 'px-4 pb-2 text-xs font-semibold';
   countLabel.style.color = '#666';
-  container.appendChild(countLabel);
+  corePanel.appendChild(countLabel);
 
   // ── Card lightbox ────────────────────────────────────────────────────────
   const lightbox = document.createElement('div');
@@ -324,12 +330,29 @@ export async function mountCollectionGrid(container) {
   grid.className = 'card-grid';
   grid.setAttribute('role', 'list');
   grid.setAttribute('aria-label', 'Card collection');
-  container.appendChild(grid);
+  corePanel.appendChild(grid);
 
-  // ── Bonus cards section (appended once, updated on refresh) ──────────────
+  // ── Special Cards panel ──────────────────────────────────────────────────
+  const specialPanel = document.createElement('div');
+  specialPanel.className = 'coll-panel';
+  specialPanel.hidden = true;
+  container.appendChild(specialPanel);
+
   const bonusSection = document.createElement('div');
   bonusSection.className = 'bonus-cards-section';
-  container.appendChild(bonusSection);
+  specialPanel.appendChild(bonusSection);
+
+  // ── Tab switching ────────────────────────────────────────────────────────
+  function showCollTab(tab) {
+    const isCore = tab === 'core';
+    coreTab.className    = `gen-tab${isCore  ? ' gen-tab--active' : ''}`;
+    specialTab.className = `gen-tab${!isCore ? ' gen-tab--active' : ''}`;
+    corePanel.hidden    = !isCore;
+    specialPanel.hidden = isCore;
+  }
+
+  coreTab.addEventListener('click',    () => showCollTab('core'));
+  specialTab.addEventListener('click', () => showCollTab('special'));
 
   // ── Load collection & prices ─────────────────────────────────────────────
   await loadPrices();
@@ -438,17 +461,13 @@ export async function mountCollectionGrid(container) {
   function renderBonusSection() {
     bonusSection.innerHTML = '';
 
-    const heading = document.createElement('div');
-    heading.className = 'px-4 py-4';
-    heading.innerHTML = `
-      <div class="section-heading-wrap">
-        <div class="section-heading-bar"></div>
-        <span class="fx page-title" style="font-size:28px;">Special Cards</span>
-      </div>
-    `;
-    bonusSection.appendChild(heading);
+    // Hero Updates first, then rest in natural order
+    const allCats = [...new Set(BONUS_CARDS.map(c => c.bonusCategory))];
+    const categories = [
+      ...allCats.filter(c => c === 'Hero Updates'),
+      ...allCats.filter(c => c !== 'Hero Updates'),
+    ];
 
-    const categories = [...new Set(BONUS_CARDS.map(c => c.bonusCategory))];
     categories.forEach(cat => {
       const cards = BONUS_CARDS.filter(c => c.bonusCategory === cat);
       const ownedInCat = cards.filter(c => (collection[String(c.id)] ?? 0) >= 1).length;
