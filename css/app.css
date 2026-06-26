@@ -1930,7 +1930,7 @@ body::before {
 
 /* ── Swaps two-column layout & tile spacing ──────────────────────────────── */
 .pending-title-tile {
-  background: rgba(34, 103, 80, 0.10);
+  background: transparent;
   color: var(--accent);
   padding: 10px 16px;
   margin-bottom: var(--tile-gap);
