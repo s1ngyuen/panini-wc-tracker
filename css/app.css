@@ -952,7 +952,7 @@ body::before {
 
 .cst-total  { color: var(--accent); }
 .cst-unique { color: var(--accent); }
-.cst-need   { color: rgba(197,160,40,0.65); }
+.cst-need   { color: var(--accent); }
 .cst-dupe   { color: var(--accent); }
 .cst-value  { color: var(--accent); font-size: 20px; }
 
