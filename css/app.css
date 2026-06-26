@@ -73,7 +73,7 @@
 
 body {
   font-family: var(--font-body);
-  background: var(--bg);
+  background: var(--surface);
   color: var(--text-primary);
   overflow-x: hidden;
   position: relative;
@@ -1952,7 +1952,6 @@ body::before {
 }
 
 .coll-panel {
-  background: #f2f3f5;
   padding-top: 12px;
 }
 
@@ -1978,7 +1977,7 @@ body::before {
 }
 
 .gen-tab--active {
-  background: #f2f3f5 !important;
+  background: var(--surface) !important;
   color: var(--accent) !important;
   border-top: 3px solid var(--accent);
   font-weight: 700;
