@@ -73,7 +73,7 @@
 
 body {
   font-family: var(--font-body);
-  background: var(--surface);
+  background: var(--bg);
   color: var(--text-primary);
   overflow-x: hidden;
   position: relative;
@@ -1977,7 +1977,7 @@ body::before {
 }
 
 .gen-tab--active {
-  background: var(--surface) !important;
+  background: var(--bg) !important;
   color: var(--accent) !important;
   border-top: 3px solid var(--accent);
   font-weight: 700;
