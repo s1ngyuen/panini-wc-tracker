@@ -111,10 +111,16 @@ export function createCardElement(card, count, { isPending = false } = {}) {
   img.alt = '';
   img.setAttribute('aria-hidden', 'true');
   img.loading = 'lazy';
+  img._triedFallback = false;
   img.onerror = () => {
-    img.style.display = 'none';
-    card_el.classList.add('panini-card--no-photo');
-    card_el.appendChild(buildFallbackInner(card));
+    if (!img._triedFallback) {
+      img._triedFallback = true;
+      img.src = `https://www.laststicker.com/i/cards/12029/${String(card.id).toLowerCase()}.jpg`;
+    } else {
+      img.style.display = 'none';
+      card_el.classList.add('panini-card--no-photo');
+      card_el.appendChild(buildFallbackInner(card));
+    }
   };
   card_el.appendChild(img);
   outer.appendChild(card_el);
