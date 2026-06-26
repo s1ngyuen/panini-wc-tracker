@@ -179,10 +179,17 @@ export async function mountCollectionGrid(container) {
     <button class="gen-tab" data-tab="le">Limited Edition</button>
     <button class="gen-tab" data-tab="wcm">WC Masters</button>
     <button class="gen-tab" data-tab="special">Special Cards</button>
+    <button class="gen-tab" data-tab="dupes">Duplicates</button>
   `;
   container.appendChild(collTabBar);
 
   let activeTab = 'all';
+
+  // ── Duplicates panel ─────────────────────────────────────────────────────
+  const dupesPanel = document.createElement('div');
+  dupesPanel.className = 'coll-panel';
+  dupesPanel.hidden = true;
+  container.appendChild(dupesPanel);
 
   // ── All Cards overview panel ─────────────────────────────────────────────
   const allCardsPanel = document.createElement('div');
@@ -402,11 +409,13 @@ export async function mountCollectionGrid(container) {
       btn.className = `gen-tab${btn.dataset.tab === tab ? ' gen-tab--active' : ''}`;
     });
     allCardsPanel.hidden = tab !== 'all';
-    corePanel.hidden = tab !== 'core';
+    corePanel.hidden     = tab !== 'core';
+    dupesPanel.hidden    = tab !== 'dupes';
     SPECIAL_TABS.forEach(({ key }) => {
       specialPanels[key].panel.hidden = tab !== key;
     });
-    if (tab === 'all') renderAllCardsOverview();
+    if (tab === 'all')   renderAllCardsOverview();
+    if (tab === 'dupes') renderDupesPanel();
     updateStatsForTab(tab);
   }
 
@@ -461,11 +470,9 @@ export async function mountCollectionGrid(container) {
     progressCount.innerHTML = `<span class="cp-owned-n">${combined}${hasPending ? '*' : ''}</span><span class="cp-total"> of ${total} cards</span>`;
     progressPct.textContent   = `${combinedPct}%`;
 
-    progressKey.hidden = !hasPending;
-    if (hasPending) {
-      progressKeyOwned.textContent   = `${owned} owned`;
-      progressKeyPending.textContent = `${pending} pending`;
-    }
+    progressKey.hidden = false;
+    progressKeyOwned.textContent   = `${owned} owned`;
+    progressKeyPending.textContent = `${pending} pending`;
 
     const totalOwned = filtered.reduce((sum, c) => sum + (collection[String(c.id)] ?? 0), 0);
     const dupCount   = filtered.reduce((sum, c) => sum + Math.max(0, (collection[String(c.id)] ?? 0) - 1), 0);
@@ -500,6 +507,8 @@ export async function mountCollectionGrid(container) {
     let cardSet;
     if (tab === 'all') {
       cardSet = [...CARDS, ...BONUS_CARDS];
+    } else if (tab === 'dupes') {
+      cardSet = [...CARDS, ...BONUS_CARDS].filter(c => (collection[String(c.id)] ?? 0) >= 2);
     } else {
       const def = SPECIAL_TABS.find(t => t.key === tab);
       cardSet = def ? BONUS_CARDS.filter(c => def.cats.includes(c.bonusCategory)) : [];
@@ -520,11 +529,9 @@ export async function mountCollectionGrid(container) {
     const hasPending = pending > 0;
     progressCount.innerHTML = `<span class="cp-owned-n">${combined}${hasPending ? '*' : ''}</span><span class="cp-total"> of ${total} cards</span>`;
     progressPct.textContent = `${combinedPct}%`;
-    progressKey.hidden = !hasPending;
-    if (hasPending) {
-      progressKeyOwned.textContent   = `${owned} owned`;
-      progressKeyPending.textContent = `${pending} pending`;
-    }
+    progressKey.hidden = false;
+    progressKeyOwned.textContent   = `${owned} owned`;
+    progressKeyPending.textContent = `${pending} pending`;
 
     const totalCopies = cardSet.reduce((s, c) => s + (collection[String(c.id)] ?? 0), 0);
     const dupes       = cardSet.reduce((s, c) => s + Math.max(0, (collection[String(c.id)] ?? 0) - 1), 0);
@@ -672,6 +679,37 @@ export async function mountCollectionGrid(container) {
     });
   }
 
+  function renderDupesPanel() {
+    dupesPanel.innerHTML = '';
+    const allCards = [...CARDS, ...BONUS_CARDS];
+    const duped    = allCards.filter(c => (collection[String(c.id)] ?? 0) >= 2);
+
+    if (duped.length === 0) {
+      const empty = document.createElement('p');
+      empty.className = 'w-full text-center py-12 text-sm px-4';
+      empty.style.color = '#555';
+      empty.textContent = 'No duplicates yet.';
+      dupesPanel.appendChild(empty);
+      return;
+    }
+
+    const dupeGrid = document.createElement('div');
+    dupeGrid.className = 'card-grid px-4 pt-2 pb-4';
+    dupeGrid.setAttribute('role', 'list');
+
+    const frag = document.createDocumentFragment();
+    duped.forEach(card => {
+      const count = collection[String(card.id)] ?? 0;
+      const el = createCardElement(card, count);
+      el.setAttribute('role', 'listitem');
+      el.style.cursor = 'pointer';
+      el.addEventListener('click', () => openLightbox(card, count));
+      frag.appendChild(el);
+    });
+    dupeGrid.appendChild(frag);
+    dupesPanel.appendChild(dupeGrid);
+  }
+
   // Render filter bar
   renderFilterBar(filterWrap, {
     teams: TEAMS,
@@ -693,7 +731,8 @@ export async function mountCollectionGrid(container) {
     pendingReceiveIds = getPendingReceiveIds();
     renderGrid();
     renderAllBonusPanels();
-    if (activeTab === 'all') renderAllCardsOverview();
-    if (activeTab !== 'core') updateStatsForTab(activeTab);
+    if (activeTab === 'all')   renderAllCardsOverview();
+    if (activeTab === 'dupes') renderDupesPanel();
+    if (activeTab !== 'core')  updateStatsForTab(activeTab);
   };
 }
