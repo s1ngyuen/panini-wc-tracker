@@ -1958,11 +1958,13 @@ body::before {
 }
 
 .coll-panel {
+  background: #fff;
   padding-top: 12px;
 }
 
 .gen-tab {
-  flex: 1;
+  flex: none;
+  padding: 0 20px;
   height: 38px;
   background: #e2e4e6;
   color: #8a8f94;
@@ -1983,8 +1985,8 @@ body::before {
 }
 
 .gen-tab--active {
-  background: var(--bg) !important;
-  color: var(--accent) !important;
+  background: var(--accent) !important;
+  color: #fff !important;
   border-top: 3px solid var(--accent);
   font-weight: 700;
 }
@@ -2006,7 +2008,7 @@ body::before {
 }
 
 .swap-generate-tile {
-  background: #f2f3f5;
+  background: #fff;
   padding: 20px;
 }
 
