@@ -676,7 +676,8 @@ body::before {
 .btn-primary:hover .btn-scrl-inner,
 .btn-secondary:hover .btn-scrl-inner,
 .btn-reset:hover .btn-scrl-inner,
-.btn-cancel:hover .btn-scrl-inner {
+.btn-cancel:hover .btn-scrl-inner,
+.gen-tab:hover .btn-scrl-inner {
   transform: translateY(-100%);
 }
 
@@ -1977,6 +1978,7 @@ body::before {
   border-radius: 4px 4px 0 0;
   cursor: pointer;
   transition: background .15s, color .15s;
+  overflow: hidden;
 }
 
 .gen-tab:hover:not(.gen-tab--active) {
