@@ -338,9 +338,59 @@ export async function mountCollectionGrid(container) {
   specialPanel.hidden = true;
   container.appendChild(specialPanel);
 
+  // Special cards filter bar
+  const bonusCats = [...new Set(BONUS_CARDS.map(c => c.bonusCategory))];
+  const specialFilterWrap = document.createElement('div');
+  specialFilterWrap.className = 'px-4 pb-3';
+  specialFilterWrap.innerHTML = `
+    <div class="flex flex-wrap gap-2 items-center">
+      <select id="sf-category" class="filter-select flex-1" aria-label="Filter by category">
+        <option value="">All Categories</option>
+        ${['Hero Updates', ...bonusCats.filter(c => c !== 'Hero Updates')].map(c => `<option value="${c}">${c}</option>`).join('')}
+      </select>
+      <select id="sf-status" class="filter-select flex-1" aria-label="Filter by status">
+        <option value="">All Cards</option>
+        <option value="owned">Owned</option>
+        <option value="missing">Missing</option>
+      </select>
+      <button id="sf-clear" class="btn-secondary text-sm px-3 py-2" hidden aria-label="Clear filters">Clear</button>
+    </div>
+  `;
+  specialPanel.appendChild(specialFilterWrap);
+
   const bonusSection = document.createElement('div');
   bonusSection.className = 'bonus-cards-section';
   specialPanel.appendChild(bonusSection);
+
+  let bonusFilter = { category: '', status: '' };
+
+  const sfCategory = specialFilterWrap.querySelector('#sf-category');
+  const sfStatus   = specialFilterWrap.querySelector('#sf-status');
+  const sfClear    = specialFilterWrap.querySelector('#sf-clear');
+
+  function updateSfClear() {
+    sfClear.hidden = !bonusFilter.category && !bonusFilter.status;
+  }
+
+  sfCategory.addEventListener('change', () => {
+    bonusFilter.category = sfCategory.value;
+    updateSfClear();
+    renderBonusSection();
+  });
+
+  sfStatus.addEventListener('change', () => {
+    bonusFilter.status = sfStatus.value;
+    updateSfClear();
+    renderBonusSection();
+  });
+
+  sfClear.addEventListener('click', () => {
+    sfCategory.value = '';
+    sfStatus.value   = '';
+    bonusFilter = { category: '', status: '' };
+    sfClear.hidden = true;
+    renderBonusSection();
+  });
 
   // ── Tab switching ────────────────────────────────────────────────────────
   function showCollTab(tab) {
@@ -463,18 +513,33 @@ export async function mountCollectionGrid(container) {
 
     // Hero Updates first, then rest in natural order
     const allCats = [...new Set(BONUS_CARDS.map(c => c.bonusCategory))];
-    const categories = [
+    const orderedCats = [
       ...allCats.filter(c => c === 'Hero Updates'),
       ...allCats.filter(c => c !== 'Hero Updates'),
     ];
 
-    categories.forEach(cat => {
-      const cards = BONUS_CARDS.filter(c => c.bonusCategory === cat);
-      const ownedInCat = cards.filter(c => (collection[String(c.id)] ?? 0) >= 1).length;
+    const categories = bonusFilter.category
+      ? orderedCats.filter(c => c === bonusFilter.category)
+      : orderedCats;
 
+    let totalShown = 0;
+
+    categories.forEach(cat => {
+      const allInCat = BONUS_CARDS.filter(c => c.bonusCategory === cat);
+      const filtered = allInCat.filter(c => {
+        const count = collection[String(c.id)] ?? 0;
+        if (bonusFilter.status === 'owned'   && count < 1)  return false;
+        if (bonusFilter.status === 'missing' && count >= 1) return false;
+        return true;
+      });
+
+      if (filtered.length === 0) return;
+      totalShown += filtered.length;
+
+      const ownedInCat = allInCat.filter(c => (collection[String(c.id)] ?? 0) >= 1).length;
       const catLabel = document.createElement('p');
       catLabel.className = 'bonus-cat-label';
-      catLabel.textContent = `${cat} · ${ownedInCat} / ${cards.length}`;
+      catLabel.textContent = `${cat} · ${ownedInCat} / ${allInCat.length}`;
       bonusSection.appendChild(catLabel);
 
       const catGrid = document.createElement('div');
@@ -482,7 +547,7 @@ export async function mountCollectionGrid(container) {
       catGrid.setAttribute('role', 'list');
 
       const frag = document.createDocumentFragment();
-      cards.forEach(card => {
+      filtered.forEach(card => {
         const count = collection[String(card.id)] ?? 0;
         const el = createCardElement(card, count);
         el.setAttribute('role', 'listitem');
@@ -493,6 +558,14 @@ export async function mountCollectionGrid(container) {
       catGrid.appendChild(frag);
       bonusSection.appendChild(catGrid);
     });
+
+    if (totalShown === 0) {
+      const empty = document.createElement('p');
+      empty.className = 'w-full text-center py-12 text-sm px-4';
+      empty.style.color = '#555';
+      empty.textContent = 'No cards match that filter.';
+      bonusSection.appendChild(empty);
+    }
   }
 
   // Render filter bar
