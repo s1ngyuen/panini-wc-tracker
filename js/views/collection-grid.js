@@ -543,23 +543,58 @@ export async function mountCollectionGrid(container) {
     updateValueTileForCards(cardSet);
   }
 
+  let allCardsStatus = '';
+
   function renderAllCardsOverview() {
     allCardsPanel.innerHTML = '';
-    const frag = document.createDocumentFragment();
 
-    function makeLabel(text, cardArr) {
-      const owned = cardArr.filter(c => (collection[String(c.id)] ?? 0) >= 1).length;
+    // Filter bar
+    const filterBar = document.createElement('div');
+    filterBar.className = 'px-4 pb-3 pt-1';
+    filterBar.innerHTML = `
+      <div class="flex gap-2 items-center">
+        <select class="all-status filter-select flex-1" aria-label="Filter by status">
+          <option value="">All Cards</option>
+          <option value="owned">Owned</option>
+          <option value="missing">Missing</option>
+          <option value="duplicates">Duplicates</option>
+        </select>
+        <button class="all-clear btn-secondary text-sm px-3 py-2" hidden>Clear</button>
+      </div>
+    `;
+    allCardsPanel.appendChild(filterBar);
+
+    const statusSel = filterBar.querySelector('.all-status');
+    const clearBtn  = filterBar.querySelector('.all-clear');
+    statusSel.value = allCardsStatus;
+    clearBtn.hidden = !allCardsStatus;
+
+    const contentDiv = document.createElement('div');
+    allCardsPanel.appendChild(contentDiv);
+
+    function applyFilter(card) {
+      const count = collection[String(card.id)] ?? 0;
+      if (allCardsStatus === 'owned'      && count < 1)  return false;
+      if (allCardsStatus === 'missing'    && count > 0)  return false;
+      if (allCardsStatus === 'duplicates' && count < 2)  return false;
+      return true;
+    }
+
+    function makeLabel(text, allInCat) {
+      const owned = allInCat.filter(c => (collection[String(c.id)] ?? 0) >= 1).length;
       const el = document.createElement('p');
       el.className = 'bonus-cat-label';
-      el.textContent = `${text} · ${owned} / ${cardArr.length}`;
+      el.textContent = `${text} · ${owned} / ${allInCat.length}`;
       return el;
     }
 
     function makeGrid(cards, isPendingFn) {
+      const filtered = cards.filter(applyFilter);
+      if (filtered.length === 0) return null;
       const g = document.createElement('div');
       g.className = 'card-grid';
       g.setAttribute('role', 'list');
-      cards.forEach(card => {
+      filtered.forEach(card => {
         const count = collection[String(card.id)] ?? 0;
         const el = createCardElement(card, count, isPendingFn ? { isPending: isPendingFn(card) } : undefined);
         el.setAttribute('role', 'listitem');
@@ -570,19 +605,52 @@ export async function mountCollectionGrid(container) {
       return g;
     }
 
-    // Core collection
-    frag.appendChild(makeLabel('Core Collection', CARDS));
-    frag.appendChild(makeGrid(CARDS, card => pendingReceiveIds.has(card.id)));
+    function renderContent() {
+      contentDiv.innerHTML = '';
+      const frag = document.createDocumentFragment();
+      let shown = 0;
 
-    // Each bonus category in order
-    const allCats = [...new Set(BONUS_CARDS.map(c => c.bonusCategory))];
-    allCats.forEach(cat => {
-      const cards = BONUS_CARDS.filter(c => c.bonusCategory === cat);
-      frag.appendChild(makeLabel(cat, cards));
-      frag.appendChild(makeGrid(cards));
+      const coreGrid = makeGrid(CARDS, card => pendingReceiveIds.has(card.id));
+      if (coreGrid) {
+        frag.appendChild(makeLabel('Core Collection', CARDS));
+        frag.appendChild(coreGrid);
+        shown += coreGrid.children.length;
+      }
+
+      [...new Set(BONUS_CARDS.map(c => c.bonusCategory))].forEach(cat => {
+        const catCards = BONUS_CARDS.filter(c => c.bonusCategory === cat);
+        const g = makeGrid(catCards);
+        if (g) {
+          frag.appendChild(makeLabel(cat, catCards));
+          frag.appendChild(g);
+          shown += g.children.length;
+        }
+      });
+
+      if (shown === 0) {
+        const empty = document.createElement('p');
+        empty.className = 'w-full text-center py-12 text-sm px-4';
+        empty.style.color = '#555';
+        empty.textContent = 'No cards match that filter.';
+        frag.appendChild(empty);
+      }
+
+      contentDiv.appendChild(frag);
+    }
+
+    statusSel.addEventListener('change', () => {
+      allCardsStatus = statusSel.value;
+      clearBtn.hidden = !allCardsStatus;
+      renderContent();
+    });
+    clearBtn.addEventListener('click', () => {
+      allCardsStatus = '';
+      statusSel.value = '';
+      clearBtn.hidden = true;
+      renderContent();
     });
 
-    allCardsPanel.appendChild(frag);
+    renderContent();
   }
 
   function renderGrid() {
