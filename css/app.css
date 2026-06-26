@@ -918,7 +918,7 @@ body::before {
 
 .collection-stat-tiles {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   gap: var(--tile-gap);
   margin: 0 16px 12px;
 }
@@ -954,9 +954,59 @@ body::before {
 .cst-unique { color: var(--accent); }
 .cst-need   { color: rgba(197,160,40,0.65); }
 .cst-dupe   { color: var(--accent); }
+.cst-value  { color: var(--accent); font-size: 20px; }
+
+/* ── eBay strip ──────────────────────────────────────────────────────────── */
+
+.ebay-strip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 16px 12px;
+  padding: 10px 14px;
+  background: #f2f3f5;
+  flex-wrap: wrap;
+}
+
+.ebay-strip__label {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  white-space: nowrap;
+}
+
+.ebay-strip__input {
+  flex: 1;
+  min-width: 140px;
+  height: 32px;
+  border: none;
+  background: #fff;
+  padding: 0 10px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: var(--text-primary);
+  outline: none;
+}
+
+.ebay-strip__btn {
+  height: 32px;
+  padding: 0 14px;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.ebay-strip__status {
+  font-size: 11px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  margin-left: auto;
+}
 
 @media (max-width: 480px) {
-  .collection-stat-tiles { grid-template-columns: repeat(2, 1fr); }
+  .collection-stat-tiles { grid-template-columns: repeat(3, 1fr); }
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -1679,6 +1729,22 @@ body::before {
 .card-lightbox__status--missing { background: #888;          color: #fff; }
 .card-lightbox__status--dupe    { background: #e02020;       color: #fff; }
 
+.card-lightbox__price {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--accent);
+  margin-top: 8px;
+  letter-spacing: .02em;
+}
+
+.card-lightbox__price-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
 .card-lightbox__actions {
   padding: 10px 20px 18px;
   display: flex;
@@ -1858,7 +1924,7 @@ body::before {
 
 /* ── Swaps two-column layout & tile spacing ──────────────────────────────── */
 .pending-title-tile {
-  background: #f2f3f5;
+  background: var(--gold);
   padding: 10px 16px;
   margin-bottom: var(--tile-gap);
 }

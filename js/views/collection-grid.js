@@ -8,6 +8,8 @@ import { createCardElement } from '../components/card-visual.js';
 import { renderFilterBar } from '../components/filters.js';
 import { buildProgressContent } from './progress.js';
 import { showToast } from '../components/toast.js';
+import { getAppId, setAppId, getCachedPrice, getCachedCurrency, getPriceSummary } from '../store-prices.js';
+import { fetchPricesForCards } from '../ebay.js';
 
 /**
  * Mount the Collection Grid view.
@@ -74,14 +76,36 @@ export async function mountCollectionGrid(container) {
       <span class="cst-tile__num cst-dupe">—</span>
       <span class="cst-tile__label">Duplicates</span>
     </div>
+    <div class="cst-tile">
+      <span class="cst-tile__num cst-value">—</span>
+      <span class="cst-tile__label">Est. Value</span>
+    </div>
   `;
   container.appendChild(statTilesWrap);
+
+  // ── eBay price strip ──────────────────────────────────────────────────────
+  const ebayStrip = document.createElement('div');
+  ebayStrip.className = 'ebay-strip';
+  ebayStrip.innerHTML = `
+    <span class="ebay-strip__label">eBay App ID</span>
+    <input type="password" class="ebay-strip__input" placeholder="Paste App ID from developer.ebay.com…" autocomplete="off" />
+    <button type="button" class="btn-primary ebay-strip__btn">Fetch Prices</button>
+    <span class="ebay-strip__status"></span>
+  `;
+  container.appendChild(ebayStrip);
+
+  const ebayInput  = ebayStrip.querySelector('.ebay-strip__input');
+  const ebayBtn    = ebayStrip.querySelector('.ebay-strip__btn');
+  const ebayStatus = ebayStrip.querySelector('.ebay-strip__status');
+
+  ebayInput.value = getAppId();
 
   const cstTotal   = statTilesWrap.querySelector('.cst-total');
   const cstUnique  = statTilesWrap.querySelector('.cst-unique');
   const cstPending = statTilesWrap.querySelector('.cst-pending');
   const cstNeed    = statTilesWrap.querySelector('.cst-need');
   const cstDupe    = statTilesWrap.querySelector('.cst-dupe');
+  const cstValue   = statTilesWrap.querySelector('.cst-value');
 
   const progressCount      = progressWrap.querySelector('.collection-progress__count');
   const progressPct        = progressWrap.querySelector('.collection-progress__pct');
@@ -192,6 +216,8 @@ export async function mountCollectionGrid(container) {
         <div class="card-lightbox__name"></div>
         <div class="card-lightbox__sub"></div>
         <div class="card-lightbox__status"></div>
+        <div class="card-lightbox__price" hidden></div>
+        <div class="card-lightbox__price-label" hidden>Avg eBay sold price</div>
       </div>
       <div class="card-lightbox__actions">
         <div class="card-lightbox__qty-row" hidden>
@@ -205,13 +231,15 @@ export async function mountCollectionGrid(container) {
   `;
   document.body.appendChild(lightbox);
 
-  const lbImg       = lightbox.querySelector('.card-lightbox__img');
-  const lbName      = lightbox.querySelector('.card-lightbox__name');
-  const lbSub       = lightbox.querySelector('.card-lightbox__sub');
-  const lbStatus    = lightbox.querySelector('.card-lightbox__status');
-  const lbRemoveBtn = lightbox.querySelector('.card-lightbox__remove');
-  const lbQtyRow    = lightbox.querySelector('.card-lightbox__qty-row');
-  const lbQtyVal    = lightbox.querySelector('.card-lightbox__qty-val');
+  const lbImg        = lightbox.querySelector('.card-lightbox__img');
+  const lbName       = lightbox.querySelector('.card-lightbox__name');
+  const lbSub        = lightbox.querySelector('.card-lightbox__sub');
+  const lbStatus     = lightbox.querySelector('.card-lightbox__status');
+  const lbPrice      = lightbox.querySelector('.card-lightbox__price');
+  const lbPriceLabel = lightbox.querySelector('.card-lightbox__price-label');
+  const lbRemoveBtn  = lightbox.querySelector('.card-lightbox__remove');
+  const lbQtyRow     = lightbox.querySelector('.card-lightbox__qty-row');
+  const lbQtyVal     = lightbox.querySelector('.card-lightbox__qty-val');
 
   let _lbCard  = null;
   let _lbCount = 0;
@@ -246,6 +274,19 @@ export async function mountCollectionGrid(container) {
     lbName.textContent = card.playerName;
     lbSub.textContent  = `#${card.id} · ${card.country} · ${card.cardType}`;
     updateLightboxStatus(count);
+
+    const cached = getCachedPrice(card.id);
+    if (cached !== undefined && cached !== null) {
+      const sym = getCachedCurrency(card.id) === 'AUD' ? 'A$' : '$';
+      lbPrice.textContent      = `${sym}${cached.toFixed(2)}`;
+      lbPriceLabel.textContent = `Avg eBay sold price`;
+      lbPrice.hidden      = false;
+      lbPriceLabel.hidden = false;
+    } else {
+      lbPrice.hidden      = true;
+      lbPriceLabel.hidden = true;
+    }
+
     lightbox.hidden = false;
     document.body.style.overflow = 'hidden';
     lightbox.querySelector('.card-lightbox__close').focus();
@@ -356,6 +397,21 @@ export async function mountCollectionGrid(container) {
     cstPending.textContent = getPendingTrades().length;
     cstNeed.textContent    = total - owned;
     cstDupe.textContent    = dupCount;
+    updateValueTile();
+  }
+
+  function updateValueTile() {
+    const ownedIds = CARDS
+      .filter(c => (collection[String(c.id)] ?? 0) >= 1)
+      .map(c => c.id);
+    const { priced, value, currency } = getPriceSummary(ownedIds);
+    if (priced === 0) {
+      cstValue.textContent = '—';
+    } else {
+      const sym = currency === 'AUD' ? 'A$' : '$';
+      cstValue.textContent = `${sym}${value.toFixed(0)}`;
+      ebayStatus.textContent = `${priced} of ${ownedIds.length} cards priced`;
+    }
   }
 
   function renderGrid() {
@@ -446,11 +502,36 @@ export async function mountCollectionGrid(container) {
   renderGrid();
   renderBonusSection();
 
+  // ── eBay fetch button ─────────────────────────────────────────────────────
+  ebayBtn.addEventListener('click', async () => {
+    const appId = ebayInput.value.trim();
+    if (!appId) { showToast('Enter your eBay App ID first.', 'error'); return; }
+    setAppId(appId);
+
+    const ownedCards = CARDS.filter(c => (collection[String(c.id)] ?? 0) >= 1);
+    if (ownedCards.length === 0) { showToast('No owned cards to price.', 'error'); return; }
+
+    ebayBtn.disabled = true;
+    ebayStatus.textContent = `Fetching 0 / ${ownedCards.length}…`;
+
+    await fetchPricesForCards(ownedCards, {
+      onProgress: (done, total) => {
+        ebayStatus.textContent = `Fetching ${done} / ${total}…`;
+        updateValueTile();
+      },
+    });
+
+    ebayBtn.disabled = false;
+    updateValueTile();
+    showToast('eBay prices updated!', 'success');
+  });
+
   // Expose refresh so app.js can call it when the view becomes active
   container._refresh = async () => {
     collection = await getCollection();
     pendingReceiveIds = getPendingReceiveIds();
     renderGrid();
     renderBonusSection();
+    updateValueTile();
   };
 }
