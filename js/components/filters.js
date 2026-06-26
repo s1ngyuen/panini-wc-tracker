@@ -11,13 +11,20 @@
  *   onChange: (filter: { country: string, cardType: string }) => void
  * }} options
  */
-export function renderFilterBar(container, { teams, cardTypes, onChange }) {
+export function renderFilterBar(container, { title, teams, cardTypes, onChange }) {
   container.innerHTML = '';
 
   const state = { country: '', cardType: '', status: '' };
 
   const bar = document.createElement('div');
-  bar.className = 'flex flex-wrap gap-2 items-center justify-end';
+  bar.className = 'flex flex-wrap gap-2 items-center';
+
+  if (title) {
+    const titleEl = document.createElement('span');
+    titleEl.className = 'filter-section-title';
+    titleEl.textContent = title;
+    bar.appendChild(titleEl);
+  }
 
   // ── Team select ────────────────────────────────────────────────────────
   const teamLabel = document.createElement('label');

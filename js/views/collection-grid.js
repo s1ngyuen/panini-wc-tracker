@@ -207,12 +207,6 @@ export async function mountCollectionGrid(container) {
   filterWrap.className = 'px-4 pb-3';
   corePanel.appendChild(filterWrap);
 
-  // ── Results count label ──────────────────────────────────────────────────
-  const countLabel = document.createElement('p');
-  countLabel.className = 'px-4 pb-2 text-xs font-semibold';
-  countLabel.style.color = '#666';
-  corePanel.appendChild(countLabel);
-
   // ── Card lightbox ────────────────────────────────────────────────────────
   const lightbox = document.createElement('div');
   lightbox.className = 'card-lightbox';
@@ -350,16 +344,16 @@ export async function mountCollectionGrid(container) {
 
   // ── Special card tab definitions ─────────────────────────────────────────
   const SPECIAL_TABS = [
-    { key: 'upgrades', cats: ['Hero Updates'] },
-    { key: 'le',       cats: ['Limited Edition', 'LE Hologram'] },
-    { key: 'wcm',      cats: ['WC Masters'] },
-    { key: 'special',  cats: ['Emblem Variants', 'Scandinavian Stars'] },
+    { key: 'upgrades', cats: ['Hero Updates'],                          label: 'Upgrade Cards' },
+    { key: 'le',       cats: ['Limited Edition', 'LE Hologram'],        label: 'Limited Edition' },
+    { key: 'wcm',      cats: ['WC Masters'],                            label: 'WC Masters' },
+    { key: 'special',  cats: ['Emblem Variants', 'Scandinavian Stars'], label: 'Special Cards' },
   ];
 
   // ── Build one panel per special tab ─────────────────────────────────────
   const specialPanels = {};
 
-  SPECIAL_TABS.forEach(({ key, cats }) => {
+  SPECIAL_TABS.forEach(({ key, cats, label }) => {
     const panel = document.createElement('div');
     panel.className = 'coll-panel';
     panel.hidden = true;
@@ -368,7 +362,8 @@ export async function mountCollectionGrid(container) {
     const spFilterWrap = document.createElement('div');
     spFilterWrap.className = 'px-4 pb-3';
     spFilterWrap.innerHTML = `
-      <div class="flex gap-2 items-center justify-end">
+      <div class="flex gap-2 items-center">
+        <span class="filter-section-title">${label}</span>
         <select class="sp-status filter-select" aria-label="Filter by status">
           <option value="">All Cards</option>
           <option value="owned">Owned</option>
@@ -443,15 +438,6 @@ export async function mountCollectionGrid(container) {
     });
   }
 
-  function buildCountLabel(filtered, filter) {
-    const { country, cardType, status } = filter;
-    if (!country && !cardType && !status) {
-      countLabel.textContent = `Showing ${filtered.length} of 630 cards`;
-    } else {
-      const parts = [country, cardType, status].filter(Boolean);
-      countLabel.textContent = `${filtered.length} cards · ${parts.join(' · ')}`;
-    }
-  }
 
   function updateProgress(filtered) {
     const total   = filtered.length;
@@ -552,7 +538,8 @@ export async function mountCollectionGrid(container) {
     const filterBar = document.createElement('div');
     filterBar.className = 'px-4 pb-3 pt-1';
     filterBar.innerHTML = `
-      <div class="flex gap-2 items-center justify-end">
+      <div class="flex gap-2 items-center">
+        <span class="filter-section-title">All Cards</span>
         <select class="all-status filter-select" aria-label="Filter by status">
           <option value="">All Cards</option>
           <option value="owned">Owned</option>
@@ -656,7 +643,6 @@ export async function mountCollectionGrid(container) {
   function renderGrid() {
     grid.innerHTML = '';
     const filtered = getFilteredCards();
-    buildCountLabel(filtered, currentFilter);
     updateProgress(filtered);
 
     if (filtered.length === 0) {
@@ -698,16 +684,6 @@ export async function mountCollectionGrid(container) {
       if (filtered.length === 0) return;
       totalShown += filtered.length;
 
-      const ownedInCat = allInCat.filter(c => (collection[String(c.id)] ?? 0) >= 1).length;
-
-      // Only show category label when the tab shows multiple categories
-      if (cats.length > 1) {
-        const catLabel = document.createElement('p');
-        catLabel.className = 'bonus-cat-label';
-        catLabel.textContent = `${cat} · ${ownedInCat} / ${allInCat.length}`;
-        section.appendChild(catLabel);
-      }
-
       const catGrid = document.createElement('div');
       catGrid.className = 'card-grid';
       catGrid.setAttribute('role', 'list');
@@ -743,6 +719,12 @@ export async function mountCollectionGrid(container) {
 
   function renderDupesPanel() {
     dupesPanel.innerHTML = '';
+
+    const dupeTitleBar = document.createElement('div');
+    dupeTitleBar.className = 'px-4 pb-3';
+    dupeTitleBar.innerHTML = `<div class="flex items-center"><span class="filter-section-title">Duplicates</span></div>`;
+    dupesPanel.appendChild(dupeTitleBar);
+
     const allCards = [...CARDS, ...BONUS_CARDS];
     const duped    = allCards.filter(c => (collection[String(c.id)] ?? 0) >= 2);
 
@@ -774,6 +756,7 @@ export async function mountCollectionGrid(container) {
 
   // Render filter bar
   renderFilterBar(filterWrap, {
+    title: 'Core Collection',
     teams: TEAMS,
     cardTypes: CARD_TYPES,
     onChange: filter => {

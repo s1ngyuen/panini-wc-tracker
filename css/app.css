@@ -1991,6 +1991,17 @@ body::before {
   font-weight: 700;
 }
 
+/* ── Filter row title ────────────────────────────────────────────────────── */
+.filter-section-title {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--accent);
+  flex: 1;
+}
+
 /* ── All Cards overview ──────────────────────────────────────────────────── */
 .all-cards-overview {
   padding: 8px 0 20px;
