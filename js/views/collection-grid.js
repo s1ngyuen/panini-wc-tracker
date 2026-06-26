@@ -567,62 +567,33 @@ export async function mountCollectionGrid(container) {
       return true;
     }
 
-    function makeLabel(text, allInCat) {
-      const owned = allInCat.filter(c => (collection[String(c.id)] ?? 0) >= 1).length;
-      const el = document.createElement('p');
-      el.className = 'bonus-cat-label';
-      el.textContent = `${text} · ${owned} / ${allInCat.length}`;
-      return el;
-    }
-
-    function makeGrid(cards, isPendingFn) {
-      const filtered = cards.filter(applyFilter);
-      if (filtered.length === 0) return null;
-      const g = document.createElement('div');
-      g.className = 'card-grid';
-      g.setAttribute('role', 'list');
-      filtered.forEach(card => {
-        const count = collection[String(card.id)] ?? 0;
-        const el = createCardElement(card, count, isPendingFn ? { isPending: isPendingFn(card) } : undefined);
-        el.setAttribute('role', 'listitem');
-        el.style.cursor = 'pointer';
-        el.addEventListener('click', () => openLightbox(card, count));
-        g.appendChild(el);
-      });
-      return g;
-    }
-
     function renderContent() {
       contentDiv.innerHTML = '';
-      const frag = document.createDocumentFragment();
-      let shown = 0;
+      const allFiltered = [...CARDS, ...BONUS_CARDS].filter(applyFilter);
 
-      const coreGrid = makeGrid(CARDS, card => pendingReceiveIds.has(card.id));
-      if (coreGrid) {
-        frag.appendChild(makeLabel('Core Collection', CARDS));
-        frag.appendChild(coreGrid);
-        shown += coreGrid.children.length;
-      }
-
-      [...new Set(BONUS_CARDS.map(c => c.bonusCategory))].forEach(cat => {
-        const catCards = BONUS_CARDS.filter(c => c.bonusCategory === cat);
-        const g = makeGrid(catCards);
-        if (g) {
-          frag.appendChild(makeLabel(cat, catCards));
-          frag.appendChild(g);
-          shown += g.children.length;
-        }
-      });
-
-      if (shown === 0) {
+      if (allFiltered.length === 0) {
         const empty = document.createElement('p');
         empty.className = 'w-full text-center py-12 text-sm px-4';
         empty.style.color = '#555';
         empty.textContent = 'No cards match that filter.';
-        frag.appendChild(empty);
+        contentDiv.appendChild(empty);
+        return;
       }
 
-      contentDiv.appendChild(frag);
+      const g = document.createElement('div');
+      g.className = 'card-grid';
+      g.setAttribute('role', 'list');
+      const frag = document.createDocumentFragment();
+      allFiltered.forEach(card => {
+        const count = collection[String(card.id)] ?? 0;
+        const el = createCardElement(card, count, { isPending: pendingReceiveIds.has(card.id) });
+        el.setAttribute('role', 'listitem');
+        el.style.cursor = 'pointer';
+        el.addEventListener('click', () => openLightbox(card, count));
+        frag.appendChild(el);
+      });
+      g.appendChild(frag);
+      contentDiv.appendChild(g);
     }
 
     statusSel.addEventListener('change', () => {
