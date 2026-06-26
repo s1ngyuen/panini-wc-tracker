@@ -8,8 +8,7 @@ import { createCardElement } from '../components/card-visual.js';
 import { renderFilterBar } from '../components/filters.js';
 import { buildProgressContent } from './progress.js';
 import { showToast } from '../components/toast.js';
-import { getAppId, setAppId, getCachedPrice, getCachedCurrency, getPriceSummary } from '../store-prices.js';
-import { fetchPricesForCards } from '../ebay.js';
+import { loadPrices, getPrice, getCurrency, getUpdated, getPriceSummary } from '../store-prices.js';
 
 /**
  * Mount the Collection Grid view.
@@ -82,23 +81,6 @@ export async function mountCollectionGrid(container) {
     </div>
   `;
   container.appendChild(statTilesWrap);
-
-  // ── eBay price strip ──────────────────────────────────────────────────────
-  const ebayStrip = document.createElement('div');
-  ebayStrip.className = 'ebay-strip';
-  ebayStrip.innerHTML = `
-    <span class="ebay-strip__label">eBay App ID</span>
-    <input type="password" class="ebay-strip__input" placeholder="Paste App ID from developer.ebay.com…" autocomplete="off" />
-    <button type="button" class="btn-primary ebay-strip__btn">Fetch Prices</button>
-    <span class="ebay-strip__status"></span>
-  `;
-  container.appendChild(ebayStrip);
-
-  const ebayInput  = ebayStrip.querySelector('.ebay-strip__input');
-  const ebayBtn    = ebayStrip.querySelector('.ebay-strip__btn');
-  const ebayStatus = ebayStrip.querySelector('.ebay-strip__status');
-
-  ebayInput.value = getAppId();
 
   const cstTotal   = statTilesWrap.querySelector('.cst-total');
   const cstUnique  = statTilesWrap.querySelector('.cst-unique');
@@ -275,11 +257,11 @@ export async function mountCollectionGrid(container) {
     lbSub.textContent  = `#${card.id} · ${card.country} · ${card.cardType}`;
     updateLightboxStatus(count);
 
-    const cached = getCachedPrice(card.id);
-    if (cached !== undefined && cached !== null) {
-      const sym = getCachedCurrency(card.id) === 'AUD' ? 'A$' : '$';
-      lbPrice.textContent      = `${sym}${cached.toFixed(2)}`;
-      lbPriceLabel.textContent = `Avg eBay sold price`;
+    const price = getPrice(card.id);
+    if (price !== null) {
+      const sym = getCurrency() === 'AUD' ? 'A$' : '$';
+      lbPrice.textContent      = `${sym}${price.toFixed(2)}`;
+      lbPriceLabel.textContent = `Avg eBay sold price · ${getUpdated()}`;
       lbPrice.hidden      = false;
       lbPriceLabel.hidden = false;
     } else {
@@ -338,7 +320,8 @@ export async function mountCollectionGrid(container) {
   bonusSection.className = 'bonus-cards-section';
   container.appendChild(bonusSection);
 
-  // ── Load collection & render ─────────────────────────────────────────────
+  // ── Load collection & prices ─────────────────────────────────────────────
+  await loadPrices();
   let collection = await getCollection();
   let pendingReceiveIds = getPendingReceiveIds();
   let currentFilter = { country: '', cardType: '', status: '' };
@@ -392,10 +375,10 @@ export async function mountCollectionGrid(container) {
 
     const totalOwned = filtered.reduce((sum, c) => sum + (collection[String(c.id)] ?? 0), 0);
     const dupCount   = filtered.reduce((sum, c) => sum + Math.max(0, (collection[String(c.id)] ?? 0) - 1), 0);
-    cstTotal.textContent  = totalOwned;
+    cstTotal.textContent   = totalOwned;
     cstUnique.textContent  = owned;
-    cstPending.textContent = getPendingTrades().length;
-    cstNeed.textContent    = total - owned;
+    cstPending.textContent = pending;
+    cstNeed.textContent    = total - owned - pending;
     cstDupe.textContent    = dupCount;
     updateValueTile();
   }
@@ -410,7 +393,6 @@ export async function mountCollectionGrid(container) {
     } else {
       const sym = currency === 'AUD' ? 'A$' : '$';
       cstValue.textContent = `${sym}${value.toFixed(0)}`;
-      ebayStatus.textContent = `${priced} of ${ownedIds.length} cards priced`;
     }
   }
 
@@ -501,30 +483,6 @@ export async function mountCollectionGrid(container) {
 
   renderGrid();
   renderBonusSection();
-
-  // ── eBay fetch button ─────────────────────────────────────────────────────
-  ebayBtn.addEventListener('click', async () => {
-    const appId = ebayInput.value.trim();
-    if (!appId) { showToast('Enter your eBay App ID first.', 'error'); return; }
-    setAppId(appId);
-
-    const ownedCards = CARDS.filter(c => (collection[String(c.id)] ?? 0) >= 1);
-    if (ownedCards.length === 0) { showToast('No owned cards to price.', 'error'); return; }
-
-    ebayBtn.disabled = true;
-    ebayStatus.textContent = `Fetching 0 / ${ownedCards.length}…`;
-
-    await fetchPricesForCards(ownedCards, {
-      onProgress: (done, total) => {
-        ebayStatus.textContent = `Fetching ${done} / ${total}…`;
-        updateValueTile();
-      },
-    });
-
-    ebayBtn.disabled = false;
-    updateValueTile();
-    showToast('eBay prices updated!', 'success');
-  });
 
   // Expose refresh so app.js can call it when the view becomes active
   container._refresh = async () => {
