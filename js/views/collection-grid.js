@@ -169,6 +169,17 @@ export async function mountCollectionGrid(container) {
     });
   });
 
+  // ── Core Collection heading ───────────────────────────────────────────────
+  const coreHeading = document.createElement('div');
+  coreHeading.className = 'px-4 py-4';
+  coreHeading.innerHTML = `
+    <div class="section-heading-wrap">
+      <div class="section-heading-bar"></div>
+      <span class="fx page-title" style="font-size:28px;">Core Collection</span>
+    </div>
+  `;
+  container.appendChild(coreHeading);
+
   // ── Filter bar container ─────────────────────────────────────────────────
   const filterWrap = document.createElement('div');
   filterWrap.className = 'px-4 pb-3';
@@ -427,15 +438,12 @@ export async function mountCollectionGrid(container) {
   function renderBonusSection() {
     bonusSection.innerHTML = '';
 
-    const ownedBonus = BONUS_CARDS.filter(c => (collection[String(c.id)] ?? 0) >= 1).length;
-    if (ownedBonus === 0) return;
-
     const heading = document.createElement('div');
     heading.className = 'px-4 py-4';
     heading.innerHTML = `
       <div class="section-heading-wrap">
         <div class="section-heading-bar"></div>
-        <span class="fx" style="font-size:28px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-primary); line-height:1;">Special Cards</span>
+        <span class="fx page-title" style="font-size:28px;">Special Cards</span>
       </div>
     `;
     bonusSection.appendChild(heading);
@@ -444,7 +452,6 @@ export async function mountCollectionGrid(container) {
     categories.forEach(cat => {
       const cards = BONUS_CARDS.filter(c => c.bonusCategory === cat);
       const ownedInCat = cards.filter(c => (collection[String(c.id)] ?? 0) >= 1).length;
-      if (ownedInCat === 0) return;
 
       const catLabel = document.createElement('p');
       catLabel.className = 'bonus-cat-label';
@@ -458,7 +465,6 @@ export async function mountCollectionGrid(container) {
       const frag = document.createDocumentFragment();
       cards.forEach(card => {
         const count = collection[String(card.id)] ?? 0;
-        if (count === 0) return;
         const el = createCardElement(card, count);
         el.setAttribute('role', 'listitem');
         el.style.cursor = 'pointer';
