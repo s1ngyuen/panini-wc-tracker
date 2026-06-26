@@ -545,50 +545,44 @@ export async function mountCollectionGrid(container) {
 
   function renderAllCardsOverview() {
     allCardsPanel.innerHTML = '';
-    const overviewDiv = document.createElement('div');
-    overviewDiv.className = 'all-cards-overview';
+    const frag = document.createDocumentFragment();
 
-    const catDefs = [
-      { label: 'Core Collection', tabKey: 'core', cards: CARDS },
-      ...SPECIAL_TABS.map(({ key, cats }) => ({
-        label: key === 'upgrades' ? 'Upgrade Cards'
-             : key === 'le'       ? 'Limited Edition'
-             : key === 'wcm'      ? 'WC Masters'
-             :                      'Special Cards',
-        tabKey: key,
-        cards: BONUS_CARDS.filter(c => cats.includes(c.bonusCategory)),
-      }))
-    ];
+    function makeLabel(text, cardArr) {
+      const owned = cardArr.filter(c => (collection[String(c.id)] ?? 0) >= 1).length;
+      const el = document.createElement('p');
+      el.className = 'bonus-cat-label';
+      el.textContent = `${text} · ${owned} / ${cardArr.length}`;
+      return el;
+    }
 
-    catDefs.forEach(({ label, tabKey, cards }) => {
-      const total = cards.length;
-      const owned = cards.filter(c => (collection[String(c.id)] ?? 0) >= 1).length;
-      const pct   = total === 0 ? 0 : Math.round((owned / total) * 100);
-
-      const row = document.createElement('div');
-      row.className = 'all-cards-row';
-      row.setAttribute('role', 'button');
-      row.setAttribute('tabindex', '0');
-      row.innerHTML = `
-        <div class="all-cards-row__header">
-          <span class="all-cards-row__label">${label}</span>
-          <span class="all-cards-row__count">${owned} / ${total}</span>
-        </div>
-        <div class="all-cards-row__bar-wrap">
-          <div class="all-cards-row__bar">
-            <div class="all-cards-row__fill" style="width:${pct}%"></div>
-          </div>
-          <span class="all-cards-row__pct">${pct}%</span>
-        </div>
-      `;
-      row.addEventListener('click', () => showCollTab(tabKey));
-      row.addEventListener('keydown', e => {
-        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); showCollTab(tabKey); }
+    function makeGrid(cards, isPendingFn) {
+      const g = document.createElement('div');
+      g.className = 'card-grid';
+      g.setAttribute('role', 'list');
+      cards.forEach(card => {
+        const count = collection[String(card.id)] ?? 0;
+        const el = createCardElement(card, count, isPendingFn ? { isPending: isPendingFn(card) } : undefined);
+        el.setAttribute('role', 'listitem');
+        el.style.cursor = 'pointer';
+        el.addEventListener('click', () => openLightbox(card, count));
+        g.appendChild(el);
       });
-      overviewDiv.appendChild(row);
+      return g;
+    }
+
+    // Core collection
+    frag.appendChild(makeLabel('Core Collection', CARDS));
+    frag.appendChild(makeGrid(CARDS, card => pendingReceiveIds.has(card.id)));
+
+    // Each bonus category in order
+    const allCats = [...new Set(BONUS_CARDS.map(c => c.bonusCategory))];
+    allCats.forEach(cat => {
+      const cards = BONUS_CARDS.filter(c => c.bonusCategory === cat);
+      frag.appendChild(makeLabel(cat, cards));
+      frag.appendChild(makeGrid(cards));
     });
 
-    allCardsPanel.appendChild(overviewDiv);
+    allCardsPanel.appendChild(frag);
   }
 
   function renderGrid() {
