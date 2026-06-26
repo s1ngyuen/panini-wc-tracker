@@ -1966,7 +1966,7 @@ body::before {
   flex: none;
   padding: 0 20px;
   height: 38px;
-  background: #f2f3f5;
+  background: #e2e4e6;
   color: #8a8f94;
   font-family: var(--font-display);
   font-size: 12px;
@@ -1985,8 +1985,8 @@ body::before {
 }
 
 .gen-tab--active {
-  background: var(--accent) !important;
-  color: #fff !important;
+  background: #f2f3f5 !important;
+  color: var(--accent) !important;
   border-top: 3px solid var(--accent);
   font-weight: 700;
 }
