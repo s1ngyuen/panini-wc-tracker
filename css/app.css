@@ -1966,7 +1966,7 @@ body::before {
   flex: none;
   padding: 0 20px;
   height: 38px;
-  background: #e2e4e6;
+  background: #f2f3f5;
   color: #8a8f94;
   font-family: var(--font-display);
   font-size: 12px;
@@ -1980,7 +1980,7 @@ body::before {
 }
 
 .gen-tab:hover:not(.gen-tab--active) {
-  background: #d8dadc;
+  background: #e6e7e9;
   color: var(--accent);
 }
 
