@@ -2,7 +2,7 @@
 // Auto-wraps .btn-primary / .btn-secondary / .btn-reset text in scroll-reveal
 // structure, matching the navbar tab hover animation. Skips buttons with SVG.
 
-const SEL = '.btn-primary, .btn-secondary, .btn-reset';
+const SEL = '.btn-primary, .btn-secondary, .btn-reset, .btn-cancel';
 
 function applyBtnScroll(btn) {
   if (btn.querySelector('.btn-scrl') || btn.querySelector('svg')) return;
