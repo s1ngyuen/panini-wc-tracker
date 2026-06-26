@@ -83,7 +83,7 @@ body::before {
   content: '';
   position: fixed;
   inset: 0;
-  background: url('../assets/bg.jpg') center center / cover no-repeat;
+  background: url('../assets/bg26.jpg') center center / cover no-repeat;
   filter: grayscale(1);
   opacity: 0.12;
   pointer-events: none;
