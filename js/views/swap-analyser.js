@@ -598,8 +598,8 @@ function renderPendingSection(container, { onComplete, onRefresh }) {
   const titleTile = document.createElement('div');
   titleTile.className = 'pending-title-tile';
   titleTile.innerHTML = `
-    <span style="font-family:var(--font-display); font-size:20px; text-transform:uppercase; letter-spacing:.04em; color:#fff;">
-      Pending Trades${trades.length > 0 ? ` <span style="color:#fff;">(${trades.length})</span>` : ''}
+    <span style="font-family:var(--font-display); font-size:20px; text-transform:uppercase; letter-spacing:.04em; color:var(--accent);">
+      Pending Trades${trades.length > 0 ? ` (${trades.length})` : ''}
     </span>
   `;
   container.appendChild(titleTile);
@@ -651,7 +651,7 @@ export async function mountSwapAnalyser(container) {
   // Title tile (same style as pending trades)
   const genTitleTile = document.createElement('div');
   genTitleTile.className = 'pending-title-tile';
-  genTitleTile.innerHTML = `<span style="font-family:var(--font-display); font-size:20px; text-transform:uppercase; letter-spacing:.04em; color:#fff;">Generate Trade</span>`;
+  genTitleTile.innerHTML = `<span style="font-family:var(--font-display); font-size:20px; text-transform:uppercase; letter-spacing:.04em; color:var(--accent);">Generate Trade</span>`;
   leftColWrap.appendChild(genTitleTile);
 
   // Tab bar
