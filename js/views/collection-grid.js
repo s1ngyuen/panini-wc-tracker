@@ -173,7 +173,8 @@ export async function mountCollectionGrid(container) {
   const collTabBar = document.createElement('div');
   collTabBar.className = 'gen-tab-bar px-4';
   collTabBar.innerHTML = `
-    <button class="gen-tab gen-tab--active" data-tab="core">Core Collection</button>
+    <button class="gen-tab gen-tab--active" data-tab="all">All Cards</button>
+    <button class="gen-tab" data-tab="core">Core Collection</button>
     <button class="gen-tab" data-tab="upgrades">Upgrade Cards</button>
     <button class="gen-tab" data-tab="le">Limited Edition</button>
     <button class="gen-tab" data-tab="wcm">WC Masters</button>
@@ -181,9 +182,17 @@ export async function mountCollectionGrid(container) {
   `;
   container.appendChild(collTabBar);
 
+  let activeTab = 'all';
+
+  // ── All Cards overview panel ─────────────────────────────────────────────
+  const allCardsPanel = document.createElement('div');
+  allCardsPanel.className = 'coll-panel';
+  container.appendChild(allCardsPanel);
+
   // ── Core Collection panel ────────────────────────────────────────────────
   const corePanel = document.createElement('div');
   corePanel.className = 'coll-panel';
+  corePanel.hidden = true;
   container.appendChild(corePanel);
 
   // ── Filter bar container ─────────────────────────────────────────────────
@@ -388,13 +397,17 @@ export async function mountCollectionGrid(container) {
 
   // ── Tab switching ────────────────────────────────────────────────────────
   function showCollTab(tab) {
+    activeTab = tab;
     collTabBar.querySelectorAll('.gen-tab').forEach(btn => {
       btn.className = `gen-tab${btn.dataset.tab === tab ? ' gen-tab--active' : ''}`;
     });
+    allCardsPanel.hidden = tab !== 'all';
     corePanel.hidden = tab !== 'core';
     SPECIAL_TABS.forEach(({ key }) => {
       specialPanels[key].panel.hidden = tab !== key;
     });
+    if (tab === 'all') renderAllCardsOverview();
+    updateStatsForTab(tab);
   }
 
   collTabBar.querySelectorAll('.gen-tab').forEach(btn => {
@@ -464,9 +477,8 @@ export async function mountCollectionGrid(container) {
     updateValueTile();
   }
 
-  function updateValueTile() {
-    const allOwned = [...CARDS, ...BONUS_CARDS]
-      .flatMap(c => Array(collection[String(c.id)] ?? 0).fill(c.id));
+  function updateValueTileForCards(cardSet) {
+    const allOwned = cardSet.flatMap(c => Array(collection[String(c.id)] ?? 0).fill(c.id));
     const { priced, value, currency } = getPriceSummary(allOwned);
     if (priced === 0) {
       cstValue.textContent = '—';
@@ -474,6 +486,102 @@ export async function mountCollectionGrid(container) {
       const sym = currency === 'AUD' ? 'A$' : '$';
       cstValue.textContent = `${sym}${value.toFixed(0)}`;
     }
+  }
+
+  function updateValueTile() {
+    updateValueTileForCards([...CARDS, ...BONUS_CARDS]);
+  }
+
+  function updateStatsForTab(tab) {
+    if (tab === 'core') {
+      updateProgress(getFilteredCards());
+      return;
+    }
+    let cardSet;
+    if (tab === 'all') {
+      cardSet = [...CARDS, ...BONUS_CARDS];
+    } else {
+      const def = SPECIAL_TABS.find(t => t.key === tab);
+      cardSet = def ? BONUS_CARDS.filter(c => def.cats.includes(c.bonusCategory)) : [];
+    }
+    const total      = cardSet.length;
+    const owned      = cardSet.filter(c => (collection[String(c.id)] ?? 0) >= 1).length;
+    const pending    = tab === 'all'
+      ? CARDS.filter(c => (collection[String(c.id)] ?? 0) === 0 && pendingReceiveIds.has(c.id)).length
+      : 0;
+    const combined   = owned + pending;
+    const ownedPct   = total === 0 ? 0 : (owned   / total) * 100;
+    const pendingPct = total === 0 ? 0 : (pending  / total) * 100;
+    const combinedPct = Math.round(ownedPct + pendingPct);
+
+    progressFill.style.width       = `${ownedPct}%`;
+    progressPendingBar.style.width = `${pendingPct}%`;
+
+    const hasPending = pending > 0;
+    progressCount.innerHTML = `<span class="cp-owned-n">${combined}${hasPending ? '*' : ''}</span><span class="cp-total"> of ${total} cards</span>`;
+    progressPct.textContent = `${combinedPct}%`;
+    progressKey.hidden = !hasPending;
+    if (hasPending) {
+      progressKeyOwned.textContent   = `${owned} owned`;
+      progressKeyPending.textContent = `${pending} pending`;
+    }
+
+    const totalCopies = cardSet.reduce((s, c) => s + (collection[String(c.id)] ?? 0), 0);
+    const dupes       = cardSet.reduce((s, c) => s + Math.max(0, (collection[String(c.id)] ?? 0) - 1), 0);
+    cstTotal.textContent   = totalCopies;
+    cstUnique.textContent  = owned;
+    cstPending.textContent = pending;
+    cstNeed.textContent    = total - owned - pending;
+    cstDupe.textContent    = dupes;
+    updateValueTileForCards(cardSet);
+  }
+
+  function renderAllCardsOverview() {
+    allCardsPanel.innerHTML = '';
+    const overviewDiv = document.createElement('div');
+    overviewDiv.className = 'all-cards-overview';
+
+    const catDefs = [
+      { label: 'Core Collection', tabKey: 'core', cards: CARDS },
+      ...SPECIAL_TABS.map(({ key, cats }) => ({
+        label: key === 'upgrades' ? 'Upgrade Cards'
+             : key === 'le'       ? 'Limited Edition'
+             : key === 'wcm'      ? 'WC Masters'
+             :                      'Special Cards',
+        tabKey: key,
+        cards: BONUS_CARDS.filter(c => cats.includes(c.bonusCategory)),
+      }))
+    ];
+
+    catDefs.forEach(({ label, tabKey, cards }) => {
+      const total = cards.length;
+      const owned = cards.filter(c => (collection[String(c.id)] ?? 0) >= 1).length;
+      const pct   = total === 0 ? 0 : Math.round((owned / total) * 100);
+
+      const row = document.createElement('div');
+      row.className = 'all-cards-row';
+      row.setAttribute('role', 'button');
+      row.setAttribute('tabindex', '0');
+      row.innerHTML = `
+        <div class="all-cards-row__header">
+          <span class="all-cards-row__label">${label}</span>
+          <span class="all-cards-row__count">${owned} / ${total}</span>
+        </div>
+        <div class="all-cards-row__bar-wrap">
+          <div class="all-cards-row__bar">
+            <div class="all-cards-row__fill" style="width:${pct}%"></div>
+          </div>
+          <span class="all-cards-row__pct">${pct}%</span>
+        </div>
+      `;
+      row.addEventListener('click', () => showCollTab(tabKey));
+      row.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); showCollTab(tabKey); }
+      });
+      overviewDiv.appendChild(row);
+    });
+
+    allCardsPanel.appendChild(overviewDiv);
   }
 
   function renderGrid() {
@@ -576,6 +684,8 @@ export async function mountCollectionGrid(container) {
 
   renderGrid();
   renderAllBonusPanels();
+  renderAllCardsOverview();
+  updateStatsForTab('all');
 
   // Expose refresh so app.js can call it when the view becomes active
   container._refresh = async () => {
@@ -583,6 +693,7 @@ export async function mountCollectionGrid(container) {
     pendingReceiveIds = getPendingReceiveIds();
     renderGrid();
     renderAllBonusPanels();
-    updateValueTile();
+    if (activeTab === 'all') renderAllCardsOverview();
+    if (activeTab !== 'core') updateStatsForTab(activeTab);
   };
 }

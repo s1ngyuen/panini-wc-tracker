@@ -1991,6 +1991,74 @@ body::before {
   font-weight: 700;
 }
 
+/* ── All Cards overview ──────────────────────────────────────────────────── */
+.all-cards-overview {
+  padding: 8px 0 20px;
+}
+
+.all-cards-row {
+  padding: 14px 16px;
+  cursor: pointer;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background .15s;
+}
+
+.all-cards-row:last-child {
+  border-bottom: none;
+}
+
+.all-cards-row:hover {
+  background: var(--accent-light);
+}
+
+.all-cards-row__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.all-cards-row__label {
+  font-size: .875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.all-cards-row__count {
+  font-size: .8rem;
+  color: #666;
+  font-weight: 500;
+}
+
+.all-cards-row__bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.all-cards-row__bar {
+  flex: 1;
+  height: 6px;
+  background: #e5e7eb;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.all-cards-row__fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 3px;
+  transition: width 0.4s;
+}
+
+.all-cards-row__pct {
+  font-size: .75rem;
+  color: var(--accent);
+  font-weight: 600;
+  min-width: 32px;
+  text-align: right;
+}
+
 .pending-trades-list {
   display: flex;
   flex-direction: column;
