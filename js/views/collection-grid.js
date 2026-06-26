@@ -174,12 +174,12 @@ export async function mountCollectionGrid(container) {
   collTabBar.className = 'gen-tab-bar px-4';
   collTabBar.innerHTML = `
     <button class="gen-tab gen-tab--active" data-tab="core">Core Collection</button>
+    <button class="gen-tab" data-tab="upgrades">Upgrade Cards</button>
+    <button class="gen-tab" data-tab="le">Limited Edition</button>
+    <button class="gen-tab" data-tab="wcm">WC Masters</button>
     <button class="gen-tab" data-tab="special">Special Cards</button>
   `;
   container.appendChild(collTabBar);
-
-  const coreTab    = collTabBar.querySelector('[data-tab="core"]');
-  const specialTab = collTabBar.querySelector('[data-tab="special"]');
 
   // ── Core Collection panel ────────────────────────────────────────────────
   const corePanel = document.createElement('div');
@@ -332,77 +332,74 @@ export async function mountCollectionGrid(container) {
   grid.setAttribute('aria-label', 'Card collection');
   corePanel.appendChild(grid);
 
-  // ── Special Cards panel ──────────────────────────────────────────────────
-  const specialPanel = document.createElement('div');
-  specialPanel.className = 'coll-panel';
-  specialPanel.hidden = true;
-  container.appendChild(specialPanel);
+  // ── Special card tab definitions ─────────────────────────────────────────
+  const SPECIAL_TABS = [
+    { key: 'upgrades', cats: ['Hero Updates'] },
+    { key: 'le',       cats: ['Limited Edition', 'LE Hologram'] },
+    { key: 'wcm',      cats: ['WC Masters'] },
+    { key: 'special',  cats: ['Emblem Variants', 'Scandinavian Stars'] },
+  ];
 
-  // Special cards filter bar
-  const bonusCats = [...new Set(BONUS_CARDS.map(c => c.bonusCategory))];
-  const specialFilterWrap = document.createElement('div');
-  specialFilterWrap.className = 'px-4 pb-3';
-  specialFilterWrap.innerHTML = `
-    <div class="flex flex-wrap gap-2 items-center">
-      <select id="sf-category" class="filter-select flex-1" aria-label="Filter by category">
-        <option value="">All Categories</option>
-        ${['Hero Updates', ...bonusCats.filter(c => c !== 'Hero Updates')].map(c => `<option value="${c}">${c}</option>`).join('')}
-      </select>
-      <select id="sf-status" class="filter-select flex-1" aria-label="Filter by status">
-        <option value="">All Cards</option>
-        <option value="owned">Owned</option>
-        <option value="missing">Missing</option>
-      </select>
-      <button id="sf-clear" class="btn-secondary text-sm px-3 py-2" hidden aria-label="Clear filters">Clear</button>
-    </div>
-  `;
-  specialPanel.appendChild(specialFilterWrap);
+  // ── Build one panel per special tab ─────────────────────────────────────
+  const specialPanels = {};
 
-  const bonusSection = document.createElement('div');
-  bonusSection.className = 'bonus-cards-section';
-  specialPanel.appendChild(bonusSection);
+  SPECIAL_TABS.forEach(({ key, cats }) => {
+    const panel = document.createElement('div');
+    panel.className = 'coll-panel';
+    panel.hidden = true;
+    container.appendChild(panel);
 
-  let bonusFilter = { category: '', status: '' };
+    const spFilterWrap = document.createElement('div');
+    spFilterWrap.className = 'px-4 pb-3';
+    spFilterWrap.innerHTML = `
+      <div class="flex gap-2 items-center">
+        <select class="sp-status filter-select flex-1" aria-label="Filter by status">
+          <option value="">All Cards</option>
+          <option value="owned">Owned</option>
+          <option value="missing">Missing</option>
+        </select>
+        <button class="sp-clear btn-secondary text-sm px-3 py-2" hidden>Clear</button>
+      </div>
+    `;
+    panel.appendChild(spFilterWrap);
 
-  const sfCategory = specialFilterWrap.querySelector('#sf-category');
-  const sfStatus   = specialFilterWrap.querySelector('#sf-status');
-  const sfClear    = specialFilterWrap.querySelector('#sf-clear');
+    const section = document.createElement('div');
+    section.className = 'bonus-cards-section';
+    panel.appendChild(section);
 
-  function updateSfClear() {
-    sfClear.hidden = !bonusFilter.category && !bonusFilter.status;
-  }
+    let spStatus = '';
+    const statusSel = spFilterWrap.querySelector('.sp-status');
+    const clearBtn  = spFilterWrap.querySelector('.sp-clear');
 
-  sfCategory.addEventListener('change', () => {
-    bonusFilter.category = sfCategory.value;
-    updateSfClear();
-    renderBonusSection();
-  });
+    statusSel.addEventListener('change', () => {
+      spStatus = statusSel.value;
+      clearBtn.hidden = !spStatus;
+      renderBonusForPanel(section, cats, spStatus);
+    });
+    clearBtn.addEventListener('click', () => {
+      statusSel.value = '';
+      spStatus = '';
+      clearBtn.hidden = true;
+      renderBonusForPanel(section, cats, spStatus);
+    });
 
-  sfStatus.addEventListener('change', () => {
-    bonusFilter.status = sfStatus.value;
-    updateSfClear();
-    renderBonusSection();
-  });
-
-  sfClear.addEventListener('click', () => {
-    sfCategory.value = '';
-    sfStatus.value   = '';
-    bonusFilter = { category: '', status: '' };
-    sfClear.hidden = true;
-    renderBonusSection();
+    specialPanels[key] = { panel, section, cats, getStatus: () => spStatus };
   });
 
   // ── Tab switching ────────────────────────────────────────────────────────
   function showCollTab(tab) {
-    const isCore = tab === 'core';
-    coreTab.className    = `gen-tab${isCore  ? ' gen-tab--active' : ''}`;
-    specialTab.className = `gen-tab${!isCore ? ' gen-tab--active' : ''}`;
-    corePanel.hidden    = !isCore;
-    specialPanel.hidden = isCore;
+    collTabBar.querySelectorAll('.gen-tab').forEach(btn => {
+      btn.className = `gen-tab${btn.dataset.tab === tab ? ' gen-tab--active' : ''}`;
+    });
+    corePanel.hidden = tab !== 'core';
+    SPECIAL_TABS.forEach(({ key }) => {
+      specialPanels[key].panel.hidden = tab !== key;
+    });
   }
 
-  coreTab.addEventListener('click',    () => showCollTab('core'));
-  specialTab.addEventListener('click', () => showCollTab('special'));
+  collTabBar.querySelectorAll('.gen-tab').forEach(btn => {
+    btn.addEventListener('click', () => showCollTab(btn.dataset.tab));
+  });
 
   // ── Load collection & prices ─────────────────────────────────────────────
   await loadPrices();
@@ -507,29 +504,17 @@ export async function mountCollectionGrid(container) {
     grid.appendChild(frag);
   }
 
-  // ── Render bonus cards section ───────────────────────────────────────────
-  function renderBonusSection() {
-    bonusSection.innerHTML = '';
-
-    // Hero Updates first, then rest in natural order
-    const allCats = [...new Set(BONUS_CARDS.map(c => c.bonusCategory))];
-    const orderedCats = [
-      ...allCats.filter(c => c === 'Hero Updates'),
-      ...allCats.filter(c => c !== 'Hero Updates'),
-    ];
-
-    const categories = bonusFilter.category
-      ? orderedCats.filter(c => c === bonusFilter.category)
-      : orderedCats;
-
+  // ── Render bonus cards into a panel section ──────────────────────────────
+  function renderBonusForPanel(section, cats, status) {
+    section.innerHTML = '';
     let totalShown = 0;
 
-    categories.forEach(cat => {
+    cats.forEach(cat => {
       const allInCat = BONUS_CARDS.filter(c => c.bonusCategory === cat);
       const filtered = allInCat.filter(c => {
         const count = collection[String(c.id)] ?? 0;
-        if (bonusFilter.status === 'owned'   && count < 1)  return false;
-        if (bonusFilter.status === 'missing' && count >= 1) return false;
+        if (status === 'owned'   && count < 1)  return false;
+        if (status === 'missing' && count >= 1) return false;
         return true;
       });
 
@@ -537,10 +522,14 @@ export async function mountCollectionGrid(container) {
       totalShown += filtered.length;
 
       const ownedInCat = allInCat.filter(c => (collection[String(c.id)] ?? 0) >= 1).length;
-      const catLabel = document.createElement('p');
-      catLabel.className = 'bonus-cat-label';
-      catLabel.textContent = `${cat} · ${ownedInCat} / ${allInCat.length}`;
-      bonusSection.appendChild(catLabel);
+
+      // Only show category label when the tab shows multiple categories
+      if (cats.length > 1) {
+        const catLabel = document.createElement('p');
+        catLabel.className = 'bonus-cat-label';
+        catLabel.textContent = `${cat} · ${ownedInCat} / ${allInCat.length}`;
+        section.appendChild(catLabel);
+      }
 
       const catGrid = document.createElement('div');
       catGrid.className = 'card-grid';
@@ -556,7 +545,7 @@ export async function mountCollectionGrid(container) {
         frag.appendChild(el);
       });
       catGrid.appendChild(frag);
-      bonusSection.appendChild(catGrid);
+      section.appendChild(catGrid);
     });
 
     if (totalShown === 0) {
@@ -564,8 +553,15 @@ export async function mountCollectionGrid(container) {
       empty.className = 'w-full text-center py-12 text-sm px-4';
       empty.style.color = '#555';
       empty.textContent = 'No cards match that filter.';
-      bonusSection.appendChild(empty);
+      section.appendChild(empty);
     }
+  }
+
+  function renderAllBonusPanels() {
+    SPECIAL_TABS.forEach(({ key }) => {
+      const { section, cats, getStatus } = specialPanels[key];
+      renderBonusForPanel(section, cats, getStatus());
+    });
   }
 
   // Render filter bar
@@ -579,14 +575,14 @@ export async function mountCollectionGrid(container) {
   });
 
   renderGrid();
-  renderBonusSection();
+  renderAllBonusPanels();
 
   // Expose refresh so app.js can call it when the view becomes active
   container._refresh = async () => {
     collection = await getCollection();
     pendingReceiveIds = getPendingReceiveIds();
     renderGrid();
-    renderBonusSection();
+    renderAllBonusPanels();
     updateValueTile();
   };
 }
